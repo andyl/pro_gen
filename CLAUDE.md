@@ -1,0 +1,69 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+ProGen is a scriptable Elixir project generator built on [Igniter](https://github.com/ash-project/igniter) for code generation, extended to handle deployment, CI/CD, monitoring, and DevOps tasks. It is in early-stage development (v0.1.0).
+
+## Build & Development Commands
+
+```bash
+mix compile          # Compile the project
+mix test             # Run all tests (ExUnit)
+mix test test/pro_gen_test.exs          # Run a single test file
+mix test test/pro_gen_test.exs:LINE     # Run a specific test by line number
+mix format           # Format code
+mix format --check-formatted            # Check formatting without modifying files
+mix deps.get         # Fetch dependencies
+```
+
+## Architecture
+
+ProGen has three pillars (Operations are implemented; Scripts and Menus are stubs/future work):
+
+### Operations — Composable Generation Tasks
+
+**Behavior module:** `ProGen.Operation` defines three callbacks: `perform/1`, `description/0`, `option_schema/0`. The `option_schema/0` callback returns a NimbleOptions schema. The `__using__` macro injects `validate_args/1` (calls NimbleOptions) and an auto-generated `usage/0` (overridable).
+
+**Registry:** `ProGen.Operations` auto-discovers any module whose name starts with `ProGen.Operation.` (note: singular `Operation`, not `Operations`). The last module name segment is downcased/underscored to derive the operation atom name (e.g., `ProGen.Operation.Run` → `:run`). Results are lazily cached in `:persistent_term`.
+
+**Running operations:** `ProGen.Operations.run(:operation_name, opts)` validates args against the schema then calls `perform/1`. Returns `{:ok, result}` or `{:error, message}`.
+
+**Adding a new operation:** Create a module under `lib/pro_gen/operation/` named `ProGen.Operation.<Name>` that does `use ProGen.Operation` and implements the three callbacks (`perform/1`, `description/0`, `option_schema/0`). It will be auto-discovered — no manual registration needed. Operation names must be unique across all modules.
+
+### Scripts — End-User Generation Workflows
+
+**Plain functions:** `ProGen.Script` provides plain functions — no macros, callbacks, or `use` required. Call functions as `ProGen.Script.function()`, or `import ProGen.Script` inside a module for unqualified access.
+
+**Core functions:**
+- `put_arg_schema(schema)` — Store an Optimus schema in `ProGen.Env` under `:pg_arg_schema`.
+- `get_arg_schema()` — Retrieve the stored Optimus schema.
+- `parse_args(schema, argv)` — Parse argv (list or string) against an Optimus schema. Returns `{:ok, parsed}` / `{:error, errors}` / `:help` / `:version`.
+- `parse_args(argv)` — Parse argv using the stored schema. Merges args/options/flags into a flat map, stores in `:pg_args`. Auto-prints usage on `--help` and version on `--version`.
+- `parse_args()` — Convenience that calls `parse_args(System.argv())`.
+- `usage(schema)` — Generate help text from an Optimus schema.
+- `usage()` — Generate help text from the stored schema.
+- `msg(text)` — Print a formatted message.
+- `run_cmd(desc, command)` — Print description then run a system command.
+- `run_op(desc, operation, opts)` — Run a ProGen operation (stub).
+- `git(arg)` — Run a git command (string or list).
+- `commit_all(message)` — Stage all and commit.
+
+**System commands:** `ProGen.Sys` provides `syscmd/1` (string) and `syscmd/2` (cmd + args) for running system commands.
+
+**Usage:** Create a `.exs` file that does `Mix.install([{:pro_gen, ...}])`, then call `ProGen.Script.parse_args(schema, System.argv())`. See `examples/greeter.exs`. Note: top-level `import` doesn't work with `Mix.install` scripts (Elixir compile-time limitation); use qualified calls or wrap in a module.
+
+### Menus (Future)
+
+YAML-defined TUI menus for interactive script generation. Not yet implemented.
+
+## Dependencies
+
+- **igniter** — Elixir code generation framework
+- **nimble_options** — Operation argument validation (also transitive via igniter)
+- **optimus** — CLI argv parsing for Scripts
+
+## Design Notes
+
+See `notes/Design.md` for architecture decisions and planned built-in operations (args, mix, run, file, ask, yes?, no?, route). Argument validation uses NimbleOptions for Operations and Optimus for Scripts.

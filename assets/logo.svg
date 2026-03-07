@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6C3FC5"/>
+      <stop offset="100%" stop-color="#4B22A0"/>
+    </linearGradient>
+  </defs>
+  <!-- Gear (outer ring with teeth) -->
+  <g transform="translate(100,100)">
+    <!-- Gear teeth -->
+    <g fill="#8B5CF6" opacity="0.5">
+      <rect x="-10" y="-95" width="20" height="20" rx="3" transform="rotate(0)"/>
+      <rect x="-10" y="-95" width="20" height="20" rx="3" transform="rotate(45)"/>
+      <rect x="-10" y="-95" width="20" height="20" rx="3" transform="rotate(90)"/>
+      <rect x="-10" y="-95" width="20" height="20" rx="3" transform="rotate(135)"/>
+      <rect x="-10" y="-95" width="20" height="20" rx="3" transform="rotate(180)"/>
+      <rect x="-10" y="-95" width="20" height="20" rx="3" transform="rotate(225)"/>
+      <rect x="-10" y="-95" width="20" height="20" rx="3" transform="rotate(270)"/>
+      <rect x="-10" y="-95" width="20" height="20" rx="3" transform="rotate(315)"/>
+    </g>
+    <!-- Outer ring -->
+    <circle cx="0" cy="0" r="82" fill="none" stroke="#8B5CF6" stroke-width="12" opacity="0.4"/>
+    <!-- Inner circle background -->
+    <circle cx="0" cy="0" r="70" fill="url(#bg)"/>
+  </g>
+  <!-- PG text -->
+  <text x="100" y="118" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="700" font-size="72" fill="white" text-anchor="middle" letter-spacing="-2">PG</text>
+  <!-- Subtle arrow/chevron on the G to suggest "generation" -->
+  <polygon points="155,88 168,100 155,112" fill="white" opacity="0.6"/>
+</svg>

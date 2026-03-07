@@ -1,0 +1,9 @@
+#!/usr/bin/env elixir
+
+Mix.install([
+  {:pro_gen, path: Path.expand("../", __DIR__)}
+])
+
+import ProGen.Script
+
+msg("HELLO WORLD")

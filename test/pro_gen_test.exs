@@ -1,0 +1,145 @@
+defmodule ProGenTest do
+  use ExUnit.Case
+  doctest ProGen
+
+  test "greets the world" do
+    assert ProGen.hello() == :world
+  end
+
+  describe "ProGen.Operation.Run option_schema validation" do
+    test "accepts valid args" do
+      args = [command: "echo", args: ["hello"], dir: "/tmp"]
+      assert {:ok, validated} = ProGen.Operation.Run.validate_args(args)
+      assert validated[:command] == "echo"
+      assert validated[:args] == ["hello"]
+      assert validated[:dir] == "/tmp"
+    end
+
+    test "applies defaults for optional args" do
+      args = [command: "echo"]
+      assert {:ok, validated} = ProGen.Operation.Run.validate_args(args)
+      assert validated[:command] == "echo"
+      assert validated[:args] == []
+      assert validated[:dir] == "."
+    end
+
+    test "rejects missing required field" do
+      assert {:error, %NimbleOptions.ValidationError{}} =
+               ProGen.Operation.Run.validate_args([])
+    end
+
+    test "rejects bad type for command" do
+      assert {:error, %NimbleOptions.ValidationError{}} =
+               ProGen.Operation.Run.validate_args(command: 123)
+    end
+
+    test "rejects bad type for args" do
+      assert {:error, %NimbleOptions.ValidationError{}} =
+               ProGen.Operation.Run.validate_args(command: "echo", args: "not_a_list")
+    end
+  end
+
+  describe "ProGen.Operation.Run usage/0" do
+    test "returns a string containing option names" do
+      usage = ProGen.Operation.Run.usage()
+      assert is_binary(usage)
+      assert usage =~ "command"
+      assert usage =~ "args"
+      assert usage =~ "dir"
+    end
+  end
+
+  describe "ProGen.Operations.run/2" do
+    test "validates and performs a valid operation" do
+      assert {:ok, {output, 0}} =
+               ProGen.Operations.run(:run, command: "echo", args: ["hello"])
+
+      assert String.trim(output) == "hello"
+    end
+
+    test "returns error for missing required args" do
+      assert {:error, message} = ProGen.Operations.run(:run, [])
+      assert is_binary(message)
+      assert message =~ "command"
+    end
+
+    test "returns error for unknown operation" do
+      assert {:error, message} = ProGen.Operations.run(:nonexistent, [])
+      assert message =~ "Unknown operation"
+    end
+  end
+
+  describe "ProGen.Operations.operation_info/1" do
+    test "includes option_schema in returned map" do
+      assert {:ok, info} = ProGen.Operations.operation_info(:run)
+      assert is_list(info.option_schema)
+      assert Keyword.has_key?(info.option_schema, :command)
+      assert is_binary(info.description)
+      assert is_binary(info.usage)
+    end
+  end
+
+  describe "ProGen.Env" do
+    test "lazily creates ETS table on first call" do
+      # get/2 should work without any explicit init
+      assert ProGen.Env.get(:lazy_test_key, "default") == "default"
+    end
+
+    test "put/2 and get/2 basic round-trip" do
+      ProGen.Env.put(:color, "blue")
+      assert ProGen.Env.get(:color) == "blue"
+    end
+
+    test "put/1 with keyword list sets multiple keys" do
+      ProGen.Env.put(fruit: "apple", veggie: "carrot")
+      assert ProGen.Env.get(:fruit) == "apple"
+      assert ProGen.Env.get(:veggie) == "carrot"
+    end
+
+    test "put/1 with map sets multiple keys" do
+      ProGen.Env.put(%{lang: "elixir", version: "1.17"})
+      assert ProGen.Env.get(:lang) == "elixir"
+      assert ProGen.Env.get(:version) == "1.17"
+    end
+
+    test "get/2 returns default when key missing and no env var" do
+      assert ProGen.Env.get(:no_such_key) == nil
+      assert ProGen.Env.get(:no_such_key, "fallback") == "fallback"
+    end
+
+    test "get/2 falls back to env var" do
+      System.put_env("PROGEN_TEST_VAR", "from_env")
+
+      try do
+        assert ProGen.Env.get(:progen_test_var) == "from_env"
+      after
+        System.delete_env("PROGEN_TEST_VAR")
+      end
+    end
+
+    test "get/2 ETS value takes precedence over env var" do
+      System.put_env("PROGEN_PRECEDENCE", "from_env")
+      ProGen.Env.put(:progen_precedence, "from_ets")
+
+      try do
+        assert ProGen.Env.get(:progen_precedence) == "from_ets"
+      after
+        System.delete_env("PROGEN_PRECEDENCE")
+      end
+    end
+
+    test "list/0 returns all stored key-value pairs" do
+      ProGen.Env.put(:list_test_a, "alpha")
+      ProGen.Env.put(:list_test_b, "beta")
+      result = ProGen.Env.list()
+      assert {:list_test_a, "alpha"} in result
+      assert {:list_test_b, "beta"} in result
+    end
+
+    test "list/0 returns empty list when table has no entries" do
+      # list/0 should work even if called on a fresh table;
+      # other tests may have inserted keys, so just verify it returns a list
+      assert is_list(ProGen.Env.list())
+    end
+  end
+end

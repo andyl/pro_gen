@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6C3FC5"/>
+      <stop offset="100%" stop-color="#4B22A0"/>
+    </linearGradient>
+  </defs>
+  <!-- Gear teeth (simplified for small size) -->
+  <g transform="translate(16,16)">
+    <g fill="#8B5CF6" opacity="0.5">
+      <rect x="-2" y="-15.5" width="4" height="4" rx="0.5" transform="rotate(0)"/>
+      <rect x="-2" y="-15.5" width="4" height="4" rx="0.5" transform="rotate(45)"/>
+      <rect x="-2" y="-15.5" width="4" height="4" rx="0.5" transform="rotate(90)"/>
+      <rect x="-2" y="-15.5" width="4" height="4" rx="0.5" transform="rotate(135)"/>
+      <rect x="-2" y="-15.5" width="4" height="4" rx="0.5" transform="rotate(180)"/>
+      <rect x="-2" y="-15.5" width="4" height="4" rx="0.5" transform="rotate(225)"/>
+      <rect x="-2" y="-15.5" width="4" height="4" rx="0.5" transform="rotate(270)"/>
+      <rect x="-2" y="-15.5" width="4" height="4" rx="0.5" transform="rotate(315)"/>
+    </g>
+    <circle cx="0" cy="0" r="13" fill="none" stroke="#8B5CF6" stroke-width="2" opacity="0.4"/>
+    <circle cx="0" cy="0" r="11" fill="url(#bg)"/>
+  </g>
+  <!-- PG text (compact for favicon) -->
+  <text x="16" y="19.5" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="700" font-size="11" fill="white" text-anchor="middle" letter-spacing="-0.5">PG</text>
+</svg>

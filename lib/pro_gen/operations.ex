@@ -1,0 +1,131 @@
+defmodule ProGen.Operations do
+  @moduledoc """
+  Central facade & registry for all ProGen operations.
+
+  Operations are auto-discovered from modules whose name starts with `ProGen.Operation.`.
+  The operation name is derived from the last segment, downcased to an atom.
+  """
+
+  # Cached results (list of operation names + name → module map)
+  @type operation_map :: %{atom() => module()}
+
+  def list_operations do
+    key = {__MODULE__, :operations_list}
+
+    case :persistent_term.get(key, :none) do
+      :none ->
+        {list, _map} = compute_operations()
+        :persistent_term.put(key, list)
+        list
+
+      cached ->
+        cached
+    end
+  end
+
+  def operation_module(operation_name) when is_atom(operation_name) do
+    key = {__MODULE__, :operations_map}
+
+    map =
+      case :persistent_term.get(key, :none) do
+        :none ->
+          {_list, map} = compute_operations()
+          :persistent_term.put(key, map)
+          map
+
+        cached ->
+          cached
+      end
+
+    Map.fetch(map, operation_name)
+  end
+
+  def operation_info(operation_name) when is_atom(operation_name) do
+    case operation_module(operation_name) do
+      {:ok, mod} ->
+        {:ok,
+         %{
+           description: mod.description(),
+           usage: mod.usage(),
+           option_schema: mod.option_schema()
+         }}
+
+      :error ->
+        {:error, "Unknown operation: #{inspect(operation_name)}"}
+    end
+  end
+
+  @doc """
+  Validates args against the operation's schema, then calls `perform/1`.
+
+  Returns `{:ok, result}` on success or `{:error, message}` on validation failure
+  or unknown operation.
+  """
+  def run(operation_name, args \\ []) when is_atom(operation_name) do
+    case operation_module(operation_name) do
+      {:ok, mod} ->
+        case mod.validate_args(args) do
+          {:ok, validated_args} ->
+            {:ok, mod.perform(validated_args)}
+
+          {:error, %NimbleOptions.ValidationError{} = error} ->
+            {:error, Exception.message(error)}
+        end
+
+      :error ->
+        {:error, "Unknown operation: #{inspect(operation_name)}"}
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # Internal computation – only runs once (lazily)
+  # ---------------------------------------------------------------------------
+
+  defp compute_operations do
+    prefix = ~c"Elixir.ProGen.Operation."
+
+    all_modules =
+      for {app, _, _} <- Application.loaded_applications(),
+          {:ok, mods} = :application.get_key(app, :modules),
+          mod <- mods,
+          do: mod
+
+    # Filter only modules under ProGen.Operation.*
+    operation_modules =
+      for mod <- all_modules,
+          mod_str = Atom.to_charlist(mod),
+          :lists.prefix(prefix, mod_str),
+          do: mod
+
+    # Derive name → module, detect duplicates
+    name_to_mod =
+      operation_modules
+      |> Enum.group_by(&operation_name_from_module/1)
+      |> Enum.map(fn
+        {name, [mod]} ->
+          {name, mod}
+
+        {name, duplicates} ->
+          raise ArgumentError,
+                """
+                Duplicate operation name detected: :#{name}
+
+                Conflicting modules:
+                #{duplicates |> Enum.map(&inspect/1) |> Enum.join("\n  ")}
+                """
+      end)
+      |> Map.new()
+
+    sorted_list = Map.keys(name_to_mod) |> Enum.sort()
+
+    {sorted_list, name_to_mod}
+  end
+
+  defp operation_name_from_module(mod) do
+    mod
+    |> Module.split()
+    |> List.last()
+    |> Macro.underscore()
+    |> String.to_atom()
+  end
+end
