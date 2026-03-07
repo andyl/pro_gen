@@ -15,13 +15,13 @@ defmodule ProGen.MixProject do
       # Documentation
       name: "ProGen",
       source_url: @source_url,
-      source_ref: "master",
       homepage_url: @source_url,
       source_ref: "v#{@version}",
       docs: [
         main: "overview",
         logo: "assets/logo.svg",
         favicon: "assets/favicon.svg",
+        source_ref: "master",
         extras: [
           {"README.md", title: "Overview", filename: "overview"},
           "LICENSE.txt"
