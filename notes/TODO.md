@@ -2,7 +2,7 @@
 
 Next Steps 
 
-- [ ] Generate Docs 
+- [x] Generate Docs 
 - [ ] Write scripts 
 - [ ] Write operations
 

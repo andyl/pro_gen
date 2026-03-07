@@ -1,20 +1,23 @@
 # ProGen
 
-A scriptable Elixir project generator built on
-[Igniter](https://github.com/ash-project/igniter) for code generation, extended
-to handle deployment, CI/CD, monitoring, and DevOps tasks.
+A scriptable Elixir project generator. 
+
+Code generation is based on [Igniter](https://github.com/ash-project/igniter),
+possible future to handle things like deployment, CI/CD, monitoring, and DevOps
+tasks.
 
 **Status:** Early-stage development (v0.0.1)
 
 ## Architecture
 
-ProGen is organized around three pillars:
+ProGen is organized around four pillars:
 
-| Pillar         | Purpose                                    | Status       |
-|----------------|--------------------------------------------|--------------|
-| **Operations** | Composable, self-describing generation tasks | Implemented  |
-| **Scripts**    | Shareable end-user generation workflows      | Implemented  |
-| **Menus**      | TUI menus for interactive script creation    | Future       |
+| Pillar         | Purpose                                      | Status               |
+|----------------|----------------------------------------------|----------------------|
+| **Operations** | Composable, self-describing generation tasks | Basic Implementation |
+| **Scripts**    | Shareable end-user generation workflows      | Basic Implementation |
+| **Menus**      | TUI menus for interactive script creation    | Future               |
+| **Chats**      | Chat interface to create scripts             | Future               |
 
 ### Operations
 
@@ -50,8 +53,9 @@ end
 ```
 
 **Auto-discovery:** Any module named `ProGen.Operation.<Name>` is automatically
-registered. The name atom is derived from the last segment
-(e.g. `ProGen.Operation.Run` becomes `:run`). No manual registration needed.
+registered. The name atom is derived from the last segment (e.g.
+`ProGen.Operation.Run` becomes `:run`). No manual registration needed.  Goal is
+to make it easy to create custom operations.
 
 **Running operations:**
 
@@ -196,6 +200,7 @@ For standalone scripts, use `Mix.install`:
 
 ```elixir
 Mix.install([{:pro_gen, github: "andyl/pro_gen"}])
+import ProGen.Script
 ```
 
 ## Development
