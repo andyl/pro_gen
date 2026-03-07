@@ -11,9 +11,9 @@ Someday
 - [ ] Variable syntax `${MYVAR}` for operations 
 - [ ] GitOps / Conventional Commits / Changelog
 - [ ] CICD 
-- [ ] Menus (TUI) 
-- [ ] Operations / Jido-ReqLLM
+- [ ] TUI Menus
 - [ ] TUI Chat / Jido-ReqLLM
+- [ ] Operations / Jido-ReqLLM
 - [ ] Add `usage_rules`
 - [ ] Add igniter installer 
 

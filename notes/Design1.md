@@ -9,7 +9,8 @@ Key Elements
 
 - Operations | Composable elements that perform atomic generation tasks
 - Scripts    | Sharable/composable scripts for end-to-end project generation
-- Menus      | User-selectable choices to create personalized scripts
+- Menus      | User-selectable choices to create personalized ProGen script
+- Chats      | LLM chat to create personalized ProGen script  
 
 ## Argument Validation
 
@@ -80,10 +81,17 @@ Overview
 
 ## Menus
 
-This is a future capability - let's defer this for now
+This is a future capability - defer this for now
 
 - menus are defined as yaml files
 - TUI interface (using TextUI library) let's end-users pick options
 - TUI is similar to Ash generator (https://ash-hq.org/#installer)
 - Define operation dependencies (use runic for this?)
 - script generator
+
+## Chats 
+
+This is a future capability - defer this for now
+
+- LLM chat to create Script
+- User supplied LLM key
