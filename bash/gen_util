@@ -1,0 +1,58 @@
+#!/usr/bin/env bash 
+
+# gen_util - bash functions for generators
+
+msg() { 
+  echo ">>>>> $@"
+}
+
+commit() { 
+  txt="$@"
+  git add .
+  git commit -a -m "$txt"
+  echo "----- $txt"
+}
+
+run_fun() { 
+  txt="$1"
+  cmd="$2"
+  msg $txt 
+  echo "$cmd"
+  eval "$cmd" 
+}
+
+plan_init() {
+  mkdir -p ./plans 
+  echo -e "# TASKS\n\n## Project Generation\n" > ./plans/TASKS.md
+}
+
+log_task() { 
+  local TODO="./plans/TASKS.md" 
+  [ -f "$TODO" ] || plan_init 
+  echo "- [x] $1" >> $TODO
+}
+
+# run_cmd "My message" "mix complete.bash > /dev/null"
+run_cmd() { 
+  txt="$1"
+  cmd="$2"
+  run_fun "$txt" "$cmd"
+  log_task "$txt"
+  commit "$txt"
+}
+
+# run_block "My message" << EOF  
+# echo "Hello World" 
+# ls
+# EOF
+run_block() { 
+  msg="$1"
+  block=""
+  while IFS= read -r line; do 
+    block+="$line;" 
+  done
+  msg "$msg"
+  eval "$block" 
+  commit "$msg"
+}
+

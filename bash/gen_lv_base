@@ -1,0 +1,10 @@
+#!/usr/bin/env bash 
+
+# gen_lv_base - generates a LiveView app without AI 
+
+if [ $# -eq 0 ]; then
+    echo "Usage: gen_lv_base <app>" >&2
+    exit 1
+fi
+
+gen_lv $1 --no-ai 

@@ -1,0 +1,116 @@
+#!/usr/bin/env bash 
+
+# gen_lv_opts - utilities for gen_lv
+
+source $(dirname "$0")/gen_util
+
+# Default values for boolean variables
+USE_ASH=false
+USE_ECTO=false
+USE_AUTH=false
+USE_ORG=false
+USE_ADMIN=false
+USE_AI=false
+
+# Usage message function
+usage() {
+  echo "$(basename "$0"): Generate LiveView Project"
+  echo " Usage: $(basename "$0") <project> [options]"
+  echo " Options:"
+  echo "   --ecto     Enable Ecto (default: $USE_ECTO)"
+  echo "   --no-ecto  Disable Ecto"
+  echo "   --ash      Enable Ash (default: $USE_ASH)"
+  echo "   --no-ash   Disable Ash"
+  echo "   --auth     Enable Auth (default: $USE_AUTH)"
+  echo "   --no-auth  Disable Auth"
+  echo "   --org      Enable Org (default: $USE_ORG)"
+  echo "   --no-org   Disable Org"
+  echo "   --admin    Enable Admin (default: $USE_ADMIN)"
+  echo "   --no-admin Disable Admin"
+  echo "   --ai       Enable AI (default: $USE_AI)"
+  echo "   --no-ai    Disable AI"
+  exit 1
+}
+
+# Check if project argument is provided
+if [ $# -lt 1 ]; then
+  usage
+fi
+
+# Store project name
+PROJECT="$1"
+shift
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --ecto)
+            USE_ECTO=true
+            shift
+            ;;
+        --no-ecto)
+            USE_ECTO=false
+            USE_AUTH=false
+            USE_ADMIN=false
+            USE_AI=false
+            shift
+            ;;
+        --ash)
+            USE_ASH=true
+            shift
+            ;;
+        --no-ash)
+            USE_ASH=false
+            shift
+            ;;
+        --ai)
+            USE_AI=true
+            USE_AUTH=true
+            USE_ECTO=true
+            shift
+            ;;
+        --no-ai)
+            USE_AI=false
+            shift
+            ;;
+        --auth)
+            USE_ADMIN=true
+            USE_AUTH=true
+            USE_ECTO=true
+            shift
+            ;;
+        --no-auth)
+            USE_AUTH=false
+            shift
+            ;;
+        --multi)
+            USE_ADMIN=true
+            USE_AUTH=true
+            USE_ECTO=true
+            USE_MULTI=true
+            shift
+            ;;
+        --no-multi)
+            USE_MULTI=false
+            shift
+            ;;
+        --admin)
+            USE_ADMIN=true
+            USE_AUTH=true
+            USE_ECTO=true
+            shift
+            ;;
+        --no-admin)
+            USE_ADMIN=false
+            shift
+            ;;
+        --*)
+            echo "Unknown option: $1"
+            usage
+            ;;
+        *)
+            echo "Unexpected argument: $1"
+            usage
+            ;;
+    esac
+done
+

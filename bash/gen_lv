@@ -1,0 +1,74 @@
+#!/usr/bin/env bash 
+
+# gen_lv - generates a LiveView app 
+
+trap "exit" SIGINT
+
+source $(dirname "$0")/gen_lv_opts
+
+msg "Generate phoenix app"
+option=$([ "$USE_ECTO" == "true" ] && echo "" || echo "--no-ecto")
+mix igniter.new $PROJECT --with=phx.new --with-args $option
+
+export APP=${PROJECT^} 
+
+cd $PROJECT
+
+log_task "Generate phoenix project ($PROJECT)"
+
+[ "$USE_ASH" == "true" ] && run_cmd "Add ash"         "mix igniter.install ash --yes"
+[ "$USE_ASH" == "true" ] && run_cmd "Add ash_phoenix" "mix igniter.install ash_phoenix --yes"
+[ "$USE_ASH" == "true" ] && run_cmd "Add ash_core"    "mix igniter.install ash_core@github:andyl/ash_core --yes"
+
+run_cmd "Add git_ops"     "mix igniter.install git_ops --only dev,test --yes"
+run_cmd "Add LV debugger" "mix igniter.install live_debugger --yes"
+run_cmd "Add Xpc"         "mix igniter.install xpc@path:/home/aleak/src/App/xpc --only dev,test --yes"
+run_cmd "Add AshMod"      "mix igniter.install ash_mod@path:/home/aleak/src/Lib/ash_mod --only dev,test --yes"
+
+[ "$USE_ECTO"  == "true" ] && run_cmd "Add ash_postgres" "mix igniter.install ash_postgres --yes"
+[ "$USE_AUTH"  == "true" ] && run_cmd "Add auth"         "mix igniter.install ash_authentication --auth-strategy password --yes"
+[ "$USE_AUTH"  == "true" ] && run_cmd "Add auth_phx"     "mix igniter.install ash_authentication_phoenix --auth-strategy password --yes"
+[ "$USE_AUTH"  == "true" ] && run_cmd "Use uuidv7"       "mix ash.gen.resource $APP.Accounts.User --uuid-v7-primary-key id --conflicts replace --yes"
+[ "$USE_AUTH"  == "true" ] && run_cmd "Add accounts_gen" "mix ash_mod.template.render accounts_gen -m"
+[ "$USE_AUTH"  == "true" ] && run_cmd "Add migration"    "mix ash.codegen use_uuidv7"
+[ "$USE_ORG"   == "true" ] && run_cmd "Add User Slug"    "mix ash.gen.resource $APP.Accounts.User -a username:ci_string -a slug:ci_string -t --conflicts replace --yes"
+[ "$USE_ORG"   == "true" ] && run_cmd "Create Org"       "mix ash.gen.resource $APP.Camp.Org --uuid-v7-primary-key id -a name:string -a orgname:ci_string -a slug:ci_string -a type:atom -t -e postgres --default-actions create,read,update,destroy --yes"
+[ "$USE_ORG"   == "true" ] && run_cmd "Create Mem"       "mix ash.gen.resource $APP.Camp.Mem --uuid-v7-primary-key id -a mem_id:uuid -a user_id:uuid -a role:atom -t -e postgres --default-actions create,read,update,destroy --yes"
+[ "$USE_ORG"   == "true" ] && run_cmd "Add camp_gen"     "mix ash_mod.template.render camp_gen -m"
+[ "$USE_ORG"   == "true" ] && run_cmd "Add migration"    "mix ash.codegen add_camp_domain"
+[ "$USE_AI"    == "true" ] && run_cmd "Add ash_ai"       "mix igniter.install ash_ai --yes"
+[ "$USE_AI"    == "true" ] && run_cmd "Add ai chat"      "echo '0' | mix ash_ai.gen.chat --live --yes"
+[ "$USE_AI"    == "true" ] && run_cmd "Add chat_bot"     "mix ash_mod.template.render chat_bot -m"
+[ "$USE_ECTO"  == "true" ] && run_cmd "Setup database"   "mix ecto.drop ; mix ash.setup"
+[ "$USE_ADMIN" == "true" ] && run_cmd "Add ash_admin"    "mix igniter.install ash_admin --yes"
+
+exit 1 
+
+SEED_CMD="mix run -e \"Ash.Seed.seed!($APP.Accounts.User, %{email: ~s(a@a.com), hashed_password: Bcrypt.hash_pwd_salt(~s(12345678))})\""
+[ "$USE_AUTH"  == "true" ] && echo "$SEED_CMD"
+[ "$USE_AUTH"  == "true" ] && run_cmd "Add a seed user" "$SEED_CMD"
+
+# run_block "Add tidewave and claude" << EOF
+# mix igniter.install tidewave --yes
+# install_claude
+# install_tidewave_mcp 
+# claude mcp add --transport stdio tidewave mcp-proxy http://localhost:4000/tidewave/mcp --scope project
+# # mix igniter.install claude --yes
+# EOF
+
+# run_cmd "Generate LLM plans"  "fab_plans -a $PROJECT"
+# run_cmd "Add usage_rules"     "mix igniter.install usage_rules --only dev --yes"
+# run_cmd "Generate RULES.md"   "echo 0 | mix usage_rules.sync RULES.md --link-to-folder RULES --all"
+run_cmd "Add mix completions" "mix complete.bash > /dev/null"
+
+run_block "Segregate base modules" << EOF
+echo $(pwd)
+cd lib
+mkdir ${PROJECT}_base 
+mv ${PROJECT}/application.ex ${PROJECT}_base
+mv ${PROJECT}/mailer.ex      ${PROJECT}_base
+mv ${PROJECT}/repo.ex        ${PROJECT}_base
+mv ${PROJECT}/secrets.ex     ${PROJECT}_base
+EOF
+
+msg "DONE ${PROJECT}"
