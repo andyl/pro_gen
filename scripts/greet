@@ -2,10 +2,10 @@
 
 Mix.install([{:pro_gen, path: "."}])
 
-alias ProGen.Script.Cmd
+alias ProGen.Script, as: PG
 
-Cmd.put_arg_schema(
-  name: "greeter",
+PG.put_schema(
+  name: "greet",
   description: "A simple greeting script",
   version: "0.1.0",
   options: [
@@ -25,7 +25,7 @@ Cmd.put_arg_schema(
   ]
 )
 
-case Cmd.parse_args(System.argv()) do
+case PG.parse_args(System.argv()) do
   {:ok, args} ->
     name = args[:name]
     greeting = "Hello, #{name}!"
@@ -46,4 +46,4 @@ case Cmd.parse_args(System.argv()) do
     System.halt(1)
 end
 
-Cmd.msg
+PG.msg "HELLO WORLD"
