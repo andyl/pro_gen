@@ -1,4 +1,5 @@
 defmodule ProGen.Script do
+
   @moduledoc """
   Importable DSL for ProGen scripts.
 
@@ -15,7 +16,7 @@ defmodule ProGen.Script do
     * `run_cmd/2`     — Print description then run a system command
     * `run_op/3`      — Run a ProGen operation (stub)
     * `git/1`         — Run a git command
-    * `commit_all/1`  — Stage all and commit
+    * `commit/1`      — Stage all and commit
   """
 
   # --- Schema storage ---
@@ -129,7 +130,7 @@ defmodule ProGen.Script do
   @doc """
   Stages all files and commits with the given message.
   """
-  def commit_all(message) do
+  def commit(message) do
     git("add .")
     git("commit -am \"#{message}\"")
   end
@@ -142,4 +143,5 @@ defmodule ProGen.Script do
 
   def git(arg_list) when is_list(arg_list),
     do: ProGen.Sys.syscmd("git", arg_list)
+
 end

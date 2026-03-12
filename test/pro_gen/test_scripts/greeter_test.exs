@@ -180,13 +180,13 @@ defmodule ProGen.ScriptTest do
     end
   end
 
-  describe "commit_all/1" do
+  describe "commit/1" do
     test "calls git add and git commit without crashing" do
-      # commit_all runs in CWD; with a clean tree the commit will fail,
+      # commit runs in CWD; with a clean tree the commit will fail,
       # but the function should still return without raising.
       {_result, output} =
         with_io(fn ->
-          ProGen.Script.commit_all("test commit")
+          ProGen.Script.commit("test commit")
         end)
 
       assert is_binary(output)

@@ -48,7 +48,7 @@ ProGen has three pillars (Operations are implemented; Scripts and Menus are stub
 - `run_cmd(desc, command)` — Print description then run a system command.
 - `run_op(desc, operation, opts)` — Run a ProGen operation (stub).
 - `git(arg)` — Run a git command (string or list).
-- `commit_all(message)` — Stage all and commit.
+- `commit(message)` — Stage all and commit.
 
 **System commands:** `ProGen.Sys` provides `syscmd/1` (string) and `syscmd/2` (cmd + args) for running system commands.
 

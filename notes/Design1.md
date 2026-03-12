@@ -70,7 +70,7 @@ Overview
 - `run_cmd(desc, command)` — Print description then run a system command.
 - `run_op(desc, operation, opts)` — Run a ProGen operation (stub).
 - `git(arg)` — Run a git command (string or list).
-- `commit_all(message)` — Stage all and commit.
+- `commit(message)` — Stage all and commit.
 
 ### System Commands
 

@@ -156,7 +156,7 @@ elixir examples/greeter.exs --help
 | `run_cmd/2`          | Print description, then run a system command               |
 | `run_op/3`           | Run a ProGen operation (stub)                              |
 | `git/1`              | Run a git command (string or list)                        |
-| `commit_all/1`       | Stage all files and commit                                |
+| `commit/1`           | Stage all files and commit                                |
 
 The `parse_args/1` convenience function merges `parsed.args`, `parsed.options`,
 and `parsed.flags` into a single flat map and stores it in `ProGen.Env` under
