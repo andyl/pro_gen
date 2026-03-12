@@ -90,7 +90,7 @@ Mix.install([{:pro_gen, path: ".."}])
 
 import ProGen.Script
 
-put_arg_schema(
+put_schema(
   name: "greeter",
   description: "A simple greeting script",
   version: "0.1.0",
@@ -145,7 +145,7 @@ elixir examples/greeter.exs --help
 
 | Function             | Description                                               |
 |----------------------|-----------------------------------------------------------|
-| `put_arg_schema/1`   | Store an Optimus schema in `ProGen.Env`                   |
+| `put_schema/1`   | Store an Optimus schema in `ProGen.Env`                   |
 | `get_arg_schema/0`   | Retrieve the stored schema                                |
 | `parse_args/2`       | Parse argv against an explicit schema                     |
 | `parse_args/1`       | Parse argv using the stored schema (merges into flat map)  |

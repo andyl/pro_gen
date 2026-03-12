@@ -79,16 +79,16 @@ defmodule ProGen.ScriptTest do
     end
   end
 
-  describe "put_arg_schema/1 and get_arg_schema/0" do
+  describe "put_schema/1 and get_arg_schema/0" do
     test "round-trip stores and retrieves schema" do
-      ProGen.Script.put_arg_schema(@schema)
+      ProGen.Script.put_schema(@schema)
       assert ProGen.Script.get_arg_schema() == @schema
     end
   end
 
   describe "parse_args/1" do
     setup do
-      ProGen.Script.put_arg_schema(@schema)
+      ProGen.Script.put_schema(@schema)
       :ok
     end
 
@@ -131,7 +131,7 @@ defmodule ProGen.ScriptTest do
 
   describe "usage/0" do
     setup do
-      ProGen.Script.put_arg_schema(@schema)
+      ProGen.Script.put_schema(@schema)
       :ok
     end
 

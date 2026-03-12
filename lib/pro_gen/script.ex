@@ -5,7 +5,7 @@ defmodule ProGen.Script do
 
   `import ProGen.Script` to access:
 
-    * `put_arg_schema/1` — Store an Optimus schema in ProGen.Env
+    * `put_schema/1` — Store an Optimus schema in ProGen.Env
     * `get_arg_schema/0`  — Retrieve the stored Optimus schema
     * `parse_args/2`  — Parse argv against an Optimus schema
     * `parse_args/1`  — Parse argv using the stored schema
@@ -24,12 +24,12 @@ defmodule ProGen.Script do
   @doc """
   Stores an Optimus schema in `ProGen.Env` under `:pg_arg_schema`.
   """
-  def put_arg_schema(schema) do
+  def put_schema(schema) do
     ProGen.Env.put(:pg_arg_schema, schema)
   end
 
   @doc """
-  Retrieves the Optimus schema previously stored by `put_arg_schema/1`.
+  Retrieves the Optimus schema previously stored by `put_schema/1`.
   """
   def get_arg_schema do
     ProGen.Env.get(:pg_arg_schema)
@@ -51,7 +51,7 @@ defmodule ProGen.Script do
   end
 
   @doc """
-  Parses `argv` using the schema stored by `put_arg_schema/1`.
+  Parses `argv` using the schema stored by `put_schema/1`.
 
   On success, merges `parsed.args`, `parsed.options`, and `parsed.flags` into
   a single flat map and stores it in `ProGen.Env` under `:pg_args`.
@@ -97,7 +97,7 @@ defmodule ProGen.Script do
   end
 
   @doc """
-  Generates help text from the schema stored by `put_arg_schema/1`.
+  Generates help text from the schema stored by `put_schema/1`.
   """
   def usage do
     usage(get_arg_schema())
