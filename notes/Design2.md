@@ -6,7 +6,7 @@ This document follows the initial design notes in Version 1.
 
 Commands:
 
-- run_cmd "DESCRIPTION", "CMD"
+- run "DESCRIPTION", "CMD"
 - run_op "DESCRIPTION", OPERATION, ARGS
 - msg "TEXT"
 - ...
