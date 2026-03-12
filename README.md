@@ -154,7 +154,7 @@ elixir examples/greeter.exs --help
 | `usage/0`            | Generate help text from the stored schema                 |
 | `msg/1`              | Print a formatted message                                 |
 | `cmd/2`              | Print description, then run a system command               |
-| `run_op/3`           | Run a ProGen operation (stub)                              |
+| `op/3`               | Run a ProGen operation (stub)                              |
 | `git/1`              | Run a git command (string or list)                        |
 | `commit/1`           | Stage all files and commit                                |
 

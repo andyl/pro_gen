@@ -14,7 +14,7 @@ defmodule ProGen.Script do
     * `usage/0`       — Generate help text from the stored schema
     * `msg/1`         — Print a formatted message
     * `cmd/2`         — Print description then run a system command
-    * `run_op/3`      — Run a ProGen operation (stub)
+    * `op/3`          — Run a ProGen operation (stub)
     * `git/1`         — Run a git command
     * `commit/1`      — Stage all and commit
   """
@@ -116,7 +116,7 @@ defmodule ProGen.Script do
   @doc """
   Runs a ProGen operation. Currently a stub.
   """
-  def run_op(_desc, _operation, _opts \\ []) do
+  def op(_desc, _operation, _opts \\ []) do
     IO.puts("Under Construction")
   end
 

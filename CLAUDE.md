@@ -46,7 +46,7 @@ ProGen has three pillars (Operations are implemented; Scripts and Menus are stub
 - `usage()` — Generate help text from the stored schema.
 - `msg(text)` — Print a formatted message.
 - `cmd(desc, command)` — Print description then run a system command.
-- `run_op(desc, operation, opts)` — Run a ProGen operation (stub).
+- `op(desc, operation, opts)` — Run a ProGen operation (stub).
 - `git(arg)` — Run a git command (string or list).
 - `commit(message)` — Stage all and commit.
 
