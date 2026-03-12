@@ -47,7 +47,7 @@ usage(schema)
 New CLI processing functions (existing `parse_args/2` and `usage/1` remain unchanged):
 
     * `put_schema/1` — Store the Optimus schema in Env under atom key `:pg_arg_schema`
-    * `get_arg_schema/0` — Retrieve the stored schema from `:pg_arg_schema`
+    * `get_schema/0` — Retrieve the stored schema from `:pg_arg_schema`
     * `parse_args/1`     — Parse argv using the stored schema, store merged results in `:pg_args`
     * `parse_args/0`     — Convenience for `parse_args(System.argv())`
     * `usage/0`          — Generate help text from the stored schema

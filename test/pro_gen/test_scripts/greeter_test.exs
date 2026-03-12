@@ -79,10 +79,10 @@ defmodule ProGen.ScriptTest do
     end
   end
 
-  describe "put_schema/1 and get_arg_schema/0" do
+  describe "put_schema/1 and get_schema/0" do
     test "round-trip stores and retrieves schema" do
       ProGen.Script.put_schema(@schema)
-      assert ProGen.Script.get_arg_schema() == @schema
+      assert ProGen.Script.get_schema() == @schema
     end
   end
 
