@@ -11,7 +11,7 @@ Someday
 - [ ] Variable syntax `${MYVAR}` for operations 
 - [ ] GitOps / Conventional Commits / Changelog
 - [ ] CICD 
-- [ ] TUI Menus
+- [ ] TUI Menus (liveview like?)
 - [ ] TUI Chat / Jido-ReqLLM
 - [ ] Operations / Jido-ReqLLM
 - [ ] Add `usage_rules`
