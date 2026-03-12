@@ -1,9 +1,7 @@
 defmodule ProGen.Script do
 
   @moduledoc """
-  Importable DSL for ProGen scripts.
-
-  `import ProGen.Script` to access:
+  Functions for ProGen scripts.
 
     * `put_schema/1` — Store an Optimus schema in ProGen.Env
     * `get_schema/0`  — Retrieve the stored Optimus schema
@@ -17,6 +15,18 @@ defmodule ProGen.Script do
     * `op/3`          — Run a ProGen operation (stub)
     * `git/1`         — Run a git command
     * `commit/1`      — Stage all and commit
+
+  Usage Example:
+
+  ```
+  #!/usr/bin/env elixir
+
+  Mix.install([:pro_gen, github: "andyl/pro_gen"])
+
+  alias ProGen.Script, as: PG
+
+  PG.msg "Hello World"
+  ...
   """
 
   # --- Schema storage ---
