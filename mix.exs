@@ -61,7 +61,6 @@ defmodule ProGen.MixProject do
       {:nimble_options, "~> 1.0"},
       {:optimus, "~> 0.5"},
       {:ex_doc, "~> 0.31", only: :dev, runtime: false},
-      {:specled_ex, path: "~/src/Fork/specled_ex/"},
     ]
   end
 end
