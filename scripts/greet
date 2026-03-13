@@ -4,7 +4,7 @@ Mix.install([{:pro_gen, path: "."}])
 
 alias ProGen.Script, as: PG
 
-PG.put_schema(
+PG.cli_args(
   name: "greet",
   description: "A simple greeting script",
   version: "0.1.0",

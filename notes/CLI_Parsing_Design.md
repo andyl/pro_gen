@@ -46,8 +46,8 @@ usage(schema)
 
 New CLI processing functions (existing `parse_args/2` and `usage/1` remain unchanged):
 
-    * `put_schema/1` — Store the Optimus schema in Env under atom key `:pg_arg_schema`
-    * `get_schema/0` — Retrieve the stored schema from `:pg_arg_schema`
+    * `cli_args/1` — Store the Optimus schema in Env under atom key `:pg_cli_args`
+    * `get_schema/0` — Retrieve the stored schema from `:pg_cli_args`
     * `parse_args/1`     — Parse argv using the stored schema, store merged results in `:pg_args`
     * `parse_args/0`     — Convenience for `parse_args(System.argv())`
     * `usage/0`          — Generate help text from the stored schema
@@ -55,7 +55,7 @@ New CLI processing functions (existing `parse_args/2` and `usage/1` remain uncha
 A new script looks like:
 
 ```elixir
-put_schema(
+cli_args(
   name: "greeter",
   description: "A greeting script",
   version: "0.1.0",
@@ -88,7 +88,7 @@ end
 
 ## Design Decisions
 
-- **Atom key `:pg_arg_schema`** — uses atom keys in `ProGen.Env`, avoiding the
+- **Atom key `:pg_cli_args`** — uses atom keys in `ProGen.Env`, avoiding the
   env-var fallback that happens with string keys.
 - **Merged map in `:pg_args`** — `parse_args/1` merges `parsed.args`,
   `parsed.options`, and `parsed.flags` into one flat map, so

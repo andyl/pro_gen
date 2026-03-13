@@ -79,16 +79,16 @@ defmodule ProGen.ScriptTest do
     end
   end
 
-  describe "put_schema/1 and get_schema/0" do
+  describe "cli_args/1 and get_schema/0" do
     test "round-trip stores and retrieves schema" do
-      ProGen.Script.put_schema(@schema)
+      ProGen.Script.cli_args(@schema)
       assert ProGen.Script.get_schema() == @schema
     end
   end
 
   describe "parse_args/1" do
     setup do
-      ProGen.Script.put_schema(@schema)
+      ProGen.Script.cli_args(@schema)
       Application.put_env(:pro_gen, :system_halt, fn code -> throw({:halted, code}) end)
       on_exit(fn -> Application.delete_env(:pro_gen, :system_halt) end)
       :ok
@@ -152,7 +152,7 @@ defmodule ProGen.ScriptTest do
 
   describe "usage/0" do
     setup do
-      ProGen.Script.put_schema(@schema)
+      ProGen.Script.cli_args(@schema)
       :ok
     end
 

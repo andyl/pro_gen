@@ -2,7 +2,7 @@ defmodule ProGen.Script do
   @moduledoc """
   Functions for ProGen scripts.
 
-    * `put_schema/1` — Store an Optimus schema in ProGen.Env
+    * `cli_args/1`    — Store an Optimus schema in ProGen.Env
     * `get_schema/0`  — Retrieve the stored Optimus schema
     * `parse_args/2`  — Parse argv against an Optimus schema
     * `parse_args/1`  — Parse argv using the stored schema
@@ -31,17 +31,17 @@ defmodule ProGen.Script do
   # --- Schema storage ---
 
   @doc """
-  Stores an Optimus schema in `ProGen.Env` under `:pg_arg_schema`.
+  Stores an Optimus schema in `ProGen.Env` under `:pg_cli_args`.
   """
-  def put_schema(schema) do
-    ProGen.Env.put(:pg_arg_schema, schema)
+  def cli_args(schema) do
+    ProGen.Env.put(:pg_cli_args, schema)
   end
 
   @doc """
-  Retrieves the Optimus schema previously stored by `put_schema/1`.
+  Retrieves the Optimus schema previously stored by `cli_args/1`.
   """
   def get_schema do
-    ProGen.Env.get(:pg_arg_schema)
+    ProGen.Env.get(:pg_cli_args)
   end
 
   # --- CLI parsing ---
@@ -60,7 +60,7 @@ defmodule ProGen.Script do
   end
 
   @doc """
-  Parses `argv` using the schema stored by `put_schema/1`.
+  Parses `argv` using the schema stored by `cli_args/1`.
 
   On success, merges `parsed.args`, `parsed.options`, and `parsed.flags` into
   a single flat map and stores it in `ProGen.Env` under `:pg_args`.
@@ -113,7 +113,7 @@ defmodule ProGen.Script do
   end
 
   @doc """
-  Generates help text from the schema stored by `put_schema/1`.
+  Generates help text from the schema stored by `cli_args/1`.
   """
   def usage do
     usage(get_schema())
