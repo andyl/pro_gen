@@ -46,4 +46,4 @@ case PG.parse_args(System.argv()) do
     System.halt(1)
 end
 
-PG.msg "HELLO WORLD"
+PG.puts "HELLO WORLD"

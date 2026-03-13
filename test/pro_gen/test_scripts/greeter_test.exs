@@ -164,9 +164,9 @@ defmodule ProGen.ScriptTest do
     end
   end
 
-  describe "msg/1" do
+  describe "puts/1" do
     test "prints formatted message" do
-      output = capture_io(fn -> ProGen.Script.msg("hello") end)
+      output = capture_io(fn -> ProGen.Script.puts("hello") end)
       assert output =~ ">>>>> hello"
     end
   end

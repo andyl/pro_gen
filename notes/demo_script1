@@ -6,4 +6,4 @@ Mix.install([
 
 import ProGen.Script
 
-msg("HELLO WORLD")
+puts("HELLO WORLD")

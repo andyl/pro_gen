@@ -152,7 +152,7 @@ elixir examples/greeter.exs --help
 | `parse_args/0`       | Parse `System.argv()` using the stored schema             |
 | `usage/1`            | Generate help text from an explicit schema                |
 | `usage/0`            | Generate help text from the stored schema                 |
-| `msg/1`              | Print a formatted message                                 |
+| `puts/1`             | Print a formatted message                                 |
 | `command/2`          | Print description, then run a system command               |
 | `action/3`           | Run a ProGen action (stub)                                 |
 | `git/1`              | Run a git command (string or list)                        |

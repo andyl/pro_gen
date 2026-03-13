@@ -8,7 +8,7 @@ Commands:
 
 - command "DESCRIPTION", "CMD"
 - action "DESCRIPTION", ACTION, ARGS
-- msg "TEXT"
+- puts "TEXT"
 - ...
 
 DESCRIPTION | a string
