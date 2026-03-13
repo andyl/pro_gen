@@ -1,20 +1,20 @@
-defmodule ProGen.Operations do
+defmodule ProGen.Actions do
   @moduledoc """
-  Central facade & registry for all ProGen operations.
+  Central facade & registry for all ProGen actions.
 
-  Operations are auto-discovered from modules whose name starts with `ProGen.Operation.`.
-  The operation name is derived from the last segment, downcased to an atom.
+  Actions are auto-discovered from modules whose name starts with `ProGen.Action.`.
+  The action name is derived from the last segment, downcased to an atom.
   """
 
-  # Cached results (list of operation names + name → module map)
-  @type operation_map :: %{atom() => module()}
+  # Cached results (list of action names + name → module map)
+  @type action_map :: %{atom() => module()}
 
-  def list_operations do
-    key = {__MODULE__, :operations_list}
+  def list_actions do
+    key = {__MODULE__, :actions_list}
 
     case :persistent_term.get(key, :none) do
       :none ->
-        {list, _map} = compute_operations()
+        {list, _map} = compute_actions()
         :persistent_term.put(key, list)
         list
 
@@ -23,13 +23,13 @@ defmodule ProGen.Operations do
     end
   end
 
-  def operation_module(operation_name) when is_atom(operation_name) do
-    key = {__MODULE__, :operations_map}
+  def action_module(action_name) when is_atom(action_name) do
+    key = {__MODULE__, :actions_map}
 
     map =
       case :persistent_term.get(key, :none) do
         :none ->
-          {_list, map} = compute_operations()
+          {_list, map} = compute_actions()
           :persistent_term.put(key, map)
           map
 
@@ -37,11 +37,11 @@ defmodule ProGen.Operations do
           cached
       end
 
-    Map.fetch(map, operation_name)
+    Map.fetch(map, action_name)
   end
 
-  def operation_info(operation_name) when is_atom(operation_name) do
-    case operation_module(operation_name) do
+  def action_info(action_name) when is_atom(action_name) do
+    case action_module(action_name) do
       {:ok, mod} ->
         {:ok,
          %{
@@ -51,18 +51,18 @@ defmodule ProGen.Operations do
          }}
 
       :error ->
-        {:error, "Unknown operation: #{inspect(operation_name)}"}
+        {:error, "Unknown action: #{inspect(action_name)}"}
     end
   end
 
   @doc """
-  Validates args against the operation's schema, then calls `perform/1`.
+  Validates args against the action's schema, then calls `perform/1`.
 
   Returns `{:ok, result}` on success or `{:error, message}` on validation failure
-  or unknown operation.
+  or unknown action.
   """
-  def run(operation_name, args \\ []) when is_atom(operation_name) do
-    case operation_module(operation_name) do
+  def run(action_name, args \\ []) when is_atom(action_name) do
+    case action_module(action_name) do
       {:ok, mod} ->
         case mod.validate_args(args) do
           {:ok, validated_args} ->
@@ -73,7 +73,7 @@ defmodule ProGen.Operations do
         end
 
       :error ->
-        {:error, "Unknown operation: #{inspect(operation_name)}"}
+        {:error, "Unknown action: #{inspect(action_name)}"}
     end
   end
 
@@ -81,8 +81,8 @@ defmodule ProGen.Operations do
   # Internal computation – only runs once (lazily)
   # ---------------------------------------------------------------------------
 
-  defp compute_operations do
-    prefix = ~c"Elixir.ProGen.Operation."
+  defp compute_actions do
+    prefix = ~c"Elixir.ProGen.Action."
 
     all_modules =
       for {app, _, _} <- Application.loaded_applications(),
@@ -90,8 +90,8 @@ defmodule ProGen.Operations do
           mod <- mods,
           do: mod
 
-    # Filter only modules under ProGen.Operation.*
-    operation_modules =
+    # Filter only modules under ProGen.Action.*
+    action_modules =
       for mod <- all_modules,
           mod_str = Atom.to_charlist(mod),
           :lists.prefix(prefix, mod_str),
@@ -99,8 +99,8 @@ defmodule ProGen.Operations do
 
     # Derive name → module, detect duplicates
     name_to_mod =
-      operation_modules
-      |> Enum.group_by(&operation_name_from_module/1)
+      action_modules
+      |> Enum.group_by(&action_name_from_module/1)
       |> Enum.map(fn
         {name, [mod]} ->
           {name, mod}
@@ -108,7 +108,7 @@ defmodule ProGen.Operations do
         {name, duplicates} ->
           raise ArgumentError,
                 """
-                Duplicate operation name detected: :#{name}
+                Duplicate action name detected: :#{name}
 
                 Conflicting modules:
                 #{duplicates |> Enum.map(&inspect/1) |> Enum.join("\n  ")}
@@ -121,7 +121,7 @@ defmodule ProGen.Operations do
     {sorted_list, name_to_mod}
   end
 
-  defp operation_name_from_module(mod) do
+  defp action_name_from_module(mod) do
     mod
     |> Module.split()
     |> List.last()

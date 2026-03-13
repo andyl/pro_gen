@@ -20,17 +20,17 @@ mix deps.get         # Fetch dependencies
 
 ## Architecture
 
-ProGen has three pillars (Operations are implemented; Scripts and Menus are stubs/future work):
+ProGen has three pillars (Actions are implemented; Scripts and Menus are stubs/future work):
 
-### Operations — Composable Generation Tasks
+### Actions — Composable Generation Tasks
 
-**Behavior module:** `ProGen.Operation` defines three callbacks: `perform/1`, `description/0`, `option_schema/0`. The `option_schema/0` callback returns a NimbleOptions schema. The `__using__` macro injects `validate_args/1` (calls NimbleOptions) and an auto-generated `usage/0` (overridable).
+**Behavior module:** `ProGen.Action` defines three callbacks: `perform/1`, `description/0`, `option_schema/0`. The `option_schema/0` callback returns a NimbleOptions schema. The `__using__` macro injects `validate_args/1` (calls NimbleOptions) and an auto-generated `usage/0` (overridable).
 
-**Registry:** `ProGen.Operations` auto-discovers any module whose name starts with `ProGen.Operation.` (note: singular `Operation`, not `Operations`). The last module name segment is downcased/underscored to derive the operation atom name (e.g., `ProGen.Operation.Run` → `:run`). Results are lazily cached in `:persistent_term`.
+**Registry:** `ProGen.Actions` auto-discovers any module whose name starts with `ProGen.Action.` (note: singular `Action`, not `Actions`). The last module name segment is downcased/underscored to derive the action atom name (e.g., `ProGen.Action.Run` → `:run`). Results are lazily cached in `:persistent_term`.
 
-**Running operations:** `ProGen.Operations.run(:operation_name, opts)` validates args against the schema then calls `perform/1`. Returns `{:ok, result}` or `{:error, message}`.
+**Running actions:** `ProGen.Actions.run(:action_name, opts)` validates args against the schema then calls `perform/1`. Returns `{:ok, result}` or `{:error, message}`.
 
-**Adding a new operation:** Create a module under `lib/pro_gen/operation/` named `ProGen.Operation.<Name>` that does `use ProGen.Operation` and implements the three callbacks (`perform/1`, `description/0`, `option_schema/0`). It will be auto-discovered — no manual registration needed. Operation names must be unique across all modules.
+**Adding a new action:** Create a module under `lib/pro_gen/action/` named `ProGen.Action.<Name>` that does `use ProGen.Action` and implements the three callbacks (`perform/1`, `description/0`, `option_schema/0`). It will be auto-discovered — no manual registration needed. Action names must be unique across all modules.
 
 ### Scripts — End-User Generation Workflows
 
@@ -46,7 +46,7 @@ ProGen has three pillars (Operations are implemented; Scripts and Menus are stub
 - `usage()` — Generate help text from the stored schema.
 - `msg(text)` — Print a formatted message.
 - `cmd(desc, command)` — Print description then run a system command.
-- `op(desc, operation, opts)` — Run a ProGen operation (stub).
+- `op(desc, action, opts)` — Run a ProGen action (stub).
 - `git(arg)` — Run a git command (string or list).
 - `commit(message)` — Stage all and commit.
 
@@ -61,9 +61,9 @@ YAML-defined TUI menus for interactive script generation. Not yet implemented.
 ## Dependencies
 
 - **igniter** — Elixir code generation framework
-- **nimble_options** — Operation argument validation (also transitive via igniter)
+- **nimble_options** — Action argument validation (also transitive via igniter)
 - **optimus** — CLI argv parsing for Scripts
 
 ## Design Notes
 
-See `notes/Design.md` for architecture decisions and planned built-in operations (args, mix, run, file, ask, yes?, no?, route). Argument validation uses NimbleOptions for Operations and Optimus for Scripts.
+See `notes/Design.md` for architecture decisions and planned built-in actions (args, mix, run, file, ask, yes?, no?, route). Argument validation uses NimbleOptions for Actions and Optimus for Scripts.

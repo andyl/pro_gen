@@ -2,17 +2,17 @@
 
 This document follows the initial design notes in Version 1.
 
-## Script DSL 
+## Script DSL
 
 Commands:
 
 - cmd "DESCRIPTION", "CMD"
-- op "DESCRIPTION", OPERATION, ARGS
+- op "DESCRIPTION", ACTION, ARGS
 - msg "TEXT"
 - ...
 
 DESCRIPTION | a string
 CMD         | a bash command (string)
-OPERATION   | An Operation Name (string?)
-ARGS        | Operation arguments (keyword list)
+ACTION      | An Action Name (string?)
+ARGS        | Action arguments (keyword list)
 

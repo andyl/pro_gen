@@ -1,9 +1,9 @@
-defmodule ProGen.Operation.Run do
+defmodule ProGen.Action.Run do
   @moduledoc """
   Runs a system command.
   """
 
-  use ProGen.Operation
+  use ProGen.Action
 
   @impl true
   def description do

@@ -6,10 +6,10 @@ defmodule ProGenTest do
     assert ProGen.hello() == :world
   end
 
-  describe "ProGen.Operation.Run option_schema validation" do
+  describe "ProGen.Action.Run option_schema validation" do
     test "accepts valid args" do
       args = [command: "echo", args: ["hello"], dir: "/tmp"]
-      assert {:ok, validated} = ProGen.Operation.Run.validate_args(args)
+      assert {:ok, validated} = ProGen.Action.Run.validate_args(args)
       assert validated[:command] == "echo"
       assert validated[:args] == ["hello"]
       assert validated[:dir] == "/tmp"
@@ -17,7 +17,7 @@ defmodule ProGenTest do
 
     test "applies defaults for optional args" do
       args = [command: "echo"]
-      assert {:ok, validated} = ProGen.Operation.Run.validate_args(args)
+      assert {:ok, validated} = ProGen.Action.Run.validate_args(args)
       assert validated[:command] == "echo"
       assert validated[:args] == []
       assert validated[:dir] == "."
@@ -25,23 +25,23 @@ defmodule ProGenTest do
 
     test "rejects missing required field" do
       assert {:error, %NimbleOptions.ValidationError{}} =
-               ProGen.Operation.Run.validate_args([])
+               ProGen.Action.Run.validate_args([])
     end
 
     test "rejects bad type for command" do
       assert {:error, %NimbleOptions.ValidationError{}} =
-               ProGen.Operation.Run.validate_args(command: 123)
+               ProGen.Action.Run.validate_args(command: 123)
     end
 
     test "rejects bad type for args" do
       assert {:error, %NimbleOptions.ValidationError{}} =
-               ProGen.Operation.Run.validate_args(command: "echo", args: "not_a_list")
+               ProGen.Action.Run.validate_args(command: "echo", args: "not_a_list")
     end
   end
 
-  describe "ProGen.Operation.Run usage/0" do
+  describe "ProGen.Action.Run usage/0" do
     test "returns a string containing option names" do
-      usage = ProGen.Operation.Run.usage()
+      usage = ProGen.Action.Run.usage()
       assert is_binary(usage)
       assert usage =~ "command"
       assert usage =~ "args"
@@ -49,29 +49,29 @@ defmodule ProGenTest do
     end
   end
 
-  describe "ProGen.Operations.run/2" do
-    test "validates and performs a valid operation" do
+  describe "ProGen.Actions.run/2" do
+    test "validates and performs a valid action" do
       assert {:ok, {output, 0}} =
-               ProGen.Operations.run(:run, command: "echo", args: ["hello"])
+               ProGen.Actions.run(:run, command: "echo", args: ["hello"])
 
       assert String.trim(output) == "hello"
     end
 
     test "returns error for missing required args" do
-      assert {:error, message} = ProGen.Operations.run(:run, [])
+      assert {:error, message} = ProGen.Actions.run(:run, [])
       assert is_binary(message)
       assert message =~ "command"
     end
 
-    test "returns error for unknown operation" do
-      assert {:error, message} = ProGen.Operations.run(:nonexistent, [])
-      assert message =~ "Unknown operation"
+    test "returns error for unknown action" do
+      assert {:error, message} = ProGen.Actions.run(:nonexistent, [])
+      assert message =~ "Unknown action"
     end
   end
 
-  describe "ProGen.Operations.operation_info/1" do
+  describe "ProGen.Actions.action_info/1" do
     test "includes option_schema in returned map" do
-      assert {:ok, info} = ProGen.Operations.operation_info(:run)
+      assert {:ok, info} = ProGen.Actions.action_info(:run)
       assert is_list(info.option_schema)
       assert Keyword.has_key?(info.option_schema, :command)
       assert is_binary(info.description)

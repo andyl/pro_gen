@@ -1,19 +1,19 @@
-# ProGen TODO 
+# ProGen TODO
 
-Next Steps 
+Next Steps
 
-- [x] Generate Docs 
-- [ ] Write scripts 
-- [ ] Write operations
+- [x] Generate Docs
+- [ ] Write scripts
+- [ ] Write actions
 
-Someday 
+Someday
 
-- [ ] Variable syntax `${MYVAR}` for operations 
+- [ ] Variable syntax `${MYVAR}` for actions
 - [ ] GitOps / Conventional Commits / Changelog
-- [ ] CICD 
+- [ ] CICD
 - [ ] TUI Menus (liveview like?)
 - [ ] TUI Chat / Jido-ReqLLM
-- [ ] Operations / Jido-ReqLLM
+- [ ] Actions / Jido-ReqLLM
 - [ ] Add `usage_rules`
-- [ ] Add igniter installer 
+- [ ] Add igniter installer
 

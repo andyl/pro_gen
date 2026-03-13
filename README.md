@@ -1,6 +1,6 @@
 # ProGen
 
-A scriptable Elixir project generator. 
+A scriptable Elixir project generator.
 
 Code generation is based on [Igniter](https://github.com/ash-project/igniter),
 possible future to handle things like deployment, CI/CD, monitoring, and DevOps
@@ -14,23 +14,23 @@ ProGen is organized around four pillars:
 
 | Pillar         | Purpose                                      | Status               |
 |----------------|----------------------------------------------|----------------------|
-| **Operations** | Composable, self-describing generation tasks | Basic Implementation |
+| **Actions**    | Composable, self-describing generation tasks | Basic Implementation |
 | **Scripts**    | Shareable end-user generation workflows      | Basic Implementation |
 | **Menus**      | TUI menus for interactive script creation    | Future               |
 | **Chats**      | Chat interface to create scripts             | Future               |
 
-### Operations
+### Actions
 
-Operations are small, composable units of work. Each operation is a module that
+Actions are small, composable units of work. Each action is a module that
 implements three callbacks:
 
-- `perform/1` — execute the operation with validated args
+- `perform/1` — execute the action with validated args
 - `description/0` — short human-readable description
 - `option_schema/0` — [NimbleOptions](https://github.com/dashbitco/nimble_options) schema for argument validation
 
 ```elixir
-defmodule ProGen.Operation.Run do
-  use ProGen.Operation
+defmodule ProGen.Action.Run do
+  use ProGen.Action
 
   @impl true
   def description, do: "Run a system command"
@@ -52,28 +52,28 @@ defmodule ProGen.Operation.Run do
 end
 ```
 
-**Auto-discovery:** Any module named `ProGen.Operation.<Name>` is automatically
+**Auto-discovery:** Any module named `ProGen.Action.<Name>` is automatically
 registered. The name atom is derived from the last segment (e.g.
-`ProGen.Operation.Run` becomes `:run`). No manual registration needed.  Goal is
-to make it easy to create custom operations.
+`ProGen.Action.Run` becomes `:run`). No manual registration needed.  Goal is
+to make it easy to create custom actions.
 
-**Running operations:**
+**Running actions:**
 
 ```elixir
-ProGen.Operations.run(:run, command: "echo", args: ["hello"])
+ProGen.Actions.run(:run, command: "echo", args: ["hello"])
 #=> {:ok, {"hello\n", 0}}
 
-ProGen.Operations.run(:run, [])
+ProGen.Actions.run(:run, [])
 #=> {:error, "required option :command not found..."}
 ```
 
-**Inspecting operations:**
+**Inspecting actions:**
 
 ```elixir
-ProGen.Operations.list_operations()
-#=> [run: ProGen.Operation.Run]
+ProGen.Actions.list_actions()
+#=> [run: ProGen.Action.Run]
 
-ProGen.Operations.operation_info(:run)
+ProGen.Actions.action_info(:run)
 #=> {:ok, %{description: "Run a system command", usage: "...", option_schema: [...]}}
 ```
 
@@ -154,7 +154,7 @@ elixir examples/greeter.exs --help
 | `usage/0`            | Generate help text from the stored schema                 |
 | `msg/1`              | Print a formatted message                                 |
 | `cmd/2`              | Print description, then run a system command               |
-| `op/3`               | Run a ProGen operation (stub)                              |
+| `op/3`               | Run a ProGen action (stub)                                 |
 | `git/1`              | Run a git command (string or list)                        |
 | `commit/1`           | Stage all files and commit                                |
 
@@ -219,7 +219,7 @@ mix format --check-formatted    # Check formatting
 | Dependency       | Purpose                                         |
 |------------------|-------------------------------------------------|
 | igniter          | Elixir code generation framework                |
-| nimble_options   | Operation argument validation                   |
+| nimble_options   | Action argument validation                      |
 | optimus          | CLI argv parsing for Scripts                    |
 
 ## License

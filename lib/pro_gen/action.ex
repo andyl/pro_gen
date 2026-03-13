@@ -1,11 +1,11 @@
-defmodule ProGen.Operation do
+defmodule ProGen.Action do
   @moduledoc """
-  Behavior for all operations.
+  Behavior for all actions.
 
   Defines three callbacks:
 
-    * `perform/1`       — Executes the operation with validated keyword args
-    * `description/0`   — Short human-readable description of what the operation does
+    * `perform/1`       — Executes the action with validated keyword args
+    * `description/0`   — Short human-readable description of what the action does
     * `option_schema/0` — NimbleOptions schema describing accepted options
 
   Using this module injects:
@@ -20,10 +20,10 @@ defmodule ProGen.Operation do
 
   defmacro __using__(_opts) do
     quote do
-      @behaviour ProGen.Operation
+      @behaviour ProGen.Action
 
       @doc """
-      Validates `args` against this operation's `option_schema/0`.
+      Validates `args` against this action's `option_schema/0`.
 
       Returns `{:ok, validated_args}` or `{:error, %NimbleOptions.ValidationError{}}`.
       """
