@@ -138,10 +138,11 @@ defmodule ProGen.Script do
   end
 
   @doc """
-  Runs a ProGen action. Currently a stub.
+  Runs a ProGen action.
   """
-  def action(_desc, _action, _opts \\ []) do
-    IO.puts("Under Construction")
+  def action(desc, action, opts \\ []) do
+    puts(desc)
+    ProGen.Actions.run(action, opts)
   end
 
   @doc """
