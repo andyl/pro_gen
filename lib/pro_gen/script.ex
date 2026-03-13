@@ -1,5 +1,4 @@
 defmodule ProGen.Script do
-
   @moduledoc """
   Functions for ProGen scripts.
 
@@ -86,8 +85,13 @@ defmodule ProGen.Script do
         IO.puts(schema[:version] || "unknown")
         :version
 
-      error ->
-        error
+      {:error, errors} ->
+        errors
+        |> List.wrap()
+        |> Enum.each(&IO.puts(:stderr, &1))
+
+        usage() |> IO.puts()
+        do_halt(1)
     end
   end
 
@@ -154,4 +158,10 @@ defmodule ProGen.Script do
   def git(arg_list) when is_list(arg_list),
     do: ProGen.Sys.syscmd("git", arg_list)
 
+  # --- Private helpers ---
+
+  defp do_halt(code) do
+    halt_fn = Application.get_env(:pro_gen, :system_halt, &System.halt/1)
+    halt_fn.(code)
+  end
 end

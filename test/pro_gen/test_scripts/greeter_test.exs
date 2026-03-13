@@ -89,6 +89,8 @@ defmodule ProGen.ScriptTest do
   describe "parse_args/1" do
     setup do
       ProGen.Script.put_schema(@schema)
+      Application.put_env(:pro_gen, :system_halt, fn code -> throw({:halted, code}) end)
+      on_exit(fn -> Application.delete_env(:pro_gen, :system_halt) end)
       :ok
     end
 
@@ -124,8 +126,27 @@ defmodule ProGen.ScriptTest do
       assert output =~ "0.1.0"
     end
 
-    test "returns {:error, _} for missing required options" do
-      assert {:error, _} = ProGen.Script.parse_args([])
+    test "prints usage and halts with code 1 for missing required options" do
+      capture_io(:stderr, fn ->
+        output =
+          capture_io(fn ->
+            assert {:halted, 1} =
+                     catch_throw(ProGen.Script.parse_args([]))
+          end)
+
+        assert output =~ "--name"
+      end)
+    end
+
+    test "prints error details to stderr for missing required options" do
+      stderr =
+        capture_io(:stderr, fn ->
+          capture_io(fn ->
+            catch_throw(ProGen.Script.parse_args([]))
+          end)
+        end)
+
+      assert stderr =~ "name"
     end
   end
 
