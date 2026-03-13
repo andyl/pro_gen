@@ -86,10 +86,12 @@ defmodule ProGen.Script do
         :version
 
       {:error, errors} ->
+        IO.puts(:stderr, "\nError:")
         errors
         |> List.wrap()
-        |> Enum.each(&IO.puts(:stderr, &1))
+        |> Enum.each(&IO.puts(:stderr, "- #{&1}"))
 
+        IO.puts(:stderr, "")
         usage() |> IO.puts()
         do_halt(1)
     end
