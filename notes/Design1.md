@@ -67,7 +67,7 @@ Overview
 - `parse_args(schema, argv)` — Parse argv (list or string) against an Optimus schema. Returns `{:ok, parsed}` / `{:error, errors}` / `:help` / `:version`.
 - `usage(schema)` — Generate help text from an Optimus schema.
 - `msg(text)` — Print a formatted message.
-- `cmd(desc, command)` — Print description then run a system command.
+- `command(desc, command)` — Print description then run a system command.
 - `action(desc, action, opts)` — Run a ProGen action (stub).
 - `git(arg)` — Run a git command (string or list).
 - `commit(message)` — Stage all and commit.

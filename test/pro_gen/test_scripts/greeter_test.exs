@@ -171,9 +171,9 @@ defmodule ProGen.ScriptTest do
     end
   end
 
-  describe "cmd/2" do
+  describe "command/2" do
     test "prints description and runs command" do
-      {result, output} = with_io(fn -> ProGen.Script.cmd("listing", "echo hi") end)
+      {result, output} = with_io(fn -> ProGen.Script.command("listing", "echo hi") end)
       assert output =~ ">>>>> listing"
       assert output =~ "hi"
       assert {:ok, _} = result

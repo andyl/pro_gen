@@ -6,7 +6,7 @@ This document follows the initial design notes in Version 1.
 
 Commands:
 
-- cmd "DESCRIPTION", "CMD"
+- command "DESCRIPTION", "CMD"
 - action "DESCRIPTION", ACTION, ARGS
 - msg "TEXT"
 - ...

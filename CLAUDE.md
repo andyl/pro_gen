@@ -45,7 +45,7 @@ ProGen has three pillars (Actions are implemented; Scripts and Menus are stubs/f
 - `usage(schema)` — Generate help text from an Optimus schema.
 - `usage()` — Generate help text from the stored schema.
 - `msg(text)` — Print a formatted message.
-- `cmd(desc, command)` — Print description then run a system command.
+- `command(desc, command)` — Print description then run a system command.
 - `action(desc, action, opts)` — Run a ProGen action (stub).
 - `git(arg)` — Run a git command (string or list).
 - `commit(message)` — Stage all and commit.

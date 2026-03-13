@@ -10,7 +10,7 @@ defmodule ProGen.Script do
     * `usage/1`       — Generate help text from an Optimus schema
     * `usage/0`       — Generate help text from the stored schema
     * `msg/1`         — Print a formatted message
-    * `cmd/2`         — Print description then run a system command
+    * `command/2`     — Print description then run a system command
     * `action/3`      — Run a ProGen action (stub)
     * `git/1`         — Run a git command
     * `commit/1`      — Stage all and commit
@@ -124,7 +124,7 @@ defmodule ProGen.Script do
   @doc """
   Prints a formatted description, then runs a system command via `ProGen.Sys.syscmd/1`.
   """
-  def cmd(desc, command) do
+  def command(desc, command) do
     msg(desc)
     ProGen.Sys.syscmd(command)
   end
