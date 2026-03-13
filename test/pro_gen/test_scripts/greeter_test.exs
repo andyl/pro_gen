@@ -180,9 +180,9 @@ defmodule ProGen.ScriptTest do
     end
   end
 
-  describe "op/3" do
+  describe "action/3" do
     test "prints stub message" do
-      output = capture_io(fn -> ProGen.Script.op("desc", :some_op, []) end)
+      output = capture_io(fn -> ProGen.Script.action("desc", :some_action, []) end)
       assert output =~ "Under Construction"
     end
   end

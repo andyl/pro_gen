@@ -68,7 +68,7 @@ Overview
 - `usage(schema)` — Generate help text from an Optimus schema.
 - `msg(text)` — Print a formatted message.
 - `cmd(desc, command)` — Print description then run a system command.
-- `op(desc, action, opts)` — Run a ProGen action (stub).
+- `action(desc, action, opts)` — Run a ProGen action (stub).
 - `git(arg)` — Run a git command (string or list).
 - `commit(message)` — Stage all and commit.
 
