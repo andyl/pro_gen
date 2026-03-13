@@ -3,7 +3,7 @@ defmodule ProGen.Script do
   Functions for ProGen scripts.
 
     * `cli_args/1`    — Store an Optimus schema in ProGen.Env
-    * `get_schema/0`  — Retrieve the stored Optimus schema
+    * `cli_args/0`    — Retrieve the stored Optimus schema
     * `parse_args/2`  — Parse argv against an Optimus schema
     * `parse_args/1`  — Parse argv using the stored schema
     * `parse_args/0`  — Parse System.argv() using the stored schema
@@ -40,7 +40,7 @@ defmodule ProGen.Script do
   @doc """
   Retrieves the Optimus schema previously stored by `cli_args/1`.
   """
-  def get_schema do
+  def cli_args do
     ProGen.Env.get(:pg_cli_args)
   end
 
@@ -69,7 +69,7 @@ defmodule ProGen.Script do
   On `:help`, auto-prints usage. On `:version`, auto-prints the version string.
   """
   def parse_args(argv) when is_list(argv) or is_binary(argv) do
-    schema = get_schema()
+    schema = cli_args()
 
     case parse_args(schema, argv) do
       {:ok, parsed} ->
@@ -116,7 +116,7 @@ defmodule ProGen.Script do
   Generates help text from the schema stored by `cli_args/1`.
   """
   def usage do
-    usage(get_schema())
+    usage(cli_args())
   end
 
   # --- DSL functions ---

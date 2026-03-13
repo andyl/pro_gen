@@ -79,10 +79,10 @@ defmodule ProGen.ScriptTest do
     end
   end
 
-  describe "cli_args/1 and get_schema/0" do
+  describe "cli_args/1 and cli_args/0" do
     test "round-trip stores and retrieves schema" do
       ProGen.Script.cli_args(@schema)
-      assert ProGen.Script.get_schema() == @schema
+      assert ProGen.Script.cli_args() == @schema
     end
   end
 

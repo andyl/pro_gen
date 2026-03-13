@@ -38,7 +38,7 @@ ProGen has three pillars (Actions are implemented; Scripts and Menus are stubs/f
 
 **Core functions:**
 - `cli_args(schema)` — Store an Optimus schema in `ProGen.Env` under `:pg_cli_args`.
-- `get_schema()` — Retrieve the stored Optimus schema.
+- `cli_args()` — Retrieve the stored Optimus schema.
 - `parse_args(schema, argv)` — Parse argv (list or string) against an Optimus schema. Returns `{:ok, parsed}` / `{:error, errors}` / `:help` / `:version`.
 - `parse_args(argv)` — Parse argv using the stored schema. Merges args/options/flags into a flat map, stores in `:pg_args`. Auto-prints usage on `--help` and version on `--version`.
 - `parse_args()` — Convenience that calls `parse_args(System.argv())`.
