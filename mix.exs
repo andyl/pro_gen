@@ -43,7 +43,7 @@ defmodule ProGen.MixProject do
       usage_rules: [{~r/.*/, link: :markdown}],
       skills: [
         location: ".claude/skills",
-        build: [ ]
+        build: []
       ]
     ]
   end
@@ -54,7 +54,7 @@ defmodule ProGen.MixProject do
       {:usage_rules, "~> 1.0"},
       {:nimble_options, "~> 1.0"},
       {:optimus, "~> 0.5"},
-      {:ex_doc, "~> 0.31", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.31", only: :dev, runtime: false}
     ]
   end
 end

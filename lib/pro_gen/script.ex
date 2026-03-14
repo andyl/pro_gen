@@ -95,6 +95,7 @@ defmodule ProGen.Script do
 
       {:error, errors} ->
         IO.puts(:stderr, "\nError:")
+
         errors
         |> List.wrap()
         |> Enum.each(&IO.puts(:stderr, "- #{&1}"))

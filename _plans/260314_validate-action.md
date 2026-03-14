@@ -15,10 +15,10 @@ Add a `ProGen.Action.Validate` action that accepts a list of declarative checks 
 - New `ProGen.Action.Validate` module with `use ProGen.Action`
 - Required `:checks` option of type `{:list, :any}`
 - `perform/1` callback that iterates checks and fails fast on first error
-- Built-in check clauses for file existence, directory existence, and git
-- Data-driven introspection mechanism to list available checks at runtime
+- Data-driven `all_checks/0` private function returning a list of maps (`:term`, `:desc`, `:func`) — the single source of truth for check definitions
+- Built-in checks for file existence, directory existence, and git (9 checks total)
+- `checks/0` public introspection function
 - Auto-discovery by the existing registry as `:validate`
-- Validation error when `:checks` is missing
 - Tests covering all acceptance criteria
 
 ### Out of scope
@@ -30,33 +30,17 @@ Add a `ProGen.Action.Validate` action that accepts a list of declarative checks 
 
 ## Architecture & Design Decisions
 
-1. **Data-driven check registry via a module attribute.** Define a `@checks`
-   module attribute as a list of maps, where each entry describes one check
-   clause: its pattern (atom or tuple shape), a human-readable description, and
-   the implementation function. This serves dual purpose — it drives both the
-   runtime `check/1` dispatch and the introspection API. This approach was
-   suggested in the design notes and keeps everything self-contained.
+1. **Data-driven check registry via a private function.** Define a private `all_checks/0` function that returns a list of maps, where each entry has three keys: `:term` (atom identifying the check), `:desc` (human-readable description), and `:func` (anonymous function implementing the check). This serves dual purpose — it drives both the runtime dispatch and the introspection API. A private function is used instead of a `@checks` module attribute because module attributes containing anonymous functions cannot be escaped into compile-time function bodies.
 
-   ```elixir
-   @checks [
-     %{
-       term: :no_mix,
-       desc: "Passes if mix.exs does not exist",
-       func: fn :no_mix -> check({:no_file, "mix.exs"}) end
-     },
-     ...
-   ]
-   ```
+2. **No separate public `check/1` function.** Individual checks are dispatched entirely through the `all_checks/0` data structure. The `find_check/1` private helper locates entries by matching `:term` — atom checks match directly, tuple checks match the first element (tag). This keeps the API surface minimal.
 
-2. **Public `check/1` function.** Make `check/1` public so it can be called directly in tests and by scripts that want to run individual checks outside the action pipeline. The function uses pattern matching with multiple clauses — the shorthand atom clauses delegate to the tuple-based clauses.
+3. **Public `checks/0` introspection function.** Returns `all_checks/0` with `:func` stripped, yielding a list of `%{term: atom, desc: string}` maps. Enables runtime discovery of available checks.
 
-3. **Public `checks/0` introspection function.** Returns a list of maps with `:term` and `:desc` keys, enabling developers to discover available checks programmatically. This is simpler and more useful than documentation-only approaches.
+4. **Fail-fast iteration via `Enum.reduce_while/3`.** The `perform/1` callback iterates the checks list using `Enum.reduce_while/3`, halting on the first `{:error, message}` result or on an unrecognized term. This gives clean early-return semantics without throwing exceptions.
 
-4. **Fail-fast iteration via `Enum.reduce_while/3`.** The `perform/1` callback iterates the checks list using `Enum.reduce_while/3`, halting on the first `{:error, message}` result. This gives clean early-return semantics without throwing exceptions.
+5. **Return value convention.** `perform/1` returns `:ok` on success. On failure, it returns `{:error, message}`. Since `ProGen.Actions.run/2` wraps the result as `{:ok, perform_result}`, callers see `{:ok, :ok}` for success and `{:ok, {:error, message}}` for check failures. Validation-level failures (missing `:checks` option) return `{:error, message}` directly from `run/2`.
 
-5. **Follow established action patterns.** Use `@description`, `@option_schema`, `Keyword.fetch!/1` after validation — same as Echo and Inspect actions.
-
-6. **Separate test file.** Create `test/pro_gen/action/validate_test.exs` following the pattern used by `echo_test.exs` and `inspect_test.exs`.
+6. **Follow established action patterns.** Use `@description`, `@option_schema`, `Keyword.fetch!/2` after validation — same as Echo and Inspect actions.
 
 ## Implementation Steps
 
@@ -65,39 +49,38 @@ Add a `ProGen.Action.Validate` action that accepts a list of declarative checks 
    - Define `ProGen.Action.Validate` with `use ProGen.Action`
    - Set `@description "Validate preconditions using declarative checks"`
    - Set `@option_schema [checks: [type: {:list, :any}, required: true, doc: "List of checks to run"]]`
-   - Implement `check/1` with pattern-matched clauses for each built-in check:
-     - `:no_mix` → delegates to `{:no_file, "mix.exs"}`
-     - `:has_mix` → delegates to `{:has_file, "mix.exs"}`
-     - `{:no_file, path}` → `:ok` if `!File.exists?(path)`, else `{:error, ...}`
-     - `{:has_file, path}` → `:ok` if `File.exists?(path)`, else `{:error, ...}`
-     - `{:no_dir, path}` → `:ok` if `!File.dir?(path)`, else `{:error, ...}`
-     - `{:has_dir, path}` → `:ok` if `File.dir?(path)`, else `{:error, ...}`
-     - `{:dir_free, path}` → `:ok` if `File.dir?(path)` and `File.ls!(path) == []`, else `{:error, ...}`
-     - `:no_git` → delegates to `{:no_dir, ".git"}`
-     - `:has_git` → delegates to `{:has_dir, ".git"}`
-     - Catch-all clause → `{:error, "Unknown check: #{inspect(check)}"}`
-   - Implement `checks/0` returning a list of `%{check: pattern, description: text}` maps for all supported checks
-   - Implement `perform/1`: fetch `:checks`, iterate with `Enum.reduce_while/3`, return `:ok` or `{:error, message}`
+   - Implement private `all_checks/0` returning 9 check entries:
+     - `:no_mix` — passes if `mix.exs` does not exist
+     - `:has_mix` — passes if `mix.exs` exists
+     - `:no_git` — passes if `.git` directory does not exist
+     - `:has_git` — passes if `.git` directory exists
+     - `:no_file` — passes if given file does not exist
+     - `:has_file` — passes if given file exists
+     - `:no_dir` — passes if given directory does not exist
+     - `:has_dir` — passes if given directory exists
+     - `:dir_free` — passes if given directory exists and is empty
+   - Implement `perform/1` with `Enum.reduce_while/3`
+   - Implement `find_check/1` private helper (atom clause + tuple clause)
+   - Implement `checks/0` public introspection function
 
 2. **Add tests for the Validate action**
    - File: `test/pro_gen/action/validate_test.exs` (new)
-   - Use `ExUnit.Case` with `import ExUnit.CaptureIO` if needed
-   - Test cases for each check type, run from a temporary directory where filesystem state is controlled:
-     - `:no_mix` passes when no `mix.exs` exists
-     - `:has_mix` fails when no `mix.exs` exists
-     - `{:no_file, path}` passes when file does not exist
-     - `{:has_file, path}` passes when file exists (use `mix.exs` from the project root)
-     - `{:no_dir, path}` passes when directory does not exist
-     - `{:has_dir, path}` passes when directory exists (use `lib` from the project root)
-     - `{:dir_free, path}` passes when directory exists and is empty; fails when non-empty
-     - `:no_git` fails when inside a git repo
-     - `:has_git` passes when inside a git repo
-   - Test fail-fast: multiple checks where the first fails — verify error is from the first failing check
-   - Test validation: `run(:validate, [])` returns `{:error, ...}` for missing `:checks`
-   - Test unknown check: `run(:validate, checks: [:bogus])` returns `{:error, ...}`
-   - Test introspection: `ProGen.Action.Validate.checks/0` returns a non-empty list of maps with `:check` and `:description` keys
-   - Test metadata: `name/0` returns `:validate`, `description/0` returns non-empty string, `option_schema/0` includes `:checks`
-   - Test auto-discovery: `:validate in ProGen.Actions.list_actions()`
+   - Use `ExUnit.Case`
+   - Test cases for each check type using known project paths (`mix.exs`, `lib/`, `.git`) and temp directories:
+     - `:has_mix` passes, `:no_mix` fails (mix.exs exists in project root)
+     - `:has_git` passes, `:no_git` fails (.git exists in project root)
+     - `{:has_file, "mix.exs"}` passes, `{:has_file, "nonexistent.txt"}` fails
+     - `{:no_file, "nonexistent.txt"}` passes, `{:no_file, "mix.exs"}` fails
+     - `{:has_dir, "lib"}` passes, `{:has_dir, "no_such_dir"}` fails
+     - `{:no_dir, "no_such_dir"}` passes, `{:no_dir, "lib"}` fails
+     - `{:dir_free, tmp}` passes for empty temp dir, fails for non-empty dir, fails for non-existent path
+   - Fail-fast: multiple checks where first fails — error is from first failure
+   - Missing `:checks` option returns validation error via NimbleOptions
+   - Unrecognized term returns error with guidance message mentioning `checks/0`
+   - `checks/0` returns non-empty list of maps with `:term` and `:desc` keys, no `:func` key
+   - `checks/0` contains all 9 built-in check terms
+   - Metadata: `name/0` returns `:validate`, `description/0` returns non-empty string, `option_schema/0` includes `:checks`
+   - Auto-discovery: `:validate in ProGen.Actions.list_actions()`
 
 3. **Run the test suite**
    - Command: `mix test`
@@ -118,21 +101,23 @@ In practice, step 1 and step 2 can be written together, then steps 3 and 4 run t
 
 ## Edge Cases & Risks
 
-- **Persistent term cache:** The `ProGen.Actions` registry caches discovered actions in `:persistent_term`. During tests, the cache from a prior test run may not include the new `:validate` action. Since the test suite compiles all modules fresh each run and `ProGen.Actions` lazily populates the cache, this should work correctly without special handling.
+- **Module attribute vs function for check definitions:** Anonymous functions cannot be stored in module attributes and then referenced at runtime because Elixir cannot escape anonymous functions into compile-time constructs. The solution is to use a private `all_checks/0` function instead of a `@checks` module attribute.
 
-- **Working directory sensitivity:** File and directory checks are relative to the current working directory. Tests should either use absolute paths to known locations (e.g., the project's own `mix.exs` and `lib/` directory) or create temporary directories with controlled content. Using `System.tmp_dir!/0` with setup/teardown is the safest approach for checks like `:dir_free`.
+- **Persistent term cache:** The `ProGen.Actions` registry caches discovered actions in `:persistent_term`. Since the test suite compiles all modules fresh each run and the cache is lazily populated, the new `:validate` action is discovered without special handling.
 
-- **`:dir_free` on non-existent directory:** The spec says `:dir_free` passes if the directory "exists and is empty". If the directory does not exist, `File.ls!/1` will raise. The check should return `{:error, ...}` when the directory does not exist, since the precondition ("directory exists") is not met.
+- **Working directory sensitivity:** File and directory checks are relative to the current working directory. Tests use absolute paths to known project files (`mix.exs`, `lib/`) or create temporary directories via `System.tmp_dir!/0` with cleanup in `after` blocks for checks like `:dir_free`.
 
-- **Unknown check atoms/tuples:** A catch-all `check/1` clause should return `{:error, "Unknown check: ..."}` rather than raising, so the action gracefully reports invalid check names.
+- **`:dir_free` on non-existent directory:** Returns `{:error, "#{path} is not a directory"}` since the precondition is not met. The `cond` checks `File.dir?/1` before calling `File.ls!/1` to avoid a raise.
+
+- **Unrecognized check terms:** `find_check/1` returns `nil` for unknown terms, and `perform/1` halts with a descriptive error message pointing users to `checks/0`.
 
 - **Path traversal:** The spec does not require sanitizing paths. Checks accept any string path. This is acceptable since the validate action only reads filesystem metadata (existence checks), never modifies files.
 
 ## Testing Strategy
 
-- **Unit tests** in `test/pro_gen/action/validate_test.exs` testing each `check/1` clause individually through `ProGen.Actions.run/2`
-- **Temporary directories** via `setup` blocks for filesystem-dependent tests (`:dir_free`, `:no_file`, etc.)
-- **Known project paths** for simple existence checks (e.g., `mix.exs` and `lib/` are guaranteed to exist in the project root)
+- **Unit tests** in `test/pro_gen/action/validate_test.exs` testing each check through `ProGen.Actions.run/2` (25 tests total)
+- **Temporary directories** created inline with `try/after` cleanup for `:dir_free` tests
+- **Known project paths** for simple existence checks (`mix.exs`, `lib/`, `.git`)
 - **Validation tests** to confirm NimbleOptions rejects missing required `:checks`
 - **Registry integration** to confirm `:validate` appears in `list_actions/0`
 - **Metadata tests** for `name/0`, `description/0`, `option_schema/0`, `checks/0`
@@ -140,5 +125,4 @@ In practice, step 1 and step 2 can be written together, then steps 3 and 4 run t
 
 ## Open Questions
 
-- [x] Should `check/1` be public or private? Plan recommends public for testability and reuse, but this is a minor decision that can be revisited during implementation. Answer: public for testability
-- [x] Exact format of the introspection return value — the plan proposes `%{check: pattern, description: text}` but the key names could differ. Settle on naming during implementation. Answer: the format should be %{term: pattern, desc: text}
+- None. All design decisions from the original plan have been resolved during implementation.
