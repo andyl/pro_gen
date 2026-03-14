@@ -87,20 +87,26 @@ defmodule ProGen.Action.Validate do
   def perform(args) do
     checks = Keyword.fetch!(args, :checks)
 
-    Enum.reduce_while(checks, :ok, fn check, :ok ->
-      case find_check(check) do
-        nil ->
-          {:halt,
-           {:error,
-            "Unrecognized term (#{inspect(check)}), use ProGen.Action.Validate.checks/0 for a list of valid terms"}}
-
-        entry ->
-          case entry.func.(check) do
-            :ok -> {:cont, :ok}
-            {:error, _} = error -> {:halt, error}
-          end
+    Enum.reduce_while(checks, :ok, fn term, :ok ->
+      case check(term) do
+        :ok -> {:cont, :ok}
+        {:error, _} = error -> {:halt, error}
       end
     end)
+  end
+
+  @doc """
+  Runs a single check term and returns `:ok` or `{:error, message}`.
+  """
+  def check(term) do
+    case find_check(term) do
+      nil ->
+        {:error,
+         "Unrecognized term (#{inspect(term)}), use ProGen.Action.Validate.checks/0 for a list of valid terms"}
+
+      entry ->
+        entry.func.(term)
+    end
   end
 
   @doc """

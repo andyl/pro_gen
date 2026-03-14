@@ -7,7 +7,10 @@
 
 ## Goal
 
-Add a `ProGen.Action.Validate` action that accepts a list of declarative checks (atoms or tuples), runs each one, and returns `:ok` if all pass or `{:error, message}` on the first failure. The full set of available checks must be introspectable at runtime.
+Add a `ProGen.Action.Validate` action that accepts a list of declarative checks
+(atoms or tuples), runs each one, and returns `:ok` if all pass or `{:error,
+message}` on the first failure. The full set of available checks must be
+introspectable at runtime.
 
 ## Scope
 
