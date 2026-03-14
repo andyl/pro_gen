@@ -43,21 +43,15 @@ defmodule ProGen.MixProject do
       usage_rules: [{~r/.*/, link: :markdown}],
       skills: [
         location: ".claude/skills",
-        build: [
-          # "phoenix-framework": [
-          #   description: "Use this skill working with Phoenix Framework. Consult this when working with the web layer, controllers, views, liveviews etc.",
-          #   # Include all Phoenix dependencies
-          #   usage_rules: [:phoenix, ~r/^phoenix_/]
-          # ]
-        ]
+        build: [ ]
       ]
     ]
   end
 
   defp deps do
     [
-      {:usage_rules, "~> 1.0"},
       {:igniter, "~> 0.6"},
+      {:usage_rules, "~> 1.0"},
       {:nimble_options, "~> 1.0"},
       {:optimus, "~> 0.5"},
       {:ex_doc, "~> 0.31", only: :dev, runtime: false},
