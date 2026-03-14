@@ -20,8 +20,8 @@ end
 ## Example Actions
 
 `PG.action :echo,     "string"`
-`PG.action :inspect,  element`
-`PG.action :validate, [{:dir_free, "path"}, :no_mix, :no_git]`
+`PG.action "Inspect Element", :inspect,  element`
+`PG.action "Check Environment", :validate, [{:dir_free, "path"}, :no_mix, :no_git]`
 
 ## Action Data Elements
 
