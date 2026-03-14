@@ -101,8 +101,8 @@ defmodule ProGenTest do
   end
 
   describe "ProGen.Actions.action_info/1" do
-    test "returns an Info struct with all fields populated" do
-      assert {:ok, %ProGen.ActionInfo{} = info} = ProGen.Actions.action_info(:run)
+    test "returns a map with all fields populated" do
+      assert {:ok, info} = ProGen.Actions.action_info(:run)
       assert info.module == ProGen.Action.Run
       assert info.name == :run
       assert info.description == "Run a system command"
