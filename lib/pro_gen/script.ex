@@ -12,7 +12,7 @@ defmodule ProGen.Script do
     * `usage/0`       — Generate help text from the stored schema
     * `puts/1`        — Print a formatted message
     * `command/2`     — Print description then run a system command
-    * `action/3`      — Run a ProGen action (stub)
+    * `action/3`      — Run a ProGen action
     * `git/1`         — Run a git command
     * `commit/1`      — Stage all and commit
 
