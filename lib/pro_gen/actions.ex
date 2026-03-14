@@ -44,10 +44,12 @@ defmodule ProGen.Actions do
     case action_module(action_name) do
       {:ok, mod} ->
         {:ok,
-         %{
+         %ProGen.ActionInfo{
+           module: mod,
+           name: mod.name(),
            description: mod.description(),
-           usage: mod.usage(),
-           option_schema: mod.option_schema()
+           option_schema: mod.option_schema(),
+           usage: mod.usage()
          }}
 
       :error ->

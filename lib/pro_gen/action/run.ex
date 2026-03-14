@@ -5,19 +5,12 @@ defmodule ProGen.Action.Run do
 
   use ProGen.Action
 
-  @impl true
-  def description do
-    "Run a system command"
-  end
-
-  @impl true
-  def option_schema do
-    [
-      command: [type: :string, required: true, doc: "The command to execute"],
-      args: [type: {:list, :string}, default: [], doc: "Arguments to pass"],
-      dir: [type: :string, default: ".", doc: "Working directory"]
-    ]
-  end
+  @description "Run a system command"
+  @option_schema [
+    command: [type: :string, required: true, doc: "The command to execute"],
+    args: [type: {:list, :string}, default: [], doc: "Arguments to pass"],
+    dir: [type: :string, default: ".", doc: "Working directory"]
+  ]
 
   @impl true
   def perform(args) do
