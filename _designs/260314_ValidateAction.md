@@ -1,4 +1,4 @@
-# Validation Action 
+# Validate Action 
 
 ## Overview 
 
