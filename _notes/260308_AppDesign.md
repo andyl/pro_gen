@@ -1,4 +1,4 @@
-# ProGen Design Notes - Version 1
+# ProGen Design Notes 
 
 ProGen - A scriptable Elixir Project Generator
 

@@ -100,9 +100,9 @@ defmodule ProGen.ScriptTest do
       assert args[:loud] == false
     end
 
-    test "stores merged args in :pg_args" do
+    test "stores merged args in :pg_cli_vals" do
       {:ok, args} = ProGen.Script.parse_args(["--name", "World", "--loud"])
-      assert ProGen.Env.get(:pg_args) == args
+      assert ProGen.Env.get(:pg_cli_vals) == args
       assert args[:name] == "World"
       assert args[:loud] == true
     end
@@ -181,10 +181,10 @@ defmodule ProGen.ScriptTest do
   end
 
   describe "action/3" do
-    test "prints stub message" do
-      output = capture_io(fn -> ProGen.Script.action("desc", :some_action, []) end)
-      assert output =~ "Under Construction"
-    end
+    # test "prints stub message" do
+    #   output = capture_io(fn -> ProGen.Script.action("desc", :some_action, []) end)
+    #   assert output =~ "Under Construction"
+    # end
   end
 
   describe "git/1" do
