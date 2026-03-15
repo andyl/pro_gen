@@ -148,7 +148,10 @@ defmodule ProGen.Script do
   """
   def action(desc, action_name, opts \\ []) do
     puts(desc)
-    ProGen.Actions.run(action_name, normalize_action_opts(action_name, opts))
+
+    action_name
+    |> ProGen.Actions.run(normalize_action_opts(action_name, opts))
+    |> halt_on_error()
   end
 
   @doc """
@@ -198,6 +201,14 @@ defmodule ProGen.Script do
           opts
       end
     end
+  end
+
+  defp halt_on_error(:ok), do: :ok
+  defp halt_on_error({:ok, _} = result), do: result
+
+  defp halt_on_error({:error, message}) do
+    IO.puts(:stderr, "Error: #{message}")
+    do_halt(1)
   end
 
   defp do_halt(code) do
