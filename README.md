@@ -8,25 +8,18 @@ tasks.
 
 **Status:** Early-stage development (v0.0.1)
 
-## Architecture
+## Core Architecture
 
-ProGen is organized around four pillars:
-
-| Pillar         | Purpose                                      | Status               |
-|----------------|----------------------------------------------|----------------------|
-| **Actions**    | Composable, self-describing generation tasks | Basic Implementation |
-| **Scripts**    | Shareable end-user generation workflows      | Basic Implementation |
-| **Menus**      | TUI menus for interactive script creation    | Future               |
-| **Chats**      | Chat interface to create scripts             | Future               |
+| Element     | Purpose                                      | Implementation |
+|-------------|----------------------------------------------|----------------|
+| **Actions** | Composable, self-describing generation tasks | Elixir Modules | 
+| **Scripts** | Shareable end-user generation workflows      | Elixir Scripts |
 
 ### Actions
 
-Actions are small, composable units of work. Each action is a module that
-implements three callbacks:
-
-- `perform/1` — execute the action with validated args
-- `description/0` — short human-readable description
-- `option_schema/0` — [NimbleOptions](https://github.com/dashbitco/nimble_options) schema for argument validation
+Actions are small, composable units of work, implemented in a standalone
+module.  ProGen comes with a collection of built-in Actions.  Third parties can
+independently write their own actions.
 
 ```elixir
 defmodule ProGen.Action.Run do

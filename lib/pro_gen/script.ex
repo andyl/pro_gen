@@ -32,7 +32,7 @@ defmodule ProGen.Script do
 
   PG.puts "Hello World"
   ...
-  """
+  ```
 
   # --- Schema storage ---
 

@@ -9,7 +9,7 @@ defmodule ProGen.Action do
   Action metadata is declared via module attributes:
 
     * `@description`   — Short human-readable description (required)
-    * `@option_schema` — NimbleOptions schema describing accepted options (defaults to `[]`)
+    * `@option_schema` — [NimbleOptions](https://github.com/dashbitco/nimble_options) schema describing accepted options (defaults to `[]`)
 
   Using this module injects:
 

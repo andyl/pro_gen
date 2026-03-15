@@ -25,25 +25,6 @@ PG.cli_args(
   ]
 )
 
-case PG.parse_args(System.argv()) do
-  {:ok, args} ->
-    name = args[:name]
-    greeting = "Hello, #{name}!"
-
-    if args[:loud] do
-      IO.puts(String.upcase(greeting))
-    else
-      IO.puts(greeting)
-    end
-
-  :help ->
-    System.halt(0)
-
-  :version ->
-    System.halt(0)
-
-  {:error, _errors} ->
-    System.halt(1)
-end
+PG.parse_args()
 
 PG.puts "HELLO WORLD"
