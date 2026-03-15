@@ -2,7 +2,7 @@ defmodule ProGen.Sys do
   @moduledoc """
   Low-level system command runner.
 
-  Wraps `System.cmd/3` with stdout printing and `{:ok, output}` / `{:error, output}` returns.
+  Wraps `System.cmd/3` with stdout printing and `:ok` / `{:error, output}` returns.
   """
 
   def syscmd(cmd_string) when is_binary(cmd_string) do
@@ -14,7 +14,7 @@ defmodule ProGen.Sys do
     case System.cmd(cmd, arg_list, stderr_to_stdout: true) do
       {output, 0} ->
         IO.puts(output)
-        {:ok, output}
+        :ok
 
       {error_output, code} ->
         IO.puts("Command failed (code #{code})")

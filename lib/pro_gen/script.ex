@@ -136,6 +136,7 @@ defmodule ProGen.Script do
   def command(desc, command) do
     puts(desc)
     ProGen.Sys.syscmd(command)
+    |> halt_on_error()
   end
 
   @doc """

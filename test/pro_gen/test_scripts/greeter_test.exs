@@ -176,7 +176,7 @@ defmodule ProGen.ScriptTest do
       {result, output} = with_io(fn -> ProGen.Script.command("listing", "echo hi") end)
       assert output =~ ">>>>> listing"
       assert output =~ "hi"
-      assert {:ok, _} = result
+      assert :ok = result
     end
   end
 
@@ -211,14 +211,14 @@ defmodule ProGen.ScriptTest do
 
   describe "git/1" do
     test "runs a git command with string arg" do
-      {result, _output} = with_io(fn -> ProGen.Script.git("--version") end)
-      assert {:ok, output} = result
+      {result, output} = with_io(fn -> ProGen.Script.git("--version") end)
+      assert :ok = result
       assert output =~ "git version"
     end
 
     test "runs a git command with list arg" do
-      {result, _output} = with_io(fn -> ProGen.Script.git(["--version"]) end)
-      assert {:ok, output} = result
+      {result, output} = with_io(fn -> ProGen.Script.git(["--version"]) end)
+      assert :ok = result
       assert output =~ "git version"
     end
   end
@@ -247,10 +247,9 @@ defmodule ProGen.ScriptTest do
       assert output =~ "hello"
     end
 
-    test "returns {:ok, output} on success" do
+    test "returns :ok on success" do
       capture_io(fn -> send(self(), ProGen.Sys.syscmd("echo", ["hi"])) end)
-      assert_received {:ok, output}
-      assert output =~ "hi"
+      assert_received :ok
     end
 
     test "returns {:error, _} on failure" do
