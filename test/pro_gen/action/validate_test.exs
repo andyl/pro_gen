@@ -97,7 +97,7 @@ defmodule ProGen.Action.ValidateTest do
     test ":has_phx_new and :no_phx_new are mutually exclusive" do
       has_result = ProGen.Action.Validate.check(:has_phx_new)
       no_result = ProGen.Action.Validate.check(:no_phx_new)
-      assert (has_result == :ok) != (no_result == :ok)
+      assert has_result == :ok != (no_result == :ok)
     end
   end
 
