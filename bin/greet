@@ -8,12 +8,12 @@ PG.cli_args(
   name: "greet",
   description: "A simple greeting script",
   version: "0.1.0",
-  options: [
+  args: [
     name: [
-      short: "-n",
-      long: "--name",
+      value_name: "NAME", 
       help: "Name to greet",
-      required: true
+      required: true, 
+      parser: :string
     ]
   ],
   flags: [
@@ -27,4 +27,12 @@ PG.cli_args(
 
 PG.parse_args()
 
-PG.puts "HELLO WORLD"
+PG.start()
+PG.inspect "CLI Values", PG.cli_vals()
+
+name = PG.cli_vals().name
+output = if PG.cli_vals().loud, do: String.upcase(name), else: name
+
+PG.puts "Hello #{output}"
+
+PG.finish()

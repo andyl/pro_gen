@@ -163,10 +163,18 @@ defmodule ProGen.Script do
   end
 
   @doc """
-  Prints a formatted message prefixed with `>>>>>`.
+  Prints a formatted message prefixed with `>>>`.
   """
   def puts(text) do
     IO.puts(">>> #{text}")
+  end
+
+  @doc """
+  Inspect an elixir term.
+  """
+  def inspect(text, term, _opts \\ []) do
+    puts(text)
+    IO.inspect(term)
   end
 
   @doc """
