@@ -82,10 +82,12 @@ defmodule ProGen.Action.Validate do
   def check(term) do
     case find_check(term) do
       nil ->
+        IO.puts("YES")
         {:error,
          "Unrecognized term (#{inspect(term)}), use ProGen.Action.Validate.checks/0 for a list of valid terms"}
 
       entry ->
+        IO.puts("NO")
         if entry.test.(term) do
           :ok
         else

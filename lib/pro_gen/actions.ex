@@ -68,7 +68,7 @@ defmodule ProGen.Actions do
       {:ok, mod} ->
         case mod.validate_args(args) do
           {:ok, validated_args} ->
-            {:ok, mod.perform(validated_args)}
+            mod.perform(validated_args)
 
           {:error, %NimbleOptions.ValidationError{} = error} ->
             {:error, Exception.message(error)}
