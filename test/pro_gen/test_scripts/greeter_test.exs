@@ -238,7 +238,7 @@ defmodule ProGen.ScriptTest do
 
     test "returns {:error, _} on failure" do
       capture_io(fn -> send(self(), ProGen.Sys.syscmd("false", [])) end)
-      assert_received {:error, _}
+      assert_received {:error, code} when is_integer(code)
     end
   end
 end

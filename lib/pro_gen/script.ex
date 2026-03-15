@@ -16,6 +16,7 @@ defmodule ProGen.Script do
     * `log/1`         — Log an info message
     * `git/1`         — Run a git command
     * `commit/1`      — Stage all and commit
+    * `clear/0`       — Clear the screen
 
   Usage Example:
 
@@ -171,6 +172,13 @@ defmodule ProGen.Script do
     require Logger
     Logger.info(text)
     Logger.flush()
+  end
+
+  @doc """
+  Clears the terminal screen.
+  """
+  def clear do
+    IO.write(IO.ANSI.clear() <> IO.ANSI.home())
   end
 
   @doc """
