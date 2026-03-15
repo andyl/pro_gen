@@ -12,6 +12,7 @@ defmodule ProGen.Script do
     * `usage/0`       — Generate help text from the stored schema
     * `command/2`     — Print description then run a system command
     * `action/3`      — Run a ProGen action
+    * `validate/3`    — Run a ProGen validator
     * `puts/1`        — Print a formatted message
     * `log/1`         — Log an info message
     * `git/1`         — Run a git command
@@ -36,7 +37,7 @@ defmodule ProGen.Script do
 
   # --- Schema storage ---
 
-  @doc """
+  @doc \"""
   Stores an Optimus schema in `ProGen.Env` under `:pg_cli_args`.
   """
   def cli_args(schema) do
@@ -159,6 +160,20 @@ defmodule ProGen.Script do
 
     action_name
     |> ProGen.Actions.run(normalize_action_opts(action_name, opts))
+    |> halt_on_error()
+  end
+
+  @doc """
+  Runs a ProGen validator.
+
+  Looks up the named validator in the `ProGen.Validations` registry and runs
+  the given list of checks. Halts on the first failure.
+  """
+  def validate(desc, validator_name, checks \\ []) do
+    log(desc)
+
+    validator_name
+    |> ProGen.Validations.run(checks: checks)
     |> halt_on_error()
   end
 

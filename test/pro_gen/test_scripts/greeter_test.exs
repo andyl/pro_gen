@@ -179,17 +179,13 @@ defmodule ProGen.ScriptTest do
     end
   end
 
-  describe "action/3" do
-    test "accepts keyword opts" do
-      assert :ok = ProGen.Script.action("Test", "validate", checks: [:has_mix])
+  describe "validate/3" do
+    test "accepts check list" do
+      assert :ok = ProGen.Script.validate("Test", "basics", [:has_mix])
     end
 
-    test "accepts bare list and wraps into the action's required list option" do
-      assert :ok = ProGen.Script.action("Test", "validate", [:has_mix])
-    end
-
-    test "bare list with multiple checks" do
-      assert :ok = ProGen.Script.action("Test", "validate", [:has_mix, :has_git])
+    test "multiple checks" do
+      assert :ok = ProGen.Script.validate("Test", "basics", [:has_mix, :has_git])
     end
   end
 

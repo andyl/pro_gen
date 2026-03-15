@@ -1,15 +1,16 @@
-defmodule ProGen.Action.Validate do
+defmodule ProGen.Validate.Basics do
   @moduledoc """
-  Validates preconditions using declarative checks.
+  Basic filesystem and tool checks.
 
-  Each check is an atom or tuple that maps to a built-in check function.
+  Provides 14 built-in validation checks for common preconditions:
+  file existence, directory existence, tool availability, etc.
+
   Use `checks/0` to discover available checks at runtime.
   """
 
-  use ProGen.Action
+  use ProGen.Validate
 
-  @description "Validate preconditions using declarative checks"
-  @option_schema [checks: [type: {:list, :any}, required: true, doc: "List of checks to run"]]
+  @description "Basic filesystem and tool checks"
 
   defp all_checks do
     [
@@ -45,7 +46,7 @@ defmodule ProGen.Action.Validate do
       },
       %{
         term: {:no_file, "file"},
-        desc: "Pass if <file> doesv not exist",
+        desc: "Pass if <file> does not exist",
         fail: fn {:no_file, path} -> "File '#{path}' already exists" end,
         test: fn {:no_file, path} -> not eval_test({:has_file, path}) end
       },
@@ -98,62 +99,5 @@ defmodule ProGen.Action.Validate do
         test: fn _ -> not eval_test(:has_elixir) end
       }
     ]
-  end
-
-  @impl true
-  def perform(args) do
-    checks = Keyword.fetch!(args, :checks)
-
-    Enum.reduce_while(checks, :ok, fn term, :ok ->
-      case check(term) do
-        :ok -> {:cont, :ok}
-        {:error, _} = error -> {:halt, error}
-      end
-    end)
-  end
-
-  @doc """
-  Runs a single check term and returns `:ok` or `{:error, message}`.
-  """
-  def check(term) do
-    case find_check(term) do
-      nil ->
-        {:error,
-         "Unrecognized term (#{inspect(term)}), use ProGen.Action.Validate.checks/0 for a list of valid terms"}
-
-      entry ->
-        if eval_test(term) do
-          :ok
-        else
-          msg = if is_function(entry.fail), do: entry.fail.(term), else: entry.fail
-          {:error, msg || "Error"}
-        end
-    end
-  end
-
-  @doc """
-  Returns the list of available checks with `:term` and `:desc` keys.
-  """
-  def checks do
-    Enum.map(all_checks(), fn entry -> Map.take(entry, [:term, :desc]) end)
-  end
-
-  defp eval_test(term) do
-    case find_check(term) do
-      nil -> raise "Error: unrecognized term (#{inspect(term)})"
-      entry -> entry.test.(term)
-    end
-  end
-
-  defp find_check(check) when is_atom(check) do
-    Enum.find(all_checks(), fn entry -> entry.term == check end)
-  end
-
-  defp find_check(check) when is_tuple(check) do
-    tag = elem(check, 0)
-
-    Enum.find(all_checks(), fn entry ->
-      is_tuple(entry.term) and elem(entry.term, 0) == tag
-    end)
   end
 end
