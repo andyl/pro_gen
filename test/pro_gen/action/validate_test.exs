@@ -140,7 +140,7 @@ defmodule ProGen.Action.ValidateTest do
       Enum.each(checks, fn entry ->
         assert Map.has_key?(entry, :term)
         assert Map.has_key?(entry, :desc)
-        refute Map.has_key?(entry, :func)
+        refute Map.has_key?(entry, :test)
       end)
     end
 
