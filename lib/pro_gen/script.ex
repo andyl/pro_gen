@@ -16,6 +16,9 @@ defmodule ProGen.Script do
     * `log/1`         — Log an info message
     * `git/1`         — Run a git command
     * `commit/1`      — Stage all and commit
+    * `start/1`       — Log a start message and record the start time
+    * `finish/1`      — Log a finish message with elapsed time
+    * `cd/1`          — Change the working directory
     * `clear/0`       — Clear the screen
 
   Usage Example:
@@ -138,6 +141,7 @@ defmodule ProGen.Script do
   def command(desc, command) do
     log(desc)
     IO.puts(command)
+
     ProGen.Sys.syscmd(command)
     |> halt_on_error()
   end
@@ -172,6 +176,55 @@ defmodule ProGen.Script do
     require Logger
     Logger.info(text)
     Logger.flush()
+  end
+
+  @doc """
+  Logs a start message and records the start time in `:pg_start_time`.
+  """
+  def start(message \\ "START") do
+    now = NaiveDateTime.local_now()
+    timestamp = Calendar.strftime(now, "%y%m%d_%H%M%S")
+    ProGen.Env.put(:pg_start_time, now)
+    ProGen.Env.put(:pg_start_timestamp, timestamp)
+    log(message)
+  end
+
+  @doc """
+  Logs a finish message with elapsed time and records the finish time
+  in `:pg_finish_time` and elapsed time in `:pg_elapsed_time`.
+  """
+  def finish(message \\ "FINISH") do
+    now = NaiveDateTime.local_now()
+    timestamp = Calendar.strftime(now, "%y%m%d_%H%M%S")
+    ProGen.Env.put(:pg_finish_time, now)
+    ProGen.Env.put(:pg_finish_timestamp, timestamp)
+
+    elapsed =
+      case ProGen.Env.get(:pg_start_time) do
+        nil ->
+          "00h 00m 00s"
+
+        start_time ->
+          diff = NaiveDateTime.diff(now, start_time, :second)
+          hours = div(diff, 3600)
+          minutes = diff |> rem(3600) |> div(60)
+          seconds = rem(diff, 60)
+
+          :io_lib.format("~2..0Bh ~2..0Bm ~2..0Bs", [hours, minutes, seconds])
+          |> IO.iodata_to_binary()
+      end
+
+    ProGen.Env.put(:pg_elapsed_time, elapsed)
+    log(message <> " (elapsed time #{elapsed})")
+  end
+
+  @doc """
+  Changes the working directory of the BEAM process.
+  All subsequent commands will run in the new directory.
+  """
+  def cd(dir) do
+    log("CD #{dir}")
+    File.cd!(dir)
   end
 
   @doc """
