@@ -60,8 +60,7 @@ defmodule ProGen.Actions do
   @doc """
   Validates args against the action's schema, then calls `perform/1`.
 
-  Returns `{:ok, result}` on success or `{:error, message}` on validation failure
-  or unknown action.
+  Returns `:ok` on success or `{:error, message}` on failure.
   """
   def run(action_name, args \\ []) when is_atom(action_name) do
     case action_module(action_name) do

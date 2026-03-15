@@ -3,28 +3,28 @@ defmodule ProGen.Action.InspectTest do
   import ExUnit.CaptureIO
 
   describe "ProGen.Action.Inspect" do
-    test "inspects a map to stdout and returns {:ok, :ok}" do
+    test "inspects a map to stdout and returns :ok" do
       output =
         capture_io(fn ->
-          assert {:ok, :ok} = ProGen.Actions.run(:inspect, element: %{a: 1})
+          assert :ok = ProGen.Actions.run(:inspect, element: %{a: 1})
         end)
 
       assert output == "%{a: 1}\n"
     end
 
-    test "inspects a list to stdout and returns {:ok, :ok}" do
+    test "inspects a list to stdout and returns :ok" do
       output =
         capture_io(fn ->
-          assert {:ok, :ok} = ProGen.Actions.run(:inspect, element: [1, 2, 3])
+          assert :ok = ProGen.Actions.run(:inspect, element: [1, 2, 3])
         end)
 
       assert output == "[1, 2, 3]\n"
     end
 
-    test "inspects a string to stdout and returns {:ok, :ok}" do
+    test "inspects a string to stdout and returns :ok" do
       output =
         capture_io(fn ->
-          assert {:ok, :ok} = ProGen.Actions.run(:inspect, element: "hello")
+          assert :ok = ProGen.Actions.run(:inspect, element: "hello")
         end)
 
       assert output == "\"hello\"\n"

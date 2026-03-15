@@ -5,42 +5,42 @@ defmodule ProGen.Action.ValidateTest do
 
   describe "atom checks" do
     test ":has_mix passes when mix.exs exists" do
-      assert {:ok, :ok} = ProGen.Actions.run(:validate, checks: [:has_mix])
+      assert :ok = ProGen.Actions.run(:validate, checks: [:has_mix])
     end
 
     test ":no_mix fails when mix.exs exists" do
-      assert {:ok, {:error, msg}} = ProGen.Actions.run(:validate, checks: [:no_mix])
+      assert {:error, msg} = ProGen.Actions.run(:validate, checks: [:no_mix])
       assert msg =~ "mix.exs already exists"
     end
 
     test ":has_git passes when .git exists" do
-      assert {:ok, :ok} = ProGen.Actions.run(:validate, checks: [:has_git])
+      assert :ok = ProGen.Actions.run(:validate, checks: [:has_git])
     end
 
     test ":no_git fails when .git exists" do
-      assert {:ok, {:error, msg}} = ProGen.Actions.run(:validate, checks: [:no_git])
+      assert {:error, msg} = ProGen.Actions.run(:validate, checks: [:no_git])
       assert msg =~ ".git already exists"
     end
   end
 
   describe "tuple checks — file" do
     test "{:has_file, path} passes for existing file" do
-      assert {:ok, :ok} = ProGen.Actions.run(:validate, checks: [{:has_file, "mix.exs"}])
+      assert :ok = ProGen.Actions.run(:validate, checks: [{:has_file, "mix.exs"}])
     end
 
     test "{:has_file, path} fails for missing file" do
-      assert {:ok, {:error, msg}} =
+      assert {:error, msg} =
                ProGen.Actions.run(:validate, checks: [{:has_file, "nonexistent.txt"}])
 
       assert msg =~ "nonexistent.txt not found"
     end
 
     test "{:no_file, path} passes for missing file" do
-      assert {:ok, :ok} = ProGen.Actions.run(:validate, checks: [{:no_file, "nonexistent.txt"}])
+      assert :ok = ProGen.Actions.run(:validate, checks: [{:no_file, "nonexistent.txt"}])
     end
 
     test "{:no_file, path} fails for existing file" do
-      assert {:ok, {:error, msg}} =
+      assert {:error, msg} =
                ProGen.Actions.run(:validate, checks: [{:no_file, "mix.exs"}])
 
       assert msg =~ "mix.exs already exists"
@@ -49,63 +49,38 @@ defmodule ProGen.Action.ValidateTest do
 
   describe "tuple checks — directory" do
     test "{:has_dir, path} passes for existing directory" do
-      assert {:ok, :ok} = ProGen.Actions.run(:validate, checks: [{:has_dir, "lib"}])
+      assert :ok = ProGen.Actions.run(:validate, checks: [{:has_dir, "lib"}])
     end
 
     test "{:has_dir, path} fails for missing directory" do
-      assert {:ok, {:error, msg}} =
+      assert {:error, msg} =
                ProGen.Actions.run(:validate, checks: [{:has_dir, "no_such_dir"}])
 
       assert msg =~ "no_such_dir not found"
     end
 
     test "{:no_dir, path} passes for missing directory" do
-      assert {:ok, :ok} = ProGen.Actions.run(:validate, checks: [{:no_dir, "no_such_dir"}])
+      assert :ok = ProGen.Actions.run(:validate, checks: [{:no_dir, "no_such_dir"}])
     end
 
     test "{:no_dir, path} fails for existing directory" do
-      assert {:ok, {:error, msg}} =
+      assert {:error, msg} =
                ProGen.Actions.run(:validate, checks: [{:no_dir, "lib"}])
 
       assert msg =~ "lib already exists"
-    end
-
-    test "{:dir_free, path} passes for empty directory" do
-      tmp =
-        Path.join(System.tmp_dir!(), "validate_test_empty_#{System.unique_integer([:positive])}")
-
-      File.mkdir_p!(tmp)
-
-      try do
-        assert {:ok, :ok} = ProGen.Actions.run(:validate, checks: [{:dir_free, tmp}])
-      after
-        File.rm_rf!(tmp)
-      end
-    end
-
-    test "{:dir_free, path} fails for non-empty directory" do
-      assert {:ok, {:error, msg}} = ProGen.Actions.run(:validate, checks: [{:dir_free, "lib"}])
-      assert msg =~ "lib is not an empty directory"
-    end
-
-    test "{:dir_free, path} fails for non-existent path" do
-      assert {:ok, {:error, msg}} =
-               ProGen.Actions.run(:validate, checks: [{:dir_free, "no_such_dir"}])
-
-      assert msg =~ "no_such_dir is not an empty directory"
     end
   end
 
   describe "fail-fast behavior" do
     test "stops at first failure and returns its error" do
-      assert {:ok, {:error, msg}} =
+      assert {:error, msg} =
                ProGen.Actions.run(:validate, checks: [:no_mix, :has_mix])
 
       assert msg =~ "mix.exs already exists"
     end
 
     test "runs all checks when all pass" do
-      assert {:ok, :ok} =
+      assert :ok =
                ProGen.Actions.run(:validate,
                  checks: [:has_mix, :has_git, {:has_file, "mix.exs"}, {:has_dir, "lib"}]
                )
@@ -114,7 +89,7 @@ defmodule ProGen.Action.ValidateTest do
 
   describe "unrecognized term" do
     test "returns error with guidance message" do
-      assert {:ok, {:error, msg}} =
+      assert {:error, msg} =
                ProGen.Actions.run(:validate, checks: [:bogus])
 
       assert msg =~ "Unrecognized term"
@@ -144,7 +119,7 @@ defmodule ProGen.Action.ValidateTest do
       end)
     end
 
-    test "contains all 9 built-in check terms" do
+    test "contains all 8 built-in check terms" do
       terms = Enum.map(ProGen.Action.Validate.checks(), & &1.term)
 
       assert :no_mix in terms
@@ -155,7 +130,6 @@ defmodule ProGen.Action.ValidateTest do
       assert {:has_file, "file"} in terms
       assert {:no_dir, "dir"} in terms
       assert {:has_dir, "dir"} in terms
-      assert {:dir_free, "dir"} in terms
     end
   end
 

@@ -204,7 +204,6 @@ defmodule ProGen.Script do
   end
 
   defp halt_on_error(:ok), do: :ok
-  defp halt_on_error({:ok, _} = result), do: result
 
   defp halt_on_error({:error, message}) do
     IO.puts(:stderr, "Error: #{message}")

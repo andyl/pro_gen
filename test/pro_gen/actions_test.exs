@@ -3,7 +3,7 @@ defmodule ProGen.ActionsTest do
 
   describe "ProGen.Actions.run/2" do
     test "validates and performs a valid action" do
-      assert {:ok, {output, 0}} =
+      assert {output, 0} =
                ProGen.Actions.run(:run, command: "echo", args: ["hello"])
 
       assert String.trim(output) == "hello"

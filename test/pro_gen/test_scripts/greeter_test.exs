@@ -184,7 +184,7 @@ defmodule ProGen.ScriptTest do
     test "accepts keyword opts" do
       output =
         capture_io(fn ->
-          assert {:ok, :ok} = ProGen.Script.action("Test", :validate, checks: [:has_mix])
+          assert :ok = ProGen.Script.action("Test", :validate, checks: [:has_mix])
         end)
 
       assert output =~ ">>>>> Test"
@@ -193,7 +193,7 @@ defmodule ProGen.ScriptTest do
     test "accepts bare list and wraps into the action's required list option" do
       output =
         capture_io(fn ->
-          assert {:ok, :ok} = ProGen.Script.action("Test", :validate, [:has_mix])
+          assert :ok = ProGen.Script.action("Test", :validate, [:has_mix])
         end)
 
       assert output =~ ">>>>> Test"
@@ -202,7 +202,7 @@ defmodule ProGen.ScriptTest do
     test "bare list with multiple checks" do
       output =
         capture_io(fn ->
-          assert {:ok, :ok} = ProGen.Script.action("Test", :validate, [:has_mix, :has_git])
+          assert :ok = ProGen.Script.action("Test", :validate, [:has_mix, :has_git])
         end)
 
       assert output =~ ">>>>> Test"

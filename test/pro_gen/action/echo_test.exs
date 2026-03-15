@@ -3,10 +3,10 @@ defmodule ProGen.Action.EchoTest do
   import ExUnit.CaptureIO
 
   describe "ProGen.Action.Echo" do
-    test "writes message to stdout and returns {:ok, :ok}" do
+    test "writes message to stdout and returns :ok" do
       output =
         capture_io(fn ->
-          assert {:ok, :ok} = ProGen.Actions.run(:echo, message: "hello")
+          assert :ok = ProGen.Actions.run(:echo, message: "hello")
         end)
 
       assert output == "hello\n"
