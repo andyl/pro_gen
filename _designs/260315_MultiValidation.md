@@ -47,4 +47,5 @@ Questions:
 - would it be a better design to have a completely separate and distinct behavior modules:
     * a behavior module ProGen.Action 
     * a behavior module ProGen.Validate  (Should it be called "Validate" or "Validation")
+- is there another design alternative beyond the two that I have described here?
 
