@@ -140,10 +140,15 @@ defmodule ProGen.Script do
 
   @doc """
   Runs a ProGen action.
+
+  `opts` can be a keyword list (passed through) or a bare list, in which case
+  it is auto-wrapped under the action's single required list option key.
+  For example, `action("desc", :validate, [:has_mix])` becomes
+  `Actions.run(:validate, checks: [:has_mix])`.
   """
-  def action(desc, action, opts \\ []) do
+  def action(desc, action_name, opts \\ []) do
     puts(desc)
-    ProGen.Actions.run(action, opts)
+    ProGen.Actions.run(action_name, normalize_action_opts(action_name, opts))
   end
 
   @doc """
@@ -171,6 +176,29 @@ defmodule ProGen.Script do
     do: ProGen.Sys.syscmd("git", arg_list)
 
   # --- Private helpers ---
+
+  defp normalize_action_opts(action_name, opts) do
+    if Keyword.keyword?(opts) do
+      opts
+    else
+      case ProGen.Actions.action_module(action_name) do
+        {:ok, mod} ->
+          required_list_keys =
+            for {key, config} <- mod.option_schema(),
+                config[:required] == true,
+                match?({:list, _}, config[:type]),
+                do: key
+
+          case required_list_keys do
+            [key] -> [{key, opts}]
+            _ -> opts
+          end
+
+        :error ->
+          opts
+      end
+    end
+  end
 
   defp do_halt(code) do
     halt_fn = Application.get_env(:pro_gen, :system_halt, &System.halt/1)

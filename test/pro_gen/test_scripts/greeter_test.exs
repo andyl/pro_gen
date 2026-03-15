@@ -181,10 +181,32 @@ defmodule ProGen.ScriptTest do
   end
 
   describe "action/3" do
-    # test "prints stub message" do
-    #   output = capture_io(fn -> ProGen.Script.action("desc", :some_action, []) end)
-    #   assert output =~ "Under Construction"
-    # end
+    test "accepts keyword opts" do
+      output =
+        capture_io(fn ->
+          assert {:ok, :ok} = ProGen.Script.action("Test", :validate, checks: [:has_mix])
+        end)
+
+      assert output =~ ">>>>> Test"
+    end
+
+    test "accepts bare list and wraps into the action's required list option" do
+      output =
+        capture_io(fn ->
+          assert {:ok, :ok} = ProGen.Script.action("Test", :validate, [:has_mix])
+        end)
+
+      assert output =~ ">>>>> Test"
+    end
+
+    test "bare list with multiple checks" do
+      output =
+        capture_io(fn ->
+          assert {:ok, :ok} = ProGen.Script.action("Test", :validate, [:has_mix, :has_git])
+        end)
+
+      assert output =~ ">>>>> Test"
+    end
   end
 
   describe "git/1" do

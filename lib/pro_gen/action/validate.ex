@@ -15,71 +15,60 @@ defmodule ProGen.Action.Validate do
     [
       %{
         term: :no_mix,
-        desc: "Passes if mix.exs does not exist",
+        desc: "Pass if mix.exs does not exist",
         func: fn _check ->
           if File.exists?("mix.exs"), do: {:error, "mix.exs already exists"}, else: :ok
         end
       },
       %{
         term: :has_mix,
-        desc: "Passes if mix.exs exists",
+        desc: "Pass if mix.exs exists",
         func: fn _check ->
           if File.exists?("mix.exs"), do: :ok, else: {:error, "mix.exs not found"}
         end
       },
       %{
         term: :no_git,
-        desc: "Passes if .git directory does not exist",
+        desc: "Pass if .git directory does not exist",
         func: fn _check ->
           if File.dir?(".git"), do: {:error, ".git already exists"}, else: :ok
         end
       },
       %{
         term: :has_git,
-        desc: "Passes if .git directory exists",
+        desc: "Pass if .git directory exists",
         func: fn _check ->
           if File.dir?(".git"), do: :ok, else: {:error, ".git not found"}
         end
       },
       %{
-        term: :no_file,
-        desc: "Passes if the given file does not exist",
+        term: {:no_file, "file"},
+        desc: "Pass if <file> does not exist",
         func: fn {:no_file, path} ->
           if File.exists?(path), do: {:error, "#{path} already exists"}, else: :ok
         end
       },
       %{
-        term: :has_file,
-        desc: "Passes if the given file exists",
+        term: {:has_file, "file"},
+        desc: "Pass if <file> exists",
         func: fn {:has_file, path} ->
           if File.exists?(path), do: :ok, else: {:error, "#{path} not found"}
         end
       },
       %{
-        term: :no_dir,
-        desc: "Passes if the given directory does not exist",
+        term: {:no_dir, "dir"},
+        desc: "Pass if <dir> does not exist",
         func: fn {:no_dir, path} ->
           if File.dir?(path), do: {:error, "#{path} already exists"}, else: :ok
         end
       },
       %{
-        term: :has_dir,
-        desc: "Passes if the given directory exists",
+        term: {:has_dir, "dir"},
+        desc: "Pass if <dir> exists",
         func: fn {:has_dir, path} ->
           if File.dir?(path), do: :ok, else: {:error, "#{path} not found"}
         end
       },
-      %{
-        term: :dir_free,
-        desc: "Passes if the given directory exists and is empty",
-        func: fn {:dir_free, path} ->
-          cond do
-            not File.dir?(path) -> {:error, "#{path} is not a directory"}
-            File.ls!(path) != [] -> {:error, "#{path} is not empty"}
-            true -> :ok
-          end
-        end
-      }
     ]
   end
 
@@ -122,6 +111,9 @@ defmodule ProGen.Action.Validate do
 
   defp find_check(check) when is_tuple(check) do
     tag = elem(check, 0)
-    Enum.find(all_checks(), fn entry -> entry.term == tag end)
+
+    Enum.find(all_checks(), fn entry ->
+      is_tuple(entry.term) and elem(entry.term, 0) == tag
+    end)
   end
 end

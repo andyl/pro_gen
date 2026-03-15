@@ -151,11 +151,11 @@ defmodule ProGen.Action.ValidateTest do
       assert :has_mix in terms
       assert :no_git in terms
       assert :has_git in terms
-      assert :no_file in terms
-      assert :has_file in terms
-      assert :no_dir in terms
-      assert :has_dir in terms
-      assert :dir_free in terms
+      assert {:no_file, "path"} in terms
+      assert {:has_file, "path"} in terms
+      assert {:no_dir, "path"} in terms
+      assert {:has_dir, "path"} in terms
+      assert {:dir_free, "path"} in terms
     end
   end
 
