@@ -61,12 +61,6 @@ defmodule ProGen.Action.Validate do
         fail: fn {:has_dir, path} -> "#{path} not found" end,
         test: fn {:has_dir, path} -> File.dir?(path) end
       },
-      %{
-        term: {:dir_free, "dir"},
-        desc: "Pass if <dir> exists and is empty",
-        fail: fn {:dir_free, path} -> "#{path} is not an empty directory" end,
-        test: fn {:dir_free, path} -> File.dir?(path) and File.ls!(path) == [] end
-      }
     ]
   end
 
