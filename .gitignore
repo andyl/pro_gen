@@ -22,3 +22,9 @@ erl_crash.dump
 # Ignore package tarball (built via "mix hex.build").
 pro_gen-*.tar
 
+/.expert/
+.expert/
+.expert
+expert.log
+bin/.expert/expert.log
+
