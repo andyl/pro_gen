@@ -85,14 +85,14 @@ defmodule ProGen.Action.ValidateTest do
 
     test "{:dir_free, path} fails for non-empty directory" do
       assert {:ok, {:error, msg}} = ProGen.Actions.run(:validate, checks: [{:dir_free, "lib"}])
-      assert msg =~ "lib is not empty"
+      assert msg =~ "lib is not an empty directory"
     end
 
     test "{:dir_free, path} fails for non-existent path" do
       assert {:ok, {:error, msg}} =
                ProGen.Actions.run(:validate, checks: [{:dir_free, "no_such_dir"}])
 
-      assert msg =~ "no_such_dir is not a directory"
+      assert msg =~ "no_such_dir is not an empty directory"
     end
   end
 
@@ -151,11 +151,11 @@ defmodule ProGen.Action.ValidateTest do
       assert :has_mix in terms
       assert :no_git in terms
       assert :has_git in terms
-      assert {:no_file, "path"} in terms
-      assert {:has_file, "path"} in terms
-      assert {:no_dir, "path"} in terms
-      assert {:has_dir, "path"} in terms
-      assert {:dir_free, "path"} in terms
+      assert {:no_file, "file"} in terms
+      assert {:has_file, "file"} in terms
+      assert {:no_dir, "dir"} in terms
+      assert {:has_dir, "dir"} in terms
+      assert {:dir_free, "dir"} in terms
     end
   end
 
