@@ -167,14 +167,13 @@ defmodule ProGen.ScriptTest do
   describe "puts/1" do
     test "prints formatted message" do
       output = capture_io(fn -> ProGen.Script.puts("hello") end)
-      assert output =~ ">>>>> hello"
+      assert output =~ ">>> hello"
     end
   end
 
   describe "command/2" do
-    test "prints description and runs command" do
+    test "logs description and runs command" do
       {result, output} = with_io(fn -> ProGen.Script.command("listing", "echo hi") end)
-      assert output =~ ">>>>> listing"
       assert output =~ "hi"
       assert :ok = result
     end
@@ -182,30 +181,15 @@ defmodule ProGen.ScriptTest do
 
   describe "action/3" do
     test "accepts keyword opts" do
-      output =
-        capture_io(fn ->
-          assert :ok = ProGen.Script.action("Test", :validate, checks: [:has_mix])
-        end)
-
-      assert output =~ ">>>>> Test"
+      assert :ok = ProGen.Script.action("Test", :validate, checks: [:has_mix])
     end
 
     test "accepts bare list and wraps into the action's required list option" do
-      output =
-        capture_io(fn ->
-          assert :ok = ProGen.Script.action("Test", :validate, [:has_mix])
-        end)
-
-      assert output =~ ">>>>> Test"
+      assert :ok = ProGen.Script.action("Test", :validate, [:has_mix])
     end
 
     test "bare list with multiple checks" do
-      output =
-        capture_io(fn ->
-          assert :ok = ProGen.Script.action("Test", :validate, [:has_mix, :has_git])
-        end)
-
-      assert output =~ ">>>>> Test"
+      assert :ok = ProGen.Script.action("Test", :validate, [:has_mix, :has_git])
     end
   end
 

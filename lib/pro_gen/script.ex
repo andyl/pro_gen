@@ -10,9 +10,10 @@ defmodule ProGen.Script do
     * `cli_vals/0`    — Retrieve the parsed CLI values
     * `usage/1`       — Generate help text from an Optimus schema
     * `usage/0`       — Generate help text from the stored schema
-    * `puts/1`        — Print a formatted message
     * `command/2`     — Print description then run a system command
     * `action/3`      — Run a ProGen action
+    * `puts/1`        — Print a formatted message
+    * `log/1`         — Log an info message
     * `git/1`         — Run a git command
     * `commit/1`      — Stage all and commit
 
@@ -134,7 +135,8 @@ defmodule ProGen.Script do
   Prints a formatted description, then runs a system command via `ProGen.Sys.syscmd/1`.
   """
   def command(desc, command) do
-    puts(desc)
+    log(desc)
+    IO.puts(command)
     ProGen.Sys.syscmd(command)
     |> halt_on_error()
   end
@@ -148,7 +150,7 @@ defmodule ProGen.Script do
   `Actions.run(:validate, checks: [:has_mix])`.
   """
   def action(desc, action_name, opts \\ []) do
-    puts(desc)
+    log(desc)
 
     action_name
     |> ProGen.Actions.run(normalize_action_opts(action_name, opts))
@@ -159,7 +161,16 @@ defmodule ProGen.Script do
   Prints a formatted message prefixed with `>>>>>`.
   """
   def puts(text) do
-    IO.puts(">>>>> #{text}")
+    IO.puts(">>> #{text}")
+  end
+
+  @doc """
+  Logs an info-level message via `Logger`.
+  """
+  def log(text) do
+    require Logger
+    Logger.info(text)
+    Logger.flush()
   end
 
   @doc """
