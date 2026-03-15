@@ -2,8 +2,8 @@ defmodule ProGen.ActionTest do
   use ExUnit.Case
 
   describe "ProGen.Action attribute accessors" do
-    test "name/0 returns the derived atom name" do
-      assert ProGen.Action.Run.name() == :run
+    test "name/0 returns the derived string name" do
+      assert ProGen.Action.Run.name() == "run"
     end
 
     test "description/0 returns the declared description" do
@@ -16,6 +16,23 @@ defmodule ProGen.ActionTest do
       assert Keyword.has_key?(schema, :command)
       assert Keyword.has_key?(schema, :args)
       assert Keyword.has_key?(schema, :dir)
+    end
+
+    test "name/0 returns a dot-joined namespace for nested modules" do
+      assert ProGen.Action.Test.Echo2.name() == "test.echo2"
+    end
+
+    test "namespaced action is discoverable by its full name" do
+      assert {:ok, ProGen.Action.Test.Echo2} = ProGen.Actions.action_module("test.echo2")
+    end
+
+    test "namespaced action can be run by its full name" do
+      output =
+        ExUnit.CaptureIO.capture_io(fn ->
+          assert :ok = ProGen.Actions.run("test.echo2", message: "hi")
+        end)
+
+      assert output =~ "hi"
     end
 
     test "missing @description raises CompileError" do

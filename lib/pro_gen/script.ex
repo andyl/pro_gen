@@ -152,7 +152,7 @@ defmodule ProGen.Script do
   `opts` can be a keyword list (passed through) or a bare list, in which case
   it is auto-wrapped under the action's single required list option key.
   For example, `action("desc", :validate, [:has_mix])` becomes
-  `Actions.run(:validate, checks: [:has_mix])`.
+  `Actions.run("validate", checks: [:has_mix])`.
   """
   def action(desc, action_name, opts \\ []) do
     log(desc)

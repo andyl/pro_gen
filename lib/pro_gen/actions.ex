@@ -3,11 +3,12 @@ defmodule ProGen.Actions do
   Central facade & registry for all ProGen actions.
 
   Actions are auto-discovered from modules whose name starts with `ProGen.Action.`.
-  The action name is derived from the last segment, downcased to an atom.
+  The action name is derived from the segments after `ProGen.Action`, downcased and
+  dot-joined into a string (e.g. `ProGen.Action.Test.Echo` → `"test.echo"`).
   """
 
   # Cached results (list of action names + name → module map)
-  @type action_map :: %{atom() => module()}
+  @type action_map :: %{String.t() => module()}
 
   def list_actions do
     key = {__MODULE__, :actions_list}
@@ -23,7 +24,7 @@ defmodule ProGen.Actions do
     end
   end
 
-  def action_module(action_name) when is_atom(action_name) do
+  def action_module(action_name) when is_binary(action_name) do
     key = {__MODULE__, :actions_map}
 
     map =
@@ -40,7 +41,7 @@ defmodule ProGen.Actions do
     Map.fetch(map, action_name)
   end
 
-  def action_info(action_name) when is_atom(action_name) do
+  def action_info(action_name) when is_binary(action_name) do
     case action_module(action_name) do
       {:ok, mod} ->
         {:ok,
@@ -62,7 +63,7 @@ defmodule ProGen.Actions do
 
   Returns `:ok` on success or `{:error, message}` on failure.
   """
-  def run(action_name, args \\ []) when is_atom(action_name) do
+  def run(action_name, args \\ []) when is_binary(action_name) do
     case action_module(action_name) do
       {:ok, mod} ->
         case mod.validate_args(args) do
@@ -109,7 +110,7 @@ defmodule ProGen.Actions do
         {name, duplicates} ->
           raise ArgumentError,
                 """
-                Duplicate action name detected: :#{name}
+                Duplicate action name detected: "#{name}"
 
                 Conflicting modules:
                 #{duplicates |> Enum.map(&inspect/1) |> Enum.join("\n  ")}
@@ -125,8 +126,8 @@ defmodule ProGen.Actions do
   defp action_name_from_module(mod) do
     mod
     |> Module.split()
-    |> List.last()
-    |> Macro.underscore()
-    |> String.to_atom()
+    |> Enum.drop(2)
+    |> Enum.map(&Macro.underscore/1)
+    |> Enum.join(".")
   end
 end

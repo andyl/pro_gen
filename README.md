@@ -53,17 +53,19 @@ end
 ```
 
 **Auto-discovery:** Any module named `ProGen.Action.<Name>` is automatically
-registered. The name atom is derived from the last segment (e.g.
-`ProGen.Action.Run` becomes `:run`). No manual registration needed.  Goal is
-to make it easy to create custom actions.
+registered. The name is derived from the segments after `ProGen.Action`,
+downcased and dot-joined (e.g. `ProGen.Action.Run` becomes `"run"`,
+`ProGen.Action.Test.Echo` becomes `"test.echo"`). Namespaces are arbitrarily
+deep. No manual registration needed. Goal is to make it easy to create custom
+actions.
 
 **Running actions:**
 
 ```elixir
-ProGen.Actions.run(:run, command: "echo", args: ["hello"])
+ProGen.Actions.run("run", command: "echo", args: ["hello"])
 #=> {:ok, {"hello\n", 0}}
 
-ProGen.Actions.run(:run, [])
+ProGen.Actions.run("run", [])
 #=> {:error, "required option :command not found..."}
 ```
 
@@ -71,9 +73,9 @@ ProGen.Actions.run(:run, [])
 
 ```elixir
 ProGen.Actions.list_actions()
-#=> [run: ProGen.Action.Run]
+#=> ["echo", "inspect", "run", "test.echo2", "validate"]
 
-ProGen.Actions.action_info(:run)
+ProGen.Actions.action_info("run")
 #=> {:ok, %{description: "Run a system command", usage: "...", option_schema: [...]}}
 ```
 

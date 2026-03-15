@@ -26,9 +26,9 @@ ProGen has three pillars (Actions are implemented; Scripts and Menus are stubs/f
 
 **Behavior module:** `ProGen.Action` defines three callbacks: `perform/1`, `description/0`, `option_schema/0`. The `option_schema/0` callback returns a NimbleOptions schema. The `__using__` macro injects `validate_args/1` (calls NimbleOptions) and an auto-generated `usage/0` (overridable).
 
-**Registry:** `ProGen.Actions` auto-discovers any module whose name starts with `ProGen.Action.` (note: singular `Action`, not `Actions`). The last module name segment is downcased/underscored to derive the action atom name (e.g., `ProGen.Action.Run` → `:run`). Results are lazily cached in `:persistent_term`.
+**Registry:** `ProGen.Actions` auto-discovers any module whose name starts with `ProGen.Action.` (note: singular `Action`, not `Actions`). The segments after `ProGen.Action` are downcased/underscored and dot-joined to derive the action string name (e.g., `ProGen.Action.Run` → `"run"`, `ProGen.Action.Test.Echo` → `"test.echo"`). Namespaces are arbitrarily deep. Results are lazily cached in `:persistent_term`.
 
-**Running actions:** `ProGen.Actions.run(:action_name, opts)` validates args against the schema then calls `perform/1`. Returns `{:ok, result}` or `{:error, message}`.
+**Running actions:** `ProGen.Actions.run("action_name", opts)` validates args against the schema then calls `perform/1`. Returns `{:ok, result}` or `{:error, message}`. Action names are strings (e.g., `"run"`, `"test.echo2"`).
 
 **Adding a new action:** Create a module under `lib/pro_gen/action/` named `ProGen.Action.<Name>` that does `use ProGen.Action` and implements the three callbacks (`perform/1`, `description/0`, `option_schema/0`). It will be auto-discovered — no manual registration needed. Action names must be unique across all modules.
 

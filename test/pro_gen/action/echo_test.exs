@@ -6,7 +6,7 @@ defmodule ProGen.Action.EchoTest do
     test "writes message to stdout and returns :ok" do
       output =
         capture_io(fn ->
-          assert :ok = ProGen.Actions.run(:echo, message: "hello")
+          assert :ok = ProGen.Actions.run("echo", message: "hello")
         end)
 
       assert output == "hello\n"
@@ -14,13 +14,13 @@ defmodule ProGen.Action.EchoTest do
 
     test "rejects a list value for :message" do
       assert {:error, message} =
-               ProGen.Actions.run(:echo, message: ["not", "a", "string"])
+               ProGen.Actions.run("echo", message: ["not", "a", "string"])
 
       assert is_binary(message)
     end
 
-    test "name/0 returns :echo" do
-      assert ProGen.Action.Echo.name() == :echo
+    test "name/0 returns \"echo\"" do
+      assert ProGen.Action.Echo.name() == "echo"
     end
 
     test "description/0 returns a non-empty string" do
@@ -36,7 +36,7 @@ defmodule ProGen.Action.EchoTest do
     end
 
     test "is auto-discovered by the registry" do
-      assert :echo in ProGen.Actions.list_actions()
+      assert "echo" in ProGen.Actions.list_actions()
     end
   end
 end

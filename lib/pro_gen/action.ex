@@ -13,7 +13,7 @@ defmodule ProGen.Action do
 
   Using this module injects:
 
-    * `name/0`          — Auto-derived action name (atom)
+    * `name/0`          — Auto-derived namespaced action name (string, e.g. `"test.echo"`)
     * `description/0`   — Returns the declared description
     * `option_schema/0` — Returns the declared option schema
     * `validate_args/1`  — Validates a keyword list against the schema
@@ -65,9 +65,9 @@ defmodule ProGen.Action do
     name =
       env.module
       |> Module.split()
-      |> List.last()
-      |> Macro.underscore()
-      |> String.to_atom()
+      |> Enum.drop(2)
+      |> Enum.map(&Macro.underscore/1)
+      |> Enum.join(".")
 
     quote do
       def name, do: unquote(name)

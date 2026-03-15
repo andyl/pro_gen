@@ -60,7 +60,7 @@ defmodule ProGen.Action.Validate do
         desc: "Pass if <dir> exists",
         fail: fn {:has_dir, path} -> "Directory '#{path}' not found" end,
         test: fn {:has_dir, path} -> File.dir?(path) end
-      },
+      }
     ]
   end
 
