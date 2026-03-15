@@ -10,7 +10,7 @@ defmodule ProGen.Action.ValidateTest do
 
     test ":no_mix fails when mix.exs exists" do
       assert {:error, msg} = ProGen.Actions.run(:validate, checks: [:no_mix])
-      assert msg =~ "mix.exs already exists"
+      assert msg =~ "File 'mix.exs' already exists"
     end
 
     test ":has_git passes when .git exists" do
@@ -19,7 +19,7 @@ defmodule ProGen.Action.ValidateTest do
 
     test ":no_git fails when .git exists" do
       assert {:error, msg} = ProGen.Actions.run(:validate, checks: [:no_git])
-      assert msg =~ ".git already exists"
+      assert msg =~ "Directory '.git' already exists"
     end
   end
 
@@ -32,7 +32,7 @@ defmodule ProGen.Action.ValidateTest do
       assert {:error, msg} =
                ProGen.Actions.run(:validate, checks: [{:has_file, "nonexistent.txt"}])
 
-      assert msg =~ "nonexistent.txt not found"
+      assert msg =~ "File 'nonexistent.txt' not found"
     end
 
     test "{:no_file, path} passes for missing file" do
@@ -43,7 +43,7 @@ defmodule ProGen.Action.ValidateTest do
       assert {:error, msg} =
                ProGen.Actions.run(:validate, checks: [{:no_file, "mix.exs"}])
 
-      assert msg =~ "mix.exs already exists"
+      assert msg =~ "File 'mix.exs' already exists"
     end
   end
 
@@ -56,7 +56,7 @@ defmodule ProGen.Action.ValidateTest do
       assert {:error, msg} =
                ProGen.Actions.run(:validate, checks: [{:has_dir, "no_such_dir"}])
 
-      assert msg =~ "no_such_dir not found"
+      assert msg =~ "Directory 'no_such_dir' not found"
     end
 
     test "{:no_dir, path} passes for missing directory" do
@@ -67,7 +67,7 @@ defmodule ProGen.Action.ValidateTest do
       assert {:error, msg} =
                ProGen.Actions.run(:validate, checks: [{:no_dir, "lib"}])
 
-      assert msg =~ "lib already exists"
+      assert msg =~ "Directory 'lib' already exists"
     end
   end
 
@@ -76,7 +76,7 @@ defmodule ProGen.Action.ValidateTest do
       assert {:error, msg} =
                ProGen.Actions.run(:validate, checks: [:no_mix, :has_mix])
 
-      assert msg =~ "mix.exs already exists"
+      assert msg =~ "File 'mix.exs' already exists"
     end
 
     test "runs all checks when all pass" do
