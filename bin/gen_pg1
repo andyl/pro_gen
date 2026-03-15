@@ -24,7 +24,7 @@ PG.cli_args(
 
 PG.start()
 PG.command "CLEANUP",            "rm -rf #{project}"
-PG.action  "CHECK ENVIRONMENT",  :validate, [:no_mix, :no_git, {:no_dir, project}]
+PG.action  "CHECK ENVIRONMENT",  "validate", [:no_mix, :no_git, {:no_dir, project}]
 PG.command "GEN PHX PROJECT",    "mix igniter.new #{project} --with=phx.new --with-args --no-ecto"
 
 PG.cd(project)
