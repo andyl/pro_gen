@@ -2,9 +2,13 @@ defmodule ProGen.Action do
   @moduledoc """
   Behavior for all actions.
 
-  Defines one callback:
+  Defines two callbacks:
 
-    * `perform/1` — Executes the action with validated keyword args
+    * `perform/1`  — Executes the action with validated keyword args
+    * `needed?/1`  — Optional predicate checked before `perform/1` (default: `true`)
+
+  When `needed?/1` returns `false`, the framework skips `perform/1` and returns
+  `{:ok, :skipped}`. Pass `force: true` to `ProGen.Actions.run/2` to bypass the check.
 
   Action metadata is declared via module attributes:
 
@@ -21,6 +25,7 @@ defmodule ProGen.Action do
   """
 
   @callback perform(args :: keyword()) :: any()
+  @callback needed?(args :: keyword()) :: boolean()
 
   defmacro __using__(_opts) do
     quote do
@@ -41,6 +46,12 @@ defmodule ProGen.Action do
       end
 
       @doc """
+      Returns whether this action needs to run. Defaults to `true`.
+      Override to skip execution when the desired state already exists.
+      """
+      def needed?(_args), do: true
+
+      @doc """
       Auto-generated usage text derived from `option_schema/0`.
       Override this function to provide custom usage text.
       """
@@ -48,7 +59,7 @@ defmodule ProGen.Action do
         NimbleOptions.docs(option_schema())
       end
 
-      defoverridable usage: 0
+      defoverridable usage: 0, needed?: 1
     end
   end
 

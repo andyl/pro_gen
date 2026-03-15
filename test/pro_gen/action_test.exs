@@ -48,4 +48,29 @@ defmodule ProGen.ActionTest do
       end
     end
   end
+
+  describe "needed?/1 predicate" do
+    test "default needed?/1 returns true" do
+      assert ProGen.Action.Run.needed?([]) == true
+    end
+
+    test "needed?/1 can be overridden" do
+      Code.compile_string("""
+      defmodule ProGen.Action.Test.OverrideNeeded do
+        use ProGen.Action
+
+        @description "Action that overrides needed?/1"
+        @option_schema []
+
+        @impl true
+        def needed?(_args), do: false
+
+        @impl true
+        def perform(_args), do: :ok
+      end
+      """)
+
+      assert apply(ProGen.Action.Test.OverrideNeeded, :needed?, [[]]) == false
+    end
+  end
 end

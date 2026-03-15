@@ -49,6 +49,36 @@ defmodule ProGen.ActionsTest do
     end
   end
 
+  describe "needed?/1 integration" do
+    test "action skipped when needed?/1 returns false" do
+      assert {:ok, :skipped} =
+               ProGen.Actions.run("test.never_needed", message: "hello")
+    end
+
+    test "force: true bypasses needed?/1 check" do
+      assert :ok =
+               ProGen.Actions.run("test.never_needed", message: "hello", force: true)
+    end
+
+    test ":force does not leak into validated args" do
+      ProGen.Actions.run("test.args_capture", message: "hi", force: true)
+      captured = Process.get(:captured_args)
+      refute Keyword.has_key?(captured, :force)
+      assert Keyword.get(captured, :message) == "hi"
+    end
+
+    test "validation errors returned even when needed?/1 would return false" do
+      assert {:error, message} = ProGen.Actions.run("test.never_needed", [])
+      assert message =~ "message"
+    end
+
+    test "needed?/1 receives validated args with defaults applied" do
+      ProGen.Actions.run("test.default_check", [])
+      needed_args = Process.get(:needed_args)
+      assert Keyword.get(needed_args, :label) == "default_value"
+    end
+  end
+
   describe "ProGen.Actions.action_info/1" do
     test "returns a map with all fields populated" do
       assert {:ok, info} = ProGen.Actions.action_info("run")

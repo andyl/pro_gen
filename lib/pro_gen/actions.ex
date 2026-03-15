@@ -61,14 +61,25 @@ defmodule ProGen.Actions do
   @doc """
   Validates args against the action's schema, then calls `perform/1`.
 
-  Returns `:ok` on success or `{:error, message}` on failure.
+  Options:
+
+    * `force: true` — bypass the `needed?/1` check and always run the action.
+
+  Returns the result of `perform/1`, `{:ok, :skipped}` when the action is not
+  needed, or `{:error, message}` on failure.
   """
   def run(action_name, args \\ []) when is_binary(action_name) do
+    {force, action_args} = Keyword.pop(args, :force, false)
+
     case action_module(action_name) do
       {:ok, mod} ->
-        case mod.validate_args(args) do
+        case mod.validate_args(action_args) do
           {:ok, validated_args} ->
-            mod.perform(validated_args)
+            if force or mod.needed?(validated_args) do
+              mod.perform(validated_args)
+            else
+              {:ok, :skipped}
+            end
 
           {:error, %NimbleOptions.ValidationError{} = error} ->
             {:error, Exception.message(error)}
