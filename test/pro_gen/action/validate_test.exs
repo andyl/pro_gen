@@ -71,6 +71,36 @@ defmodule ProGen.Action.ValidateTest do
     end
   end
 
+  describe "elixir checks" do
+    test ":has_elixir passes when elixir is installed" do
+      assert :ok = ProGen.Action.Validate.check(:has_elixir)
+    end
+
+    test ":no_elixir fails when elixir is installed" do
+      assert {:error, msg} = ProGen.Action.Validate.check(:no_elixir)
+      assert msg =~ "elixir is installed"
+    end
+  end
+
+  describe "igniter checks" do
+    test ":has_igniter passes when igniter is available" do
+      assert :ok = ProGen.Action.Validate.check(:has_igniter)
+    end
+
+    test ":no_igniter fails when igniter is available" do
+      assert {:error, msg} = ProGen.Action.Validate.check(:no_igniter)
+      assert msg =~ "Igniter is installed"
+    end
+  end
+
+  describe "phx_new checks" do
+    test ":has_phx_new and :no_phx_new are mutually exclusive" do
+      has_result = ProGen.Action.Validate.check(:has_phx_new)
+      no_result = ProGen.Action.Validate.check(:no_phx_new)
+      assert (has_result == :ok) != (no_result == :ok)
+    end
+  end
+
   describe "fail-fast behavior" do
     test "stops at first failure and returns its error" do
       assert {:error, msg} =
@@ -119,7 +149,7 @@ defmodule ProGen.Action.ValidateTest do
       end)
     end
 
-    test "contains all 8 built-in check terms" do
+    test "contains all 14 built-in check terms" do
       terms = Enum.map(ProGen.Action.Validate.checks(), & &1.term)
 
       assert :no_mix in terms
@@ -130,6 +160,12 @@ defmodule ProGen.Action.ValidateTest do
       assert {:has_file, "file"} in terms
       assert {:no_dir, "dir"} in terms
       assert {:has_dir, "dir"} in terms
+      assert :has_igniter in terms
+      assert :no_igniter in terms
+      assert :has_phx_new in terms
+      assert :no_phx_new in terms
+      assert :has_elixir in terms
+      assert :no_elixir in terms
     end
   end
 

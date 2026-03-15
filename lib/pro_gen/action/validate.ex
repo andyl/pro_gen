@@ -60,6 +60,42 @@ defmodule ProGen.Action.Validate do
         desc: "Pass if <dir> exists",
         fail: fn {:has_dir, path} -> "Directory '#{path}' not found" end,
         test: fn {:has_dir, path} -> File.dir?(path) end
+      },
+      %{
+        term: :has_igniter,
+        desc: "Pass if igniter is installed",
+        fail: "No igniter (install with 'mix archive.install hex igniter_new --force')",
+        test: fn _ -> elem(System.cmd("mix", ["help"]), 0) =~ "igniter" end
+      },
+      %{
+        term: :no_igniter,
+        desc: "Pass if igniter is not installed",
+        fail: "Igniter is installed",
+        test: fn _ -> not (elem(System.cmd("mix", ["help"]), 0) =~ "igniter") end
+      },
+      %{
+        term: :has_phx_new,
+        desc: "Pass if phx_new is installed",
+        fail: "No phx_new (install with 'mix archive.install hex phx_new_new --force')",
+        test: fn _ -> elem(System.cmd("mix", ["help"]), 0) =~ "phx.new" end
+      },
+      %{
+        term: :no_phx_new,
+        desc: "Pass if phx_new is not installed",
+        fail: "phx_new is installed",
+        test: fn _ -> not (elem(System.cmd("mix", ["help"]), 0) =~ "phx.new") end
+      },
+      %{
+        term: :has_elixir,
+        desc: "Pass if elixir is installed",
+        fail: "No elixir - please install",
+        test: fn _ -> System.find_executable("elixir") != nil end
+      },
+      %{
+        term: :no_elixir,
+        desc: "Pass if elixir is not installed",
+        fail: "elixir is installed",
+        test: fn _ -> System.find_executable("elixir") == nil end
       }
     ]
   end
