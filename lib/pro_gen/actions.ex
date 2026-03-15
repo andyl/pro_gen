@@ -99,7 +99,11 @@ defmodule ProGen.Actions do
           :lists.prefix(prefix, mod_str),
           do: mod
 
-    # Derive name → module, detect duplicates
+    build_action_map(action_modules)
+  end
+
+  @doc false
+  def build_action_map(action_modules) do
     name_to_mod =
       action_modules
       |> Enum.group_by(&action_name_from_module/1)
@@ -123,7 +127,8 @@ defmodule ProGen.Actions do
     {sorted_list, name_to_mod}
   end
 
-  defp action_name_from_module(mod) do
+  @doc false
+  def action_name_from_module(mod) do
     mod
     |> Module.split()
     |> Enum.drop(2)

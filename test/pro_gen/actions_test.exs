@@ -21,6 +21,34 @@ defmodule ProGen.ActionsTest do
     end
   end
 
+  describe "duplicate detection" do
+    test "raises ArgumentError when two modules derive to the same action name" do
+      # Both modules produce "dup" after Enum.drop(2) — the first two segments differ
+      # but the remainder is the same.
+      Code.compile_string("""
+      defmodule ProGen.Action.Dup do
+        use ProGen.Action
+        @description "First"
+        @impl true
+        def perform(_), do: :ok
+      end
+      """)
+
+      Code.compile_string("""
+      defmodule ProGen.FakeNs.Dup do
+        use ProGen.Action
+        @description "Second"
+        @impl true
+        def perform(_), do: :ok
+      end
+      """)
+
+      assert_raise ArgumentError, ~r/Duplicate action name detected: "dup"/, fn ->
+        ProGen.Actions.build_action_map([ProGen.Action.Dup, ProGen.FakeNs.Dup])
+      end
+    end
+  end
+
   describe "ProGen.Actions.action_info/1" do
     test "returns a map with all fields populated" do
       assert {:ok, info} = ProGen.Actions.action_info("run")
