@@ -14,22 +14,16 @@ defmodule ProGen.Action.Validate do
   defp all_checks do
     [
       %{
-        term: :no_mix,
-        desc: "Pass if mix.exs does not exist",
-        fail: "File 'mix.exs' already exists",
-        test: fn _ -> not File.exists?("mix.exs") end
-      },
-      %{
         term: :has_mix,
         desc: "Pass if mix.exs exists",
         fail: "File 'mix.exs' not found",
         test: fn _ -> File.exists?("mix.exs") end
       },
       %{
-        term: :no_git,
-        desc: "Pass if .git directory does not exist",
-        fail: "Directory '.git' already exists",
-        test: fn _ -> not File.dir?(".git") end
+        term: :no_mix,
+        desc: "Pass if mix.exs does not exist",
+        fail: "File 'mix.exs' already exists",
+        test: fn _ -> not eval_test(:has_mix) end
       },
       %{
         term: :has_git,
@@ -38,10 +32,10 @@ defmodule ProGen.Action.Validate do
         test: fn _ -> File.dir?(".git") end
       },
       %{
-        term: {:no_file, "file"},
-        desc: "Pass if <file> doesv not exist",
-        fail: fn {:no_file, path} -> "File '#{path}' already exists" end,
-        test: fn {:no_file, path} -> not File.exists?(path) end
+        term: :no_git,
+        desc: "Pass if .git directory does not exist",
+        fail: "Directory '.git' already exists",
+        test: fn _ -> not eval_test(:has_git) end
       },
       %{
         term: {:has_file, "file"},
@@ -50,16 +44,22 @@ defmodule ProGen.Action.Validate do
         test: fn {:has_file, path} -> File.exists?(path) end
       },
       %{
-        term: {:no_dir, "dir"},
-        desc: "Pass if <dir> does not exist",
-        fail: fn {:no_dir, path} -> "Directory '#{path}' already exists" end,
-        test: fn {:no_dir, path} -> not File.dir?(path) end
+        term: {:no_file, "file"},
+        desc: "Pass if <file> doesv not exist",
+        fail: fn {:no_file, path} -> "File '#{path}' already exists" end,
+        test: fn {:no_file, path} -> not eval_test({:has_file, path}) end
       },
       %{
         term: {:has_dir, "dir"},
         desc: "Pass if <dir> exists",
         fail: fn {:has_dir, path} -> "Directory '#{path}' not found" end,
         test: fn {:has_dir, path} -> File.dir?(path) end
+      },
+      %{
+        term: {:no_dir, "dir"},
+        desc: "Pass if <dir> does not exist",
+        fail: fn {:no_dir, path} -> "Directory '#{path}' already exists" end,
+        test: fn {:no_dir, path} -> not eval_test({:has_dir, path}) end
       },
       %{
         term: :has_igniter,
@@ -71,7 +71,7 @@ defmodule ProGen.Action.Validate do
         term: :no_igniter,
         desc: "Pass if igniter is not installed",
         fail: "Igniter is installed",
-        test: fn _ -> not (elem(System.cmd("mix", ["help"]), 0) =~ "igniter") end
+        test: fn _ -> not eval_test(:has_igniter) end
       },
       %{
         term: :has_phx_new,
@@ -83,7 +83,7 @@ defmodule ProGen.Action.Validate do
         term: :no_phx_new,
         desc: "Pass if phx_new is not installed",
         fail: "phx_new is installed",
-        test: fn _ -> not (elem(System.cmd("mix", ["help"]), 0) =~ "phx.new") end
+        test: fn _ -> not eval_test(:has_phx_new) end
       },
       %{
         term: :has_elixir,
@@ -95,7 +95,7 @@ defmodule ProGen.Action.Validate do
         term: :no_elixir,
         desc: "Pass if elixir is not installed",
         fail: "elixir is installed",
-        test: fn _ -> System.find_executable("elixir") == nil end
+        test: fn _ -> not eval_test(:has_elixir) end
       }
     ]
   end
@@ -122,7 +122,7 @@ defmodule ProGen.Action.Validate do
          "Unrecognized term (#{inspect(term)}), use ProGen.Action.Validate.checks/0 for a list of valid terms"}
 
       entry ->
-        if entry.test.(term) do
+        if eval_test(term) do
           :ok
         else
           msg = if is_function(entry.fail), do: entry.fail.(term), else: entry.fail
@@ -136,6 +136,13 @@ defmodule ProGen.Action.Validate do
   """
   def checks do
     Enum.map(all_checks(), fn entry -> Map.take(entry, [:term, :desc]) end)
+  end
+
+  defp eval_test(term) do
+    case find_check(term) do
+      nil -> raise "Error: unrecognized term (#{inspect(term)})"
+      entry -> entry.test.(term)
+    end
   end
 
   defp find_check(check) when is_atom(check) do
