@@ -19,9 +19,8 @@ system commands, and directory navigation with ProGen.Script.
 
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 
-alias ProGen.Script, as: PG
-
-PG.clear() 
+alias ProGen.Script,   as: PG
+alias ProGen.Validate, as: PV
 
 PG.cli_args( 
   name: "gen_phx1",
@@ -39,13 +38,14 @@ PG.cli_args(
 
 {:ok, %{project: project}} = PG.parse_args() 
 
+PG.clear() 
+
 PG.start()
-PG.command "CLEANUP",            "rm -rf #{project}"
-PG.action  "CHECK ENVIRONMENT",  "validate", [:no_mix, :no_git, {:no_dir, project}]
-PG.command "GEN PHX PROJECT",    "mix igniter.new #{project} --with=phx.new --with-args --no-ecto"
+
+PG.validate "CHECK ENVIRONMENT",  PV.Basics, [:no_mix, :no_git, {:no_dir, project}]
+PG.command  "GEN PHX PROJECT",    "mix igniter.new #{project} --with=phx.new --with-args --no-ecto"
 
 PG.cd(project)
-PG.command "PWD",                "pwd"
 PG.command "COMPILE",            "mix compile"
 
 PG.finish()
