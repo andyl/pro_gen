@@ -119,25 +119,9 @@ defmodule ProGen.Validate do
 
       defp eval_test(term) do
         case find_check(term) do
-          nil -> raise(error_msg(term))
+          nil -> raise(ProGen.Validations.error_msg(term))
           entry -> entry.test.(term)
         end
-      end
-
-      defp error_msg(term) do
-        IO.inspect(term)
-        s1 = "Error: unrecognized term (#{inspect(term)})\n"
-        s2 = "Valid Terms:\n"
-        s3 = ProGen.Validations.list_validations() |> to_table()
-        s1 <> s2 <> s3
-      end
-
-      defp to_table(list) do
-        max_width = list |> Enum.map(fn {first, _} -> String.length(first) end) |> Enum.max(fn -> 0 end)
-
-        Enum.map_join(list, "\n", fn {first, second} ->
-          String.pad_trailing(first, max_width) <> "  " <> second
-        end)
       end
 
       defp find_check(check) when is_atom(check) do
