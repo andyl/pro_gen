@@ -166,10 +166,18 @@ defmodule ProGen.Script do
   @doc """
   Runs a ProGen validator.
 
-  Looks up the named validator in the `ProGen.Validations` registry and runs
-  the given list of checks. Halts on the first failure.
+  Accepts either a string name (looked up in the `ProGen.Validations` registry)
+  or a module atom (used directly). Runs the given list of checks and halts on
+  the first failure.
   """
-  def validate(desc, validator_name, checks \\ []) do
+  def validate(desc, name_or_mod, checks \\ [])
+
+  def validate(desc, mod, checks) when is_atom(mod) do
+    log(desc)
+    mod |> ProGen.Validations.run(checks: checks) |> halt_on_error()
+  end
+
+  def validate(desc, validator_name, checks) do
     log(desc)
 
     validator_name

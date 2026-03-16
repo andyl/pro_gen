@@ -75,9 +75,24 @@ defmodule ProGen.Validations do
   @doc """
   Validates args against the validator's schema, then calls `perform/1`.
 
+  Accepts either a string name (looked up in the registry) or a module atom
+  (used directly after verifying it implements `ProGen.Validate`).
+
   Returns `:ok` or `{:error, message}` on failure.
   """
-  def run(name, args \\ []) when is_binary(name) do
+  def run(name_or_mod, args \\ [])
+
+  def run(mod, args) when is_atom(mod) do
+    with :ok <- ensure_loaded(mod),
+         :ok <- ensure_validator(mod) do
+      case mod.validate_args(args) do
+        {:ok, validated_args} -> mod.perform(validated_args)
+        {:error, %NimbleOptions.ValidationError{} = e} -> {:error, Exception.message(e)}
+      end
+    end
+  end
+
+  def run(name, args) when is_binary(name) do
     case validation_module(name) do
       {:ok, mod} ->
         case mod.validate_args(args) do
@@ -152,5 +167,25 @@ defmodule ProGen.Validations do
     |> Enum.drop(2)
     |> Enum.map(&Macro.underscore/1)
     |> Enum.join(".")
+  end
+
+  defp ensure_loaded(mod) do
+    case Code.ensure_loaded(mod) do
+      {:module, _} -> :ok
+      {:error, _} -> {:error, "Module #{inspect(mod)} does not exist or could not be loaded"}
+    end
+  end
+
+  defp ensure_validator(mod) do
+    behaviours =
+      mod.module_info(:attributes)
+      |> Keyword.get_values(:behaviour)
+      |> List.flatten()
+
+    if ProGen.Validate in behaviours do
+      :ok
+    else
+      {:error, "Module #{inspect(mod)} is not a ProGen.Validate validator"}
+    end
   end
 end

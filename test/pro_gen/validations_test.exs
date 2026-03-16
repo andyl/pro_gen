@@ -55,6 +55,27 @@ defmodule ProGen.ValidationsTest do
     end
   end
 
+  describe "run/2 with module" do
+    test "executes checks and returns :ok with a valid module" do
+      assert :ok = ProGen.Validations.run(ProGen.Validate.Basics, checks: [:has_mix])
+    end
+
+    test "returns error on failed check with a valid module" do
+      assert {:error, msg} = ProGen.Validations.run(ProGen.Validate.Basics, checks: [:no_mix])
+      assert msg =~ "mix.exs"
+    end
+
+    test "returns error for non-existent module" do
+      assert {:error, msg} = ProGen.Validations.run(ProGen.Validate.DoesNotExist, checks: [:has_mix])
+      assert msg =~ "does not exist or could not be loaded"
+    end
+
+    test "returns error for non-validator module" do
+      assert {:error, msg} = ProGen.Validations.run(String, checks: [:has_mix])
+      assert msg =~ "is not a ProGen.Validate validator"
+    end
+  end
+
   describe "duplicate detection" do
     test "raises ArgumentError for duplicate validator names" do
       Code.compile_string("""
