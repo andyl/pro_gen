@@ -3,7 +3,7 @@ defmodule ProGen.ValidationsTest do
 
   describe "list_validations/0" do
     test "includes 'basics'" do
-      assert "basics" in ProGen.Validations.list_validations()
+      assert {"basics", "Basic filesystem and tool checks"} in ProGen.Validations.list_validations()
     end
   end
 

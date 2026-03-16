@@ -187,7 +187,7 @@ defmodule ProGen.Validate.BasicsTest do
     end
 
     test "is auto-discovered by the registry" do
-      assert "basics" in ProGen.Validations.list_validations()
+      assert {"basics", "Basic filesystem and tool checks"} in ProGen.Validations.list_validations()
     end
   end
 end

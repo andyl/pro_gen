@@ -119,7 +119,10 @@ defmodule ProGen.Validations do
       end)
       |> Map.new()
 
-    sorted_list = Map.keys(name_to_mod) |> Enum.sort()
+    sorted_list =
+      name_to_mod
+      |> Enum.map(fn {name, mod} -> {name, mod.description()} end)
+      |> Enum.sort_by(&elem(&1, 0))
 
     {sorted_list, name_to_mod}
   end

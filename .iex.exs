@@ -1,6 +1,6 @@
 IO.puts("----- ProGen")
 
-alias ProGen.TestScripts.Greeter
+alias ProGen.Script, as: PG
 
 import_file_if_available("~/.iex.exs")
 
