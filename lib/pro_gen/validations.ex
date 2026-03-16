@@ -66,7 +66,7 @@ defmodule ProGen.Validations do
          }}
 
       :error ->
-        {:error, "Unknown validator: #{inspect(name)}"}
+        {:error, "Unknown bingo bob validator: #{inspect(name)}"}
     end
   end
 
