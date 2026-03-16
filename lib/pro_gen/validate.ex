@@ -119,7 +119,7 @@ defmodule ProGen.Validate do
 
       defp eval_test(term) do
         case find_check(term) do
-          nil -> raise(ProGen.Validations.error_msg(term))
+          nil -> raise "Unknown term: #{inspect(term)}"
           entry -> entry.test.(term)
         end
       end

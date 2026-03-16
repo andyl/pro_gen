@@ -27,6 +27,7 @@ PG.clear()
 
 PG.start()
 
+PG.action   "DO SOMETHING",       "tong"
 PG.validate "CHECK ENVIRONMENT",  "basics", [:no_mix, :no_git, {:no_dir, project}]
 PG.command  "GEN PHX PROJECT",    "mix igniter.new #{project} --with=phx.new --with-args --no-ecto"
 

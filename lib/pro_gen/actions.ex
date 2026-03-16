@@ -7,6 +7,8 @@ defmodule ProGen.Actions do
   dot-joined into a string (e.g. `ProGen.Action.Test.Echo` → `"test.echo"`).
   """
 
+  alias ProGen.Util
+
   # Cached results (list of action names + name → module map)
   @type action_map :: %{String.t() => module()}
 
@@ -68,7 +70,11 @@ defmodule ProGen.Actions do
          }}
 
       :error ->
-        {:error, "Unknown action: #{inspect(action_name)}"}
+        # {:error, "Unknown action: #{inspect(action_name)}"}
+        IO.puts("ttttttttttttttttt")
+        type = "action"
+        list = ProGen.Validations.list_validations()
+        {:error, Util.unk_term_error(type, action_name, list)}
     end
   end
 
