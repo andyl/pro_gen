@@ -10,6 +10,9 @@ defmodule ProGen.Actions do
   # Cached results (list of action names + name → module map)
   @type action_map :: %{String.t() => module()}
 
+  @doc """
+  Returns a sorted list of `{name, description}` tuples for all registered actions.
+  """
   def list_actions do
     key = {__MODULE__, :actions_list}
 
@@ -24,6 +27,11 @@ defmodule ProGen.Actions do
     end
   end
 
+  @doc """
+  Looks up the module for the given action name.
+
+  Returns `{:ok, module}` or `:error` if not found.
+  """
   def action_module(action_name) when is_binary(action_name) do
     key = {__MODULE__, :actions_map}
 
@@ -41,6 +49,12 @@ defmodule ProGen.Actions do
     Map.fetch(map, action_name)
   end
 
+  @doc """
+  Returns metadata for the given action name.
+
+  Returns `{:ok, map}` with `:module`, `:name`, `:description`, `:option_schema`,
+  and `:usage` keys, or `{:error, message}` if not found.
+  """
   def action_info(action_name) when is_binary(action_name) do
     case action_module(action_name) do
       {:ok, mod} ->

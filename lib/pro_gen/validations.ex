@@ -9,6 +9,9 @@ defmodule ProGen.Validations do
 
   @type validation_map :: %{String.t() => module()}
 
+  @doc """
+  Returns a sorted list of `{name, description}` tuples for all registered validators.
+  """
   def list_validations do
     key = {__MODULE__, :validations_list}
 
@@ -23,6 +26,11 @@ defmodule ProGen.Validations do
     end
   end
 
+  @doc """
+  Looks up the module for the given validator name.
+
+  Returns `{:ok, module}` or `:error` if not found.
+  """
   def validation_module(name) when is_binary(name) do
     key = {__MODULE__, :validations_map}
 
@@ -40,6 +48,12 @@ defmodule ProGen.Validations do
     Map.fetch(map, name)
   end
 
+  @doc """
+  Returns metadata for the given validator name.
+
+  Returns `{:ok, map}` with `:module`, `:name`, `:description`, and `:checks`
+  keys, or `{:error, message}` if not found.
+  """
   def validation_info(name) when is_binary(name) do
     case validation_module(name) do
       {:ok, mod} ->
