@@ -61,7 +61,6 @@ defmodule ProGen.ValidationsTest do
       defmodule ProGen.Validate.Dup do
         use ProGen.Validate
         @description "First"
-        defp all_checks, do: []
       end
       """)
 
@@ -69,7 +68,6 @@ defmodule ProGen.ValidationsTest do
       defmodule ProGen.FakeValidateNs.Dup do
         use ProGen.Validate
         @description "Second"
-        defp all_checks, do: []
       end
       """)
 

@@ -23,8 +23,6 @@ defmodule ProGen.ValidateTest do
         Code.compile_string("""
         defmodule ProGen.Validate.NoDesc do
           use ProGen.Validate
-
-          defp all_checks, do: []
         end
         """)
       end
@@ -38,8 +36,6 @@ defmodule ProGen.ValidateTest do
         use ProGen.Validate
 
         @description "Nested test validator"
-
-        defp all_checks, do: []
       end
       """)
 

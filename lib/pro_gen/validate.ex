@@ -20,16 +20,63 @@ defmodule ProGen.Validate do
     * `check/1`         — Default implementation that looks up term in `all_checks/0`
     * `checks/0`        — Default implementation that maps `all_checks/0` to `%{term:, desc:}`
     * `perform/1`       — Iterates check list via `Enum.reduce_while/3`, fail-fast
+
+  ## `defcheck/2` macro
+
+  Declares a validation check using a block DSL:
+
+      defcheck :has_mix do
+        desc "Pass if mix.exs exists"
+        fail "File 'mix.exs' not found"
+        test fn _ -> File.exists?("mix.exs") end
+      end
+
+  Each `defcheck` call accumulates compile-time metadata used to:
+    * Auto-generate `defp all_checks/0`
+    * Append a checks table to `@moduledoc`
   """
 
   @callback checks() :: [%{term: atom() | tuple(), desc: String.t()}]
   @callback check(term :: atom() | tuple()) :: :ok | {:error, String.t()}
+
+  defmacro defcheck(term, do: block) do
+    stmts =
+      case block do
+        {:__block__, _, stmts} -> stmts
+        stmt -> [stmt]
+      end
+
+    opts =
+      Enum.reduce(stmts, %{}, fn
+        {:desc, _, [value]}, acc -> Map.put(acc, :desc, value)
+        {:fail, _, [value]}, acc -> Map.put(acc, :fail, value)
+        {:test, _, [value]}, acc -> Map.put(acc, :test, value)
+      end)
+
+    desc = Map.fetch!(opts, :desc)
+    fail = Map.fetch!(opts, :fail)
+    test_fn = Map.fetch!(opts, :test)
+
+    map_ast =
+      quote do
+        %{term: unquote(term), desc: unquote(desc), fail: unquote(fail), test: unquote(test_fn)}
+      end
+
+    quote do
+      @check_defs %{term: unquote(Macro.escape(term)), desc: unquote(desc)}
+      @check_asts unquote(Macro.escape(map_ast))
+    end
+  end
 
   defmacro __using__(_opts) do
     quote do
       @behaviour ProGen.Validate
 
       Module.register_attribute(__MODULE__, :description, persist: true)
+      Module.register_attribute(__MODULE__, :check_defs, accumulate: true)
+      Module.register_attribute(__MODULE__, :check_asts, accumulate: true)
+
+      import ProGen.Validate, only: [defcheck: 2]
 
       @before_compile ProGen.Validate
 
@@ -109,10 +156,48 @@ defmodule ProGen.Validate do
 
     option_schema = [checks: [type: {:list, :any}, required: true, doc: "List of checks to run"]]
 
+    # Accumulated attributes are in reverse order
+    check_defs = env.module |> Module.get_attribute(:check_defs) |> Enum.reverse()
+    check_asts = env.module |> Module.get_attribute(:check_asts) |> Enum.reverse()
+
+    # Build markdown table for docs
+    if check_defs != [] do
+      existing_doc = Module.get_attribute(env.module, :moduledoc)
+
+      base_doc =
+        case existing_doc do
+          {_line, text} when is_binary(text) -> text
+          text when is_binary(text) -> text
+          _ -> ""
+        end
+
+      rows =
+        Enum.map_join(check_defs, "\n", fn %{term: term, desc: desc} ->
+          "| `#{inspect(term)}` | #{desc} |"
+        end)
+
+      table = """
+
+      ## Available Checks
+
+      | Term | Description |
+      |------|-------------|
+      #{rows}
+      """
+
+      new_doc = String.trim_trailing(base_doc) <> "\n" <> table
+
+      Module.put_attribute(env.module, :moduledoc, {1, new_doc})
+    end
+
     quote do
       def name, do: unquote(name)
       def description, do: unquote(description)
       def option_schema, do: unquote(Macro.escape(option_schema))
+
+      defp all_checks do
+        unquote(check_asts)
+      end
     end
   end
 end
