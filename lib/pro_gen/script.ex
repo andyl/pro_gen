@@ -215,7 +215,7 @@ defmodule ProGen.Script do
   """
   def log(text) do
     require Logger
-    Logger.info(text)
+    Logger.info(IO.ANSI.light_yellow() <> text <> IO.ANSI.reset())
     Logger.flush()
   end
 
