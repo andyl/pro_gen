@@ -24,7 +24,12 @@ defmodule ProGen.MixProject do
         source_ref: "master",
         extras: [
           {"README.md", title: "Overview", filename: "overview"},
-          "LICENSE.txt"
+          "LICENSE.txt",
+          "scripts/greet.md",
+          "scripts/gen_pg1.md"
+        ],
+        groups_for_extras: [
+          "EXAMPLE SCRIPTS": ~r/scripts\/.*/
         ],
         assets: %{"assets" => "assets"}
       ]
