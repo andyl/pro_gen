@@ -122,9 +122,8 @@ defmodule ProGen.Validate.BasicsTest do
       assert {:error, msg} =
                ProGen.Validations.run("basics", checks: [:bogus])
 
-      assert msg =~ "Unrecognized term"
+      assert msg =~ "Unknown term"
       assert msg =~ ":bogus"
-      assert msg =~ "ProGen.Validate.Basics"
     end
   end
 
@@ -137,35 +136,35 @@ defmodule ProGen.Validate.BasicsTest do
   end
 
   describe "checks/0 introspection" do
-    test "returns a non-empty list of maps with :term and :desc" do
+    test "returns a non-empty list of {term, desc} tuples" do
       checks = ProGen.Validate.Basics.checks()
       assert is_list(checks)
       assert length(checks) > 0
 
       Enum.each(checks, fn entry ->
-        assert Map.has_key?(entry, :term)
-        assert Map.has_key?(entry, :desc)
-        refute Map.has_key?(entry, :test)
+        assert {term, desc} = entry
+        assert is_binary(term)
+        assert is_binary(desc)
       end)
     end
 
     test "contains all 14 built-in check terms" do
-      terms = Enum.map(ProGen.Validate.Basics.checks(), & &1.term)
+      terms = Enum.map(ProGen.Validate.Basics.checks(), &elem(&1, 0))
 
-      assert :no_mix in terms
-      assert :has_mix in terms
-      assert :no_git in terms
-      assert :has_git in terms
-      assert {:no_file, "file"} in terms
-      assert {:has_file, "file"} in terms
-      assert {:no_dir, "dir"} in terms
-      assert {:has_dir, "dir"} in terms
-      assert :has_igniter in terms
-      assert :no_igniter in terms
-      assert :has_phx_new in terms
-      assert :no_phx_new in terms
-      assert :has_elixir in terms
-      assert :no_elixir in terms
+      assert ":no_mix" in terms
+      assert ":has_mix" in terms
+      assert ":no_git" in terms
+      assert ":has_git" in terms
+      assert "{:no_file, \"file\"}" in terms
+      assert "{:has_file, \"file\"}" in terms
+      assert "{:no_dir, \"dir\"}" in terms
+      assert "{:has_dir, \"dir\"}" in terms
+      assert ":has_igniter" in terms
+      assert ":no_igniter" in terms
+      assert ":has_phx_new" in terms
+      assert ":no_phx_new" in terms
+      assert ":has_elixir" in terms
+      assert ":no_elixir" in terms
     end
   end
 
