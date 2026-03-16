@@ -150,12 +150,22 @@ defmodule ProGen.Script do
   @doc """
   Runs a ProGen action.
 
+  Accepts either a string name (looked up in the `ProGen.Actions` registry)
+  or a module atom (used directly after verifying it implements `ProGen.Action`).
+
   `opts` can be a keyword list (passed through) or a bare list, in which case
   it is auto-wrapped under the action's single required list option key.
-  For example, `action("desc", :validate, [:has_mix])` becomes
+  For example, `action("desc", "validate", [:has_mix])` becomes
   `Actions.run("validate", checks: [:has_mix])`.
   """
-  def action(desc, action_name, opts \\ []) do
+  def action(desc, name_or_mod, opts \\ [])
+
+  def action(desc, mod, opts) when is_atom(mod) do
+    log(desc)
+    mod |> ProGen.Actions.run(opts) |> halt_on_error()
+  end
+
+  def action(desc, action_name, opts) do
     log(desc)
 
     action_name

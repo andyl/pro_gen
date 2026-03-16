@@ -79,6 +79,9 @@ defmodule ProGen.Actions do
   @doc """
   Validates args against the action's schema, then calls `perform/1`.
 
+  Accepts either a string name (looked up in the registry) or a module atom
+  (used directly after verifying it implements `ProGen.Action`).
+
   Options:
 
     * `force: true` — bypass the `needed?/1` check and always run the action.
@@ -86,7 +89,28 @@ defmodule ProGen.Actions do
   Returns the result of `perform/1`, `{:ok, :skipped}` when the action is not
   needed, or `{:error, message}` on failure.
   """
-  def run(action_name, args \\ []) when is_binary(action_name) do
+  def run(name_or_mod, args \\ [])
+
+  def run(mod, args) when is_atom(mod) do
+    {force, action_args} = Keyword.pop(args, :force, false)
+
+    with :ok <- ensure_loaded(mod),
+         :ok <- ensure_action(mod) do
+      case mod.validate_args(action_args) do
+        {:ok, validated_args} ->
+          if force or mod.needed?(validated_args) do
+            mod.perform(validated_args)
+          else
+            {:ok, :skipped}
+          end
+
+        {:error, %NimbleOptions.ValidationError{} = e} ->
+          {:error, Exception.message(e)}
+      end
+    end
+  end
+
+  def run(action_name, args) when is_binary(action_name) do
     {force, action_args} = Keyword.pop(args, :force, false)
 
     case action_module(action_name) do
@@ -168,5 +192,25 @@ defmodule ProGen.Actions do
     |> Enum.drop(2)
     |> Enum.map(&Macro.underscore/1)
     |> Enum.join(".")
+  end
+
+  defp ensure_loaded(mod) do
+    case Code.ensure_loaded(mod) do
+      {:module, _} -> :ok
+      {:error, _} -> {:error, "Module #{inspect(mod)} does not exist or could not be loaded"}
+    end
+  end
+
+  defp ensure_action(mod) do
+    behaviours =
+      mod.module_info(:attributes)
+      |> Keyword.get_values(:behaviour)
+      |> List.flatten()
+
+    if ProGen.Action in behaviours do
+      :ok
+    else
+      {:error, "Module #{inspect(mod)} is not a ProGen.Action action"}
+    end
   end
 end

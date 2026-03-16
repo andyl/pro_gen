@@ -21,6 +21,32 @@ defmodule ProGen.ActionsTest do
     end
   end
 
+  describe "run/2 with module" do
+    test "validates and performs a valid action module" do
+      assert :ok = ProGen.Actions.run(ProGen.Action.Echo, message: "hello")
+    end
+
+    test "returns error for missing required args" do
+      assert {:error, msg} = ProGen.Actions.run(ProGen.Action.Echo, [])
+      assert msg =~ "message"
+    end
+
+    test "returns error for non-existent module" do
+      assert {:error, msg} = ProGen.Actions.run(ProGen.Action.DoesNotExist, [])
+      assert msg =~ "does not exist or could not be loaded"
+    end
+
+    test "returns error for non-action module" do
+      assert {:error, msg} = ProGen.Actions.run(String, [])
+      assert msg =~ "is not a ProGen.Action action"
+    end
+
+    test "respects needed?/1 and force option" do
+      assert {:ok, :skipped} = ProGen.Actions.run(ProGen.Action.Test.NeverNeeded, message: "hi")
+      assert :ok = ProGen.Actions.run(ProGen.Action.Test.NeverNeeded, message: "hi", force: true)
+    end
+  end
+
   describe "duplicate detection" do
     test "raises ArgumentError when two modules derive to the same action name" do
       # Both modules produce "dup" after Enum.drop(2) — the first two segments differ
