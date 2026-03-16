@@ -1,4 +1,7 @@
-#!/usr/bin/env elixir 
+#!/usr/bin/env elixir
+
+# A simple greeting script that demonstrates CLI argument parsing,
+# flags, and basic ProGen.Script usage.
 
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 

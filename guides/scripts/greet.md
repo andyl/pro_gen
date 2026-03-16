@@ -1,13 +1,11 @@
 # greet
 
 A simple greeting script that demonstrates CLI argument parsing,
-flags, and basic `ProGen.Script` usage.
+flags, and basic ProGen.Script usage.
 
 **Run it:**
 
 ```bash
-./scripts/greet World
-./scripts/greet --loud World
 ./scripts/greet --help
 ```
 
@@ -15,6 +13,9 @@ flags, and basic `ProGen.Script` usage.
 
 ```elixir
 #!/usr/bin/env elixir
+
+# A simple greeting script that demonstrates CLI argument parsing,
+# flags, and basic ProGen.Script usage.
 
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 
@@ -26,9 +27,9 @@ PG.cli_args(
   version: "0.1.0",
   args: [
     name: [
-      value_name: "NAME",
+      value_name: "NAME", 
       help: "Name to greet",
-      required: true,
+      required: true, 
       parser: :string
     ]
   ],
