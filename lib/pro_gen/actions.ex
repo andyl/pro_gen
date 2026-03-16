@@ -70,8 +70,6 @@ defmodule ProGen.Actions do
          }}
 
       :error ->
-        # {:error, "Unknown action: #{inspect(action_name)}"}
-        IO.puts("ttttttttttttttttt")
         type = "action"
         list = ProGen.Validations.list_validations()
         {:error, Util.unk_term_error(type, action_name, list)}
@@ -106,7 +104,9 @@ defmodule ProGen.Actions do
         end
 
       :error ->
-        {:error, "Unknown action: #{inspect(action_name)}"}
+        type = "action"
+        list = ProGen.Actions.list_actions()
+        {:error, Util.unk_term_error(type, action_name, list)}
     end
   end
 

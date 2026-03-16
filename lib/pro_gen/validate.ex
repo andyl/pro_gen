@@ -36,6 +36,8 @@ defmodule ProGen.Validate do
     * Append a checks table to `@moduledoc`
   """
 
+  alias ProGen.Util
+
   @callback checks() :: [%{term: atom() | tuple(), desc: String.t()}]
   @callback check(term :: atom() | tuple()) :: :ok | {:error, String.t()}
 
@@ -87,8 +89,9 @@ defmodule ProGen.Validate do
       def check(term) do
         case find_check(term) do
           nil ->
-            {:error,
-             "Unrecognized term (#{inspect(term)}), use #{inspect(__MODULE__)}.checks/0 for a list of valid terms"}
+            type = "term"
+            list = __MODULE__.checks()
+            {:error, Util.unk_term_error(type, term, list)}
 
           entry ->
             if eval_test(term) do
@@ -101,7 +104,7 @@ defmodule ProGen.Validate do
       end
 
       def checks do
-        Enum.map(all_checks(), fn entry -> Map.take(entry, [:term, :desc]) end)
+        Enum.map(all_checks(), fn entry -> {inspect(entry.term), entry.desc} end)
       end
 
       def perform(args) do

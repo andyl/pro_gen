@@ -4,7 +4,7 @@ defmodule ProGen.Util do
   @doc false
   def unk_term_error(type, term, list) do
     s1 = "Unknown #{type}: #{inspect(term)}\n"
-    s2 = "Valid Terms >\n"
+    s2 = "< Valid Terms >\n"
     s3 = to_table(list)
     s1 <> s2 <> s3
   end
