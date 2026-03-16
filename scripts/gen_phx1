@@ -5,7 +5,8 @@
 
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 
-alias ProGen.Script, as: PG
+alias ProGen.Script,   as: PG
+alias ProGen.Validate, as: PV
 
 PG.cli_args( 
   name: "gen_phx1",
@@ -27,7 +28,7 @@ PG.clear()
 
 PG.start()
 
-PG.validate "CHECK ENVIRONMENT",  "basics", [:no_mx, :no_git, {:no_dir, project}]
+PG.validate "CHECK ENVIRONMENT",  PV.Basics, [:no_mix, :no_git, {:no_dir, project}]
 PG.command  "GEN PHX PROJECT",    "mix igniter.new #{project} --with=phx.new --with-args --no-ecto"
 
 PG.cd(project)
