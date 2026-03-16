@@ -2,19 +2,20 @@ defmodule Mix.Tasks.Docs.Scripts do
   @shortdoc "Generate markdown guides from example scripts"
 
   @moduledoc """
-  Generates markdown guide files from example scripts in `scripts/`.
+  Generates a single markdown guide from all example scripts in `scripts/`.
 
   ```bash
   mix docs.scripts
   ```
 
-  For each executable script in `scripts/` (files without a `.md` extension),
-  a markdown wrapper is written to `guides/scripts/<name>.md`. Any existing
-  `.md` files in `guides/scripts/` are removed first to keep the output clean.
+  All executable scripts in `scripts/` (files without a `.md` extension)
+  are collected into a single `guides/example_scripts.md` file, with each
+  script as an `## h2` section containing its description, run command,
+  source link, and code block.
 
   ## Script comment-block convention
 
-  The description for each generated guide is extracted from a comment block
+  The description for each script section is extracted from a comment block
   immediately after the shebang line. For example:
 
       #!/usr/bin/env elixir
@@ -33,55 +34,47 @@ defmodule Mix.Tasks.Docs.Scripts do
   use Mix.Task
 
   @scripts_dir "scripts"
-  @guides_dir "guides/scripts"
+  @output_path "guides/example_scripts.md"
   @source_url "https://github.com/andyl/pro_gen/blob/master"
 
   @impl true
   def run(_args) do
-    File.mkdir_p!(@guides_dir)
+    File.mkdir_p!(Path.dirname(@output_path))
 
-    # Remove old generated markdown
-    @guides_dir
-    |> File.ls!()
-    |> Enum.filter(&String.ends_with?(&1, ".md"))
-    |> Enum.each(fn file ->
-      path = Path.join(@guides_dir, file)
-      File.rm!(path)
-    end)
+    sections =
+      @scripts_dir
+      |> File.ls!()
+      |> Enum.reject(&String.ends_with?(&1, ".md"))
+      |> Enum.reject(&File.dir?(Path.join(@scripts_dir, &1)))
+      |> Enum.sort()
+      |> Enum.map(fn filename ->
+        script_path = Path.join(@scripts_dir, filename)
+        source = File.read!(script_path)
+        desc = extract_desc(source)
 
-    # Generate new markdown from scripts
-    @scripts_dir
-    |> File.ls!()
-    |> Enum.reject(&String.ends_with?(&1, ".md"))
-    |> Enum.reject(&File.dir?(Path.join(@scripts_dir, &1)))
-    |> Enum.sort()
-    |> Enum.each(fn filename ->
-      script_path = Path.join(@scripts_dir, filename)
-      source = File.read!(script_path)
-      desc = extract_desc(source)
+        """
+        ## #{filename}
 
-      md = """
-      # #{filename}
+        #{desc}
 
-      #{desc}
+        **Run it:**
 
-      **Run it:**
+        ```bash
+        ./#{script_path} --help
+        ```
 
-      ```bash
-      ./#{script_path} --help
-      ```
+        **Source:** [`#{script_path}`](#{@source_url}/#{script_path})
 
-      **Source:** [`#{script_path}`](#{@source_url}/#{script_path})
+        ```elixir
+        #{String.trim(source)}
+        ```
+        """
+      end)
 
-      ```elixir
-      #{String.trim(source)}
-      ```
-      """
+    md = "# Example Scripts\n\n" <> Enum.join(sections, "\n")
 
-      md_path = Path.join(@guides_dir, "#{filename}.md")
-      File.write!(md_path, md)
-      Mix.shell().info("Generated #{md_path}")
-    end)
+    File.write!(@output_path, md)
+    Mix.shell().info("Generated #{@output_path}")
   end
 
   defp extract_desc(source) do
