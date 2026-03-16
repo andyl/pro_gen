@@ -1,4 +1,4 @@
-# gen_phx1
+# pg_phx_base
 
 A Phoenix project generator that demonstrates validation checks,
 system commands, and directory navigation with ProGen.Script.
@@ -6,10 +6,10 @@ system commands, and directory navigation with ProGen.Script.
 **Run it:**
 
 ```bash
-./scripts/gen_phx1 --help
+./scripts/pg_phx_base --help
 ```
 
-**Source:** [`scripts/gen_phx1`](https://github.com/andyl/pro_gen/blob/master/scripts/gen_phx1)
+**Source:** [`scripts/pg_phx_base`](https://github.com/andyl/pro_gen/blob/master/scripts/pg_phx_base)
 
 ```elixir
 #!/usr/bin/env elixir

@@ -1,4 +1,4 @@
-# greet
+# pg_base_cli
 
 A simple greeting script that demonstrates CLI argument parsing,
 flags, and basic ProGen.Script usage.
@@ -6,10 +6,10 @@ flags, and basic ProGen.Script usage.
 **Run it:**
 
 ```bash
-./scripts/greet --help
+./scripts/pg_base_cli --help
 ```
 
-**Source:** [`scripts/greet`](https://github.com/andyl/pro_gen/blob/master/scripts/greet)
+**Source:** [`scripts/pg_base_cli`](https://github.com/andyl/pro_gen/blob/master/scripts/pg_base_cli)
 
 ```elixir
 #!/usr/bin/env elixir
