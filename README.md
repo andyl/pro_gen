@@ -152,6 +152,83 @@ The `parse_args/1` convenience function merges `parsed.args`, `parsed.options`,
 and `parsed.flags` into a single flat map and stores it in `ProGen.Env` under
 `:pg_cli_vals`. It also auto-prints usage on `--help` and version on `--version`.
 
+## Extending ProGen
+
+### Actions
+
+Create a module under your project's namespace that starts with `ProGen.Action.`.
+It will be auto-discovered at runtime — no manual registration needed.
+
+```elixir
+defmodule ProGen.Action.MyCustom do
+  use ProGen.Action
+
+  @description "Does something custom"
+  @option_schema [
+    name: [type: :string, required: true, doc: "The name"]
+  ]
+
+  @impl true
+  def perform(args) do
+    name = Keyword.fetch!(args, :name)
+    {:ok, "Hello, #{name}!"}
+  end
+end
+```
+
+The module name segments after `ProGen.Action` determine the action string name
+(e.g. `ProGen.Action.MyCustom` becomes `"my_custom"`).
+
+### Validations
+
+Create a module under your project's namespace that starts with
+`ProGen.Validate.`. Define checks using the `defcheck` block DSL:
+
+```elixir
+defmodule ProGen.Validate.Deploy do
+  use ProGen.Validate
+
+  @description "Deployment readiness checks"
+
+  defcheck :has_dockerfile do
+    desc "Pass if Dockerfile exists"
+    fail "Dockerfile not found"
+    test fn _ -> File.exists?("Dockerfile") end
+  end
+
+  defcheck {:has_env, "var"} do
+    desc "Pass if environment variable is set"
+    fail fn {:has_env, var} -> "Environment variable '#{var}' is not set" end
+    test fn {:has_env, var} -> System.get_env(var) != nil end
+  end
+end
+```
+
+Each `defcheck` block requires three statements:
+
+| Statement | Purpose                                                                     |
+|-----------|-----------------------------------------------------------------------------|
+| `desc`    | Human-readable description (used in docs table and `checks/0`)              |
+| `fail`    | Error message string, or a `fn term -> string end` for parameterized checks |
+| `test`    | `fn term -> boolean end` that performs the actual check                     |
+
+The `defcheck` macro auto-generates `all_checks/0` and appends an
+"Available Checks" table to the module's `@moduledoc`.
+
+**Formatter configuration:** Add the following to your `.formatter.exs` so
+`mix format` preserves the clean `defcheck` block syntax:
+
+```elixir
+# .formatter.exs
+[
+  locals_without_parens: [defcheck: 2, desc: 1, fail: 1, test: 1],
+  # ...
+]
+```
+
+Without this, the formatter will add parentheses to `desc`, `fail`, and `test`
+calls inside the `defcheck` block.
+
 ## Supporting Modules
 
 ### `ProGen.Env`
