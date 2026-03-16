@@ -23,7 +23,10 @@ defmodule ProGen.ActionsTest do
 
   describe "run/2 with module" do
     test "validates and performs a valid action module" do
-      assert :ok = ProGen.Actions.run(ProGen.Action.Echo, message: "hello")
+      import ExUnit.CaptureIO
+      assert capture_io(fn ->
+        assert :ok = ProGen.Actions.run(ProGen.Action.Echo, message: "hello")
+      end) == "hello\n"
     end
 
     test "returns error for missing required args" do
