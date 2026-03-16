@@ -1,0 +1,7 @@
+#!/usr/bin/env elixir
+
+# Generates a phoenix app with an Ash datalayer.
+
+Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
+
+PG.puts "UNDER CONSTRUCTION"
