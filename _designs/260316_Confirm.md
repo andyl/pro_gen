@@ -1,4 +1,4 @@
-# 260316 ProGen Confirm
+# ProGen Confirm
 
 New `confirm/2` Callback for ProGen.Action
 
