@@ -24,13 +24,13 @@ ProGen has three pillars (Actions are implemented; Scripts and Menus are stubs/f
 
 ### Actions — Composable Generation Tasks
 
-**Behavior module:** `ProGen.Action` defines three callbacks: `perform/1`, `description/0`, `option_schema/0`. The `option_schema/0` callback returns a NimbleOptions schema. The `__using__` macro injects `validate_args/1` (calls NimbleOptions) and an auto-generated `usage/0` (overridable).
+**Behavior module:** `ProGen.Action` defines callbacks: `perform/1`, `description/0`, `option_schema/0`, plus optional `depends_on/1`, `needed?/1`, and `confirm/2`. The `option_schema/0` callback returns a NimbleOptions schema. The `__using__` macro injects `validate_args/1` (calls NimbleOptions) and an auto-generated `usage/0` (overridable).
 
 **Registry:** `ProGen.Actions` auto-discovers any module whose name starts with `ProGen.Action.` (note: singular `Action`, not `Actions`). The segments after `ProGen.Action` are downcased/underscored and dot-joined to derive the action string name (e.g., `ProGen.Action.Run` → `"run"`, `ProGen.Action.Test.Echo` → `"test.echo"`). Namespaces are arbitrarily deep. Results are lazily cached in `:persistent_term`.
 
-**Running actions:** `ProGen.Actions.run("action_name", opts)` validates args against the schema then calls `perform/1`. Returns `{:ok, result}` or `{:error, message}`. Action names are strings (e.g., `"run"`, `"test.echo2"`).
+**Running actions:** `ProGen.Actions.run("action_name", opts)` resolves dependencies declared by `depends_on/1`, validates args against the schema, then calls `perform/1`. Dependencies are idempotent (each runs at most once per top-level call) and cycle-safe. Pass `force: true` to bypass `needed?/1` (does not propagate to deps). Returns `{:ok, result}` or `{:error, message}`. Action names are strings (e.g., `"run"`, `"test.echo2"`).
 
-**Adding a new action:** Create a module under `lib/pro_gen/action/` named `ProGen.Action.<Name>` that does `use ProGen.Action` and implements the three callbacks (`perform/1`, `description/0`, `option_schema/0`). It will be auto-discovered — no manual registration needed. Action names must be unique across all modules.
+**Adding a new action:** Create a module under `lib/pro_gen/action/` named `ProGen.Action.<Name>` that does `use ProGen.Action` and implements the required callbacks (`perform/1`, `@description`, `@option_schema`). Optionally override `depends_on/1` (returns list of dependency action names or `{name, opts}` tuples), `needed?/1`, and `confirm/2`. It will be auto-discovered — no manual registration needed. Action names must be unique across all modules.
 
 ### Scripts — End-User Generation Workflows
 

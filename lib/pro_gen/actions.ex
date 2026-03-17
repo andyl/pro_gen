@@ -9,6 +9,10 @@ defmodule ProGen.Actions do
 
   alias ProGen.Util
 
+  # Process dictionary keys for dependency resolution
+  @ran_set_key :__pro_gen_ran_set__
+  @resolving_stack_key :__pro_gen_resolving_stack__
+
   # Cached results (list of action names + name → module map)
   @type action_map :: %{String.t() => module()}
 
@@ -82,9 +86,14 @@ defmodule ProGen.Actions do
   Accepts either a string name (looked up in the registry) or a module atom
   (used directly after verifying it implements `ProGen.Action`).
 
+  Dependencies declared via `depends_on/1` are resolved automatically before
+  the action runs. Each dependency runs at most once per top-level `run/2` call
+  (idempotent). Circular dependencies are detected and reported as errors.
+
   Options:
 
     * `force: true` — bypass the `needed?/1` check and always run the action.
+      Does **not** propagate to dependencies.
 
   Returns the result of `perform/1`, `{:ok, :skipped}` when the action is not
   needed, or `{:error, message}` on failure.
@@ -92,46 +101,139 @@ defmodule ProGen.Actions do
   def run(name_or_mod, args \\ [])
 
   def run(mod, args) when is_atom(mod) do
-    {force, action_args} = Keyword.pop(args, :force, false)
+    top_level? = Process.get(@ran_set_key) == nil
 
-    with :ok <- ensure_loaded(mod),
-         :ok <- ensure_action(mod) do
-      case mod.validate_args(action_args) do
-        {:ok, validated_args} ->
-          if force or mod.needed?(validated_args) do
-            perform_and_confirm(mod, validated_args)
-          else
-            {:ok, :skipped}
-          end
+    if top_level? do
+      Process.put(@ran_set_key, MapSet.new())
+      Process.put(@resolving_stack_key, [])
+    end
 
-        {:error, %NimbleOptions.ValidationError{} = e} ->
-          {:error, Exception.message(e)}
+    try do
+      run_internal(mod, args)
+    after
+      if top_level? do
+        Process.delete(@ran_set_key)
+        Process.delete(@resolving_stack_key)
       end
     end
   end
 
   def run(action_name, args) when is_binary(action_name) do
-    {force, action_args} = Keyword.pop(args, :force, false)
+    top_level? = Process.get(@ran_set_key) == nil
 
+    if top_level? do
+      Process.put(@ran_set_key, MapSet.new())
+      Process.put(@resolving_stack_key, [])
+    end
+
+    try do
+      run_internal(action_name, args)
+    after
+      if top_level? do
+        Process.delete(@ran_set_key)
+        Process.delete(@resolving_stack_key)
+      end
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # Internal runner with dependency resolution
+  # ---------------------------------------------------------------------------
+
+  defp run_internal(mod, args) when is_atom(mod) do
+    with :ok <- ensure_loaded(mod),
+         :ok <- ensure_action(mod) do
+      action_name = mod.name()
+      run_resolved(mod, action_name, args)
+    end
+  end
+
+  defp run_internal(action_name, args) when is_binary(action_name) do
+    case resolve_module(action_name) do
+      {:ok, mod} -> run_resolved(mod, action_name, args)
+      {:error, _} = err -> err
+    end
+  end
+
+  defp resolve_module(action_name) do
     case action_module(action_name) do
       {:ok, mod} ->
-        case mod.validate_args(action_args) do
-          {:ok, validated_args} ->
-            if force or mod.needed?(validated_args) do
-              perform_and_confirm(mod, validated_args)
-            else
-              {:ok, :skipped}
-            end
-
-          {:error, %NimbleOptions.ValidationError{} = error} ->
-            {:error, Exception.message(error)}
-        end
+        {:ok, mod}
 
       :error ->
         type = "action"
         list = ProGen.Actions.list_actions()
         {:error, Util.unk_term_error(type, action_name, list)}
     end
+  end
+
+  defp run_resolved(mod, action_name, args) do
+    {force, action_args} = Keyword.pop(args, :force, false)
+    ran_set = Process.get(@ran_set_key)
+    stack = Process.get(@resolving_stack_key)
+
+    # Idempotency: already ran in this top-level call
+    if MapSet.member?(ran_set, action_name) do
+      {:ok, :already_ran}
+    else
+      # Cycle detection
+      if action_name in stack do
+        cycle_path = Enum.reverse([action_name | stack]) |> Enum.join(" -> ")
+        {:error, "Dependency cycle detected: #{cycle_path}"}
+      else
+        case mod.validate_args(action_args) do
+          {:ok, validated_args} ->
+            # Push onto resolving stack
+            Process.put(@resolving_stack_key, [action_name | stack])
+
+            # Resolve dependencies first
+            case run_dependencies(mod, validated_args) do
+              :ok ->
+                result =
+                  if force or mod.needed?(validated_args) do
+                    perform_and_confirm(mod, validated_args)
+                  else
+                    {:ok, :skipped}
+                  end
+
+                # Record as ran and pop from stack
+                Process.put(@ran_set_key, MapSet.put(Process.get(@ran_set_key), action_name))
+                Process.put(@resolving_stack_key, stack)
+
+                result
+
+              {:error, _} = err ->
+                # Pop from stack on failure
+                Process.put(@resolving_stack_key, stack)
+                err
+            end
+
+          {:error, %NimbleOptions.ValidationError{} = e} ->
+            {:error, Exception.message(e)}
+        end
+      end
+    end
+  end
+
+  defp run_dependencies(mod, validated_args) do
+    deps = mod.depends_on(validated_args) |> normalize_deps()
+
+    Enum.reduce_while(deps, :ok, fn {dep_name, dep_opts}, :ok ->
+      case run_internal(dep_name, dep_opts) do
+        {:error, reason} ->
+          {:halt, {:error, "Dependency \"#{dep_name}\" failed: #{inspect(reason)}"}}
+
+        _ok ->
+          {:cont, :ok}
+      end
+    end)
+  end
+
+  defp normalize_deps(deps) do
+    Enum.map(deps, fn
+      {name, opts} when is_binary(name) and is_list(opts) -> {name, opts}
+      name when is_binary(name) -> {name, []}
+    end)
   end
 
   defp perform_and_confirm(mod, validated_args) do

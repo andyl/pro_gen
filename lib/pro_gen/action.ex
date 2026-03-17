@@ -2,8 +2,9 @@ defmodule ProGen.Action do
   @moduledoc """
   Behavior for all actions.
 
-  Defines three callbacks:
+  Defines four callbacks:
 
+    * `depends_on/1` — Optional list of dependency action names to run first (default: `[]`)
     * `needed?/1`  — Optional predicate checked before `perform/1` (default: `true`)
     * `perform/1`  — Executes the action with validated keyword args
     * `confirm/2`  — Optional postcondition checked after `perform/1` (default: `:ok`)
@@ -29,6 +30,7 @@ defmodule ProGen.Action do
     * `usage/0`          — Auto-generated usage text from the schema (overridable)
   """
 
+  @callback depends_on(args :: keyword()) :: [String.t() | {String.t(), keyword()}]
   @callback needed?(args :: keyword()) :: boolean()
   @callback perform(args :: keyword()) :: any()
   @callback confirm(result :: any(), args :: keyword()) :: :ok | {:error, term()}
@@ -52,6 +54,13 @@ defmodule ProGen.Action do
       end
 
       @doc """
+      Returns a list of dependency action names that must run before this action.
+      Each element is either a string name or a `{name, opts}` tuple.
+      Defaults to `[]`.
+      """
+      def depends_on(_args), do: []
+
+      @doc """
       Returns whether this action needs to run. Defaults to `true`.
       Override to skip execution when the desired state already exists.
       """
@@ -71,7 +80,7 @@ defmodule ProGen.Action do
         NimbleOptions.docs(option_schema())
       end
 
-      defoverridable usage: 0, needed?: 1, confirm: 2
+      defoverridable usage: 0, depends_on: 1, needed?: 1, confirm: 2
     end
   end
 

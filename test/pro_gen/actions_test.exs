@@ -143,6 +143,82 @@ defmodule ProGen.ActionsTest do
     end
   end
 
+  describe "depends_on/1" do
+    setup do
+      Process.delete(:dep_base_count)
+      Process.delete(:dep_child_ran)
+      Process.delete(:dep_on_failing_ran)
+      Process.delete(:dep_with_opts_args)
+      Process.delete(:dep_conditional_ran)
+      Process.delete(:dep_on_never_needed_ran)
+      :ok
+    end
+
+    test "dependencies run before the action" do
+      assert {:ok, :dep_child_ran} = ProGen.Actions.run("test.dep_child", [])
+      assert Process.get(:dep_base_count) == 1
+      assert Process.get(:dep_child_ran) == true
+    end
+
+    test "diamond: shared dependency runs exactly once" do
+      assert {:ok, :diamond_ran} = ProGen.Actions.run("test.dep_diamond", [])
+      assert Process.get(:dep_base_count) == 1
+    end
+
+    test "cycle detection returns clear error" do
+      assert {:error, msg} = ProGen.Actions.run("test.dep_cycle_a", [])
+      assert msg =~ "cycle"
+      assert msg =~ "test.dep_cycle_a"
+    end
+
+    test "dependency failure stops parent action" do
+      assert {:error, msg} = ProGen.Actions.run("test.dep_on_failing", [])
+      assert msg =~ "Dependency"
+      assert msg =~ "test.dep_failing"
+      refute Process.get(:dep_on_failing_ran)
+    end
+
+    test "default depends_on/1 returns []" do
+      assert ProGen.Action.Test.DepBase.depends_on([]) == []
+    end
+
+    test "dependencies receive their specified options" do
+      assert {:ok, :dep_passes_opts_ran} = ProGen.Actions.run("test.dep_passes_opts", [])
+      assert Process.get(:dep_with_opts_args) == [message: "from_parent"]
+    end
+
+    test "process dictionary cleaned up after run" do
+      ProGen.Actions.run("test.dep_child", [])
+      refute Process.get(:__pro_gen_ran_set__)
+      refute Process.get(:__pro_gen_resolving_stack__)
+    end
+
+    test "force: true does not propagate to dependencies" do
+      # dep_on_never_needed depends on test.never_needed which has needed?/1 -> false
+      # force: true on the parent should NOT propagate to the dep,
+      # so the dep should be skipped (but still recorded as ran)
+      assert {:ok, :dep_on_never_needed_ran} =
+               ProGen.Actions.run("test.dep_on_never_needed", message: "hi", force: true)
+
+      assert Process.get(:dep_on_never_needed_ran) == true
+    end
+
+    test "conditional deps: depends_on/1 uses args" do
+      # Without with_dep, no dependency runs
+      Process.delete(:dep_base_count)
+      assert {:ok, :dep_conditional_ran} = ProGen.Actions.run("test.dep_conditional", [])
+      refute Process.get(:dep_base_count)
+
+      # With with_dep: true, dependency runs
+      Process.delete(:dep_base_count)
+
+      assert {:ok, :dep_conditional_ran} =
+               ProGen.Actions.run("test.dep_conditional", with_dep: true)
+
+      assert Process.get(:dep_base_count) == 1
+    end
+  end
+
   describe "ProGen.Actions.action_info/1" do
     test "returns a map with all fields populated" do
       assert {:ok, info} = ProGen.Actions.action_info("run")

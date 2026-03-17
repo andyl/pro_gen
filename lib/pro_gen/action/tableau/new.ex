@@ -15,6 +15,9 @@ defmodule ProGen.Action.Tableau.New do
   ]
 
   @impl true
+  def depends_on(_args), do: ["tableau.install"]
+
+  @impl true
   def needed?(args) do
     project = Keyword.fetch!(args, :project)
     not File.dir?(project)
