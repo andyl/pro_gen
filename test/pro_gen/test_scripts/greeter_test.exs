@@ -189,33 +189,6 @@ defmodule ProGen.ScriptTest do
     end
   end
 
-  describe "git/1" do
-    test "runs a git command with string arg" do
-      {result, output} = with_io(fn -> ProGen.Script.git("--version") end)
-      assert :ok = result
-      assert output =~ "git version"
-    end
-
-    test "runs a git command with list arg" do
-      {result, output} = with_io(fn -> ProGen.Script.git(["--version"]) end)
-      assert :ok = result
-      assert output =~ "git version"
-    end
-  end
-
-  describe "commit/1" do
-    test "calls git add and git commit without crashing" do
-      # commit runs in CWD; with a clean tree the commit will fail,
-      # but the function should still return without raising.
-      {_result, output} =
-        with_io(fn ->
-          ProGen.Script.commit("test commit")
-        end)
-
-      assert is_binary(output)
-    end
-  end
-
   describe "syscmd/1,2" do
     test "runs a command string and returns output" do
       {_result, output} = with_io(fn -> ProGen.Sys.syscmd("echo hello") end)

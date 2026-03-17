@@ -10,13 +10,11 @@ defmodule ProGen.Script do
     * `cli_vals/0`    — Retrieve the parsed CLI values
     * `usage/1`       — Generate help text from an Optimus schema
     * `usage/0`       — Generate help text from the stored schema
-    * `command/2`     — Print description then run a system command
-    * `action/3`      — Run a ProGen action
+    * `command/2,3`   — Print description then run a system command (auto-commits by default)
+    * `action/3`      — Run a ProGen action (auto-commits by default)
     * `validate/3`    — Run a ProGen validator
     * `puts/1`        — Print a formatted message
     * `log/1`         — Log an info message
-    * `git/1`         — Run a git command
-    * `commit/1`      — Stage all and commit
     * `start/1`       — Log a start message and record the start time
     * `finish/1`      — Log a finish message with elapsed time
     * `cd/1`          — Change the working directory
@@ -138,13 +136,21 @@ defmodule ProGen.Script do
 
   @doc """
   Prints a formatted description, then runs a system command via `ProGen.Sys.syscmd/1`.
+
+  Auto-commits after a successful command unless `commit: false` is passed.
   """
-  def command(desc, command) do
+  def command(desc, command, opts \\ []) do
+    {commit_opts, _rest} = Keyword.split(opts, [:commit])
+
     log(desc)
     IO.puts(command)
 
-    ProGen.Sys.syscmd(command)
-    |> halt_on_error()
+    result =
+      ProGen.Sys.syscmd(command)
+      |> halt_on_error()
+
+    auto_commit(desc, commit_opts)
+    result
   end
 
   @doc """
@@ -161,16 +167,26 @@ defmodule ProGen.Script do
   def action(desc, name_or_mod, opts \\ [])
 
   def action(desc, mod, opts) when is_atom(mod) do
+    {commit_opts, action_opts} = Keyword.split(opts, [:commit])
+
     log(desc)
-    mod |> ProGen.Actions.run(opts) |> halt_on_error()
+    result = mod |> ProGen.Actions.run(action_opts) |> halt_on_error()
+    auto_commit(desc, commit_opts)
+    result
   end
 
   def action(desc, action_name, opts) do
+    {commit_opts, action_opts} = Keyword.split(opts, [:commit])
+
     log(desc)
 
-    action_name
-    |> ProGen.Actions.run(normalize_action_opts(action_name, opts))
-    |> halt_on_error()
+    result =
+      action_name
+      |> ProGen.Actions.run(normalize_action_opts(action_name, action_opts))
+      |> halt_on_error()
+
+    auto_commit(desc, commit_opts)
+    result
   end
 
   @doc """
@@ -275,23 +291,6 @@ defmodule ProGen.Script do
     IO.write(IO.ANSI.clear() <> IO.ANSI.home())
   end
 
-  @doc """
-  Stages all files and commits with the given message.
-  """
-  def commit(message) do
-    git("add .")
-    git("commit -am \"#{message}\"")
-  end
-
-  @doc """
-  Runs a git command. Accepts a string (split on spaces) or a list of args.
-  """
-  def git(arg_string) when is_binary(arg_string),
-    do: arg_string |> String.split(" ") |> git()
-
-  def git(arg_list) when is_list(arg_list),
-    do: ProGen.Sys.syscmd("git", arg_list)
-
   # --- String Conversion Utility ---
 
   def to_pascal_case(string) when is_binary(string) do
@@ -301,6 +300,21 @@ defmodule ProGen.Script do
   end
 
   # --- Private helpers ---
+
+  defp auto_commit(desc, opts) do
+    if Keyword.get(opts, :commit, true) do
+      case ProGen.Actions.run("git.commit", message: "[ProGen] #{desc}") do
+        :ok -> :ok
+        {:ok, :skipped} -> :ok
+        {:error, reason} ->
+          require Logger
+          Logger.warning("Auto-commit failed: #{inspect(reason)}")
+          :ok
+      end
+    else
+      :ok
+    end
+  end
 
   defp normalize_action_opts(action_name, opts) do
     if Keyword.keyword?(opts) do
