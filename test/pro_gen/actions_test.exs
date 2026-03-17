@@ -24,9 +24,10 @@ defmodule ProGen.ActionsTest do
   describe "run/2 with module" do
     test "validates and performs a valid action module" do
       import ExUnit.CaptureIO
+
       assert capture_io(fn ->
-        assert :ok = ProGen.Actions.run(ProGen.Action.Echo, message: "hello")
-      end) == "hello\n"
+               assert :ok = ProGen.Actions.run(ProGen.Action.Echo, message: "hello")
+             end) == "hello\n"
     end
 
     test "returns error for missing required args" do
@@ -105,6 +106,40 @@ defmodule ProGen.ActionsTest do
       ProGen.Actions.run("test.default_check", [])
       needed_args = Process.get(:needed_args)
       assert Keyword.get(needed_args, :label) == "default_value"
+    end
+  end
+
+  describe "confirm/2 integration" do
+    test "action with no confirm/2 override still works unchanged" do
+      assert {output, 0} =
+               ProGen.Actions.run("run", command: "echo", args: ["hello"])
+
+      assert String.trim(output) == "hello"
+    end
+
+    test "action with confirm/2 returning :ok passes through perform result (string)" do
+      assert {:ok, "hi"} =
+               ProGen.Actions.run("test.confirm_pass", message: "hi")
+    end
+
+    test "action with confirm/2 returning :ok passes through perform result (module)" do
+      assert {:ok, "hi"} =
+               ProGen.Actions.run(ProGen.Action.Test.ConfirmPass, message: "hi")
+    end
+
+    test "action with confirm/2 returning error wraps as confirmation_failed (string)" do
+      assert {:error, {:confirmation_failed, "boom"}} =
+               ProGen.Actions.run("test.confirm_fail", message: "hi")
+    end
+
+    test "action with confirm/2 returning error wraps as confirmation_failed (module)" do
+      assert {:error, {:confirmation_failed, "boom"}} =
+               ProGen.Actions.run(ProGen.Action.Test.ConfirmFail, message: "hi")
+    end
+
+    test "confirm/2 is not called when action is skipped" do
+      assert {:ok, :skipped} =
+               ProGen.Actions.run("test.never_needed", message: "hi")
     end
   end
 

@@ -49,6 +49,16 @@ defmodule ProGen.ActionTest do
     end
   end
 
+  describe "confirm/2 callback" do
+    test "default confirm/2 returns :ok" do
+      assert ProGen.Action.Run.confirm(:ok, []) == :ok
+    end
+
+    test "confirm/2 can be overridden" do
+      assert ProGen.Action.Test.ConfirmFail.confirm(:ok, []) == {:error, "boom"}
+    end
+  end
+
   describe "needed?/1 predicate" do
     test "default needed?/1 returns true" do
       assert ProGen.Action.Run.needed?([]) == true

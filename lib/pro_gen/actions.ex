@@ -99,7 +99,7 @@ defmodule ProGen.Actions do
       case mod.validate_args(action_args) do
         {:ok, validated_args} ->
           if force or mod.needed?(validated_args) do
-            mod.perform(validated_args)
+            perform_and_confirm(mod, validated_args)
           else
             {:ok, :skipped}
           end
@@ -118,7 +118,7 @@ defmodule ProGen.Actions do
         case mod.validate_args(action_args) do
           {:ok, validated_args} ->
             if force or mod.needed?(validated_args) do
-              mod.perform(validated_args)
+              perform_and_confirm(mod, validated_args)
             else
               {:ok, :skipped}
             end
@@ -131,6 +131,15 @@ defmodule ProGen.Actions do
         type = "action"
         list = ProGen.Actions.list_actions()
         {:error, Util.unk_term_error(type, action_name, list)}
+    end
+  end
+
+  defp perform_and_confirm(mod, validated_args) do
+    result = mod.perform(validated_args)
+
+    case mod.confirm(result, validated_args) do
+      :ok -> result
+      {:error, reason} -> {:error, {:confirmation_failed, reason}}
     end
   end
 

@@ -93,11 +93,11 @@ defmodule ProGen.Script do
 
       :help ->
         usage() |> IO.puts()
-        do_halt(1)
+        :help
 
       :version ->
         IO.puts(schema[:version] || "unknown")
-        do_halt(1)
+        :version
 
       {:error, errors} ->
         IO.puts(:stderr, "\nError:")

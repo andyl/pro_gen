@@ -2,13 +2,18 @@ defmodule ProGen.Action do
   @moduledoc """
   Behavior for all actions.
 
-  Defines two callbacks:
+  Defines three callbacks:
 
     * `perform/1`  — Executes the action with validated keyword args
     * `needed?/1`  — Optional predicate checked before `perform/1` (default: `true`)
+    * `confirm/2`  — Optional postcondition checked after `perform/1` (default: `:ok`)
 
   When `needed?/1` returns `false`, the framework skips `perform/1` and returns
   `{:ok, :skipped}`. Pass `force: true` to `ProGen.Actions.run/2` to bypass the check.
+
+  After `perform/1` succeeds, `confirm/2` is called with the raw perform result and
+  the validated args. Return `:ok` to accept the result or `{:error, reason}` to
+  signal a confirmation failure (wrapped as `{:error, {:confirmation_failed, reason}}`).
 
   Action metadata is declared via module attributes:
 
@@ -26,6 +31,7 @@ defmodule ProGen.Action do
 
   @callback perform(args :: keyword()) :: any()
   @callback needed?(args :: keyword()) :: boolean()
+  @callback confirm(result :: any(), args :: keyword()) :: :ok | {:error, term()}
 
   defmacro __using__(_opts) do
     quote do
@@ -52,6 +58,12 @@ defmodule ProGen.Action do
       def needed?(_args), do: true
 
       @doc """
+      Postcondition check called after `perform/1`. Defaults to `:ok`.
+      Override to verify the perform result before it is returned to callers.
+      """
+      def confirm(_result, _args), do: :ok
+
+      @doc """
       Auto-generated usage text derived from `option_schema/0`.
       Override this function to provide custom usage text.
       """
@@ -59,7 +71,7 @@ defmodule ProGen.Action do
         NimbleOptions.docs(option_schema())
       end
 
-      defoverridable usage: 0, needed?: 1
+      defoverridable usage: 0, needed?: 1, confirm: 2
     end
   end
 
