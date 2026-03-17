@@ -76,8 +76,8 @@ Overview
 
 `ProGen.Sys` provides low-level system command wrappers:
 
-- `syscmd(cmd)` — Parse and run a command string.
-- `syscmd(cmd, args)` — Run a command with an explicit arg list.
+- `cmd(cmd)` — Parse and run a command string.
+- `cmd(cmd, args)` — Run a command with an explicit arg list.
 
 ## Menus
 

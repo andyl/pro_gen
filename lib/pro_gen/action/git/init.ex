@@ -16,7 +16,7 @@ defmodule ProGen.Action.Git.Init do
 
   @impl true
   def perform(_args) do
-    ProGen.Sys.syscmd("git", ["init"])
+    ProGen.Sys.cmd("git", ["init"])
   end
 
   @impl true

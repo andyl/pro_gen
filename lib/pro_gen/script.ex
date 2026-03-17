@@ -135,7 +135,7 @@ defmodule ProGen.Script do
   # --- DSL functions ---
 
   @doc """
-  Prints a formatted description, then runs a system command via `ProGen.Sys.syscmd/1`.
+  Prints a formatted description, then runs a system command via `ProGen.Sys.cmd/1`.
 
   Auto-commits after a successful command unless `commit: false` is passed.
   """
@@ -146,7 +146,7 @@ defmodule ProGen.Script do
     IO.puts(command)
 
     result =
-      ProGen.Sys.syscmd(command)
+      ProGen.Sys.cmd(command)
       |> halt_on_error()
 
     auto_commit(desc, commit_opts)

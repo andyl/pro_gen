@@ -5,12 +5,12 @@ defmodule ProGen.Sys do
   Streams command output to stdout in real time and returns `:ok` / `{:error, exit_code}`.
   """
 
-  def syscmd(cmd_string) when is_binary(cmd_string) do
+  def cmd(cmd_string) when is_binary(cmd_string) do
     [cmd | args] = String.split(cmd_string)
-    syscmd(cmd, args)
+    cmd(cmd, args)
   end
 
-  def syscmd(cmd, arg_list) do
+  def cmd(cmd, arg_list) do
     case System.cmd(cmd, arg_list, stderr_to_stdout: true, into: IO.stream(:stdio, :line)) do
       {_, 0} ->
         :ok

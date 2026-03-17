@@ -189,24 +189,24 @@ defmodule ProGen.ScriptTest do
     end
   end
 
-  describe "syscmd/1,2" do
+  describe "cmd/1,2" do
     test "runs a command string and returns output" do
-      {_result, output} = with_io(fn -> ProGen.Sys.syscmd("echo hello") end)
+      {_result, output} = with_io(fn -> ProGen.Sys.cmd("echo hello") end)
       assert output =~ "hello"
     end
 
     test "runs a command with arg list and returns output" do
-      {_result, output} = with_io(fn -> ProGen.Sys.syscmd("echo", ["hello"]) end)
+      {_result, output} = with_io(fn -> ProGen.Sys.cmd("echo", ["hello"]) end)
       assert output =~ "hello"
     end
 
     test "returns :ok on success" do
-      capture_io(fn -> send(self(), ProGen.Sys.syscmd("echo", ["hi"])) end)
+      capture_io(fn -> send(self(), ProGen.Sys.cmd("echo", ["hi"])) end)
       assert_received :ok
     end
 
     test "returns {:error, _} on failure" do
-      capture_io(fn -> send(self(), ProGen.Sys.syscmd("false", [])) end)
+      capture_io(fn -> send(self(), ProGen.Sys.cmd("false", [])) end)
       assert_received {:error, code} when is_integer(code)
     end
   end
