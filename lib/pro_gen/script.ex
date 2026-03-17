@@ -302,7 +302,8 @@ defmodule ProGen.Script do
   # --- Private helpers ---
 
   defp auto_commit(desc, opts) do
-    if Keyword.get(opts, :commit, true) do
+    if Application.get_env(:pro_gen, :auto_commit, true) and
+         Keyword.get(opts, :commit, true) do
       case ProGen.Actions.run("git.commit", message: "[ProGen] #{desc}") do
         :ok -> :ok
         {:ok, :skipped} -> :ok

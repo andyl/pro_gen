@@ -4,6 +4,8 @@ defmodule ProGen.ScriptAutoCommitTest do
   import ExUnit.CaptureIO
 
   setup do
+    Application.put_env(:pro_gen, :auto_commit, true)
+
     original_dir = File.cwd!()
     tmp_dir = Path.join(System.tmp_dir!(), "pro_gen_test_auto_commit_#{:erlang.unique_integer([:positive])}")
     File.mkdir_p!(tmp_dir)
@@ -20,6 +22,7 @@ defmodule ProGen.ScriptAutoCommitTest do
     System.cmd("git", ["commit", "-m", "initial"])
 
     on_exit(fn ->
+      Application.put_env(:pro_gen, :auto_commit, false)
       File.cd!(original_dir)
       File.rm_rf!(tmp_dir)
     end)
