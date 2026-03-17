@@ -1,17 +1,6 @@
 defmodule ProGen do
-  @moduledoc """
-  Documentation for `ProGen`.
-  """
+  @moduledoc false
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> ProGen.hello()
-      :world
-
-  """
   def hello do
     :world
   end

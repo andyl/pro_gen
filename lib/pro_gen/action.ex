@@ -4,8 +4,8 @@ defmodule ProGen.Action do
 
   Defines three callbacks:
 
-    * `perform/1`  — Executes the action with validated keyword args
     * `needed?/1`  — Optional predicate checked before `perform/1` (default: `true`)
+    * `perform/1`  — Executes the action with validated keyword args
     * `confirm/2`  — Optional postcondition checked after `perform/1` (default: `:ok`)
 
   When `needed?/1` returns `false`, the framework skips `perform/1` and returns
@@ -29,8 +29,8 @@ defmodule ProGen.Action do
     * `usage/0`          — Auto-generated usage text from the schema (overridable)
   """
 
-  @callback perform(args :: keyword()) :: any()
   @callback needed?(args :: keyword()) :: boolean()
+  @callback perform(args :: keyword()) :: any()
   @callback confirm(result :: any(), args :: keyword()) :: :ok | {:error, term()}
 
   defmacro __using__(_opts) do
