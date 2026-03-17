@@ -21,12 +21,12 @@ flags, and basic ProGen.Script usage.
 
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 
-alias ProGen.Script, as: PG
+alias ProGen.Script, as: PS
 
-PG.cli_args(
-  name: "greet",
+# Declare the CLI schema
+# These values can be retrieved using PS.cli_args()
+PS.cli_args(
   description: "A simple greeting script",
-  version: "0.1.0",
   args: [
     name: [
       value_name: "NAME", 
@@ -42,19 +42,26 @@ PG.cli_args(
       help: "Greet loudly"
     ]
   ]
-)
+) 
 
-PG.parse_args()
+# Parse the CLI args, returning an error message for invalid args.
+# CLI args can be retrieved using PS.cli_vals()
+PS.parse_args() 
 
-PG.start()
-PG.inspect "CLI Values", PG.cli_vals()
+# Start a timer
+PS.start()
 
-name = PG.cli_vals().name
-output = if PG.cli_vals().loud, do: String.upcase(name), else: name
+# Get the input name using cli_vals
+name = PS.cli_vals().name
 
-PG.puts "Hello #{output}"
+if PS.cli_vals().loud do 
+  PS.puts "HELLO #{String.upcase(name)}" 
+else 
+  PS.puts "Hello #{name}"
+end
 
-PG.finish()
+# Report the elapsed time
+PS.finish()
 ```
 
 ## pg_deploy_fly
@@ -144,36 +151,59 @@ system commands, and directory navigation with ProGen.Script.
 
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 
-alias ProGen.Script,   as: PG
-alias ProGen.Validate, as: PV
+alias ProGen.Script,    as: PS
+alias ProGen.Validate,  as: PV
 
-PG.cli_args( 
-  name: "gen_phx1",
-  description: "Phoenix Generator 1", 
+# Declare the CLI schema.
+# These values can be retrieved using PS.cli_args()
+PS.cli_args( 
+  description: "Basic Phoenix Project Generator", 
   allow_unknown_args: false, 
   args: [
     project: [
       value_name: "PROJECT",
-      help: "Project name", 
+      help: "Phoenix Project name", 
       required: true, 
       parser: :string
+    ]
+  ],
+  flags: [ 
+    force: [
+      short: "-f", 
+      long: "--force", 
+      help: "Overwrite project directory if it exists"
     ]
   ]
 )
 
-{:ok, %{project: project}} = PG.parse_args() 
+# Parse the CLI args and grab the project name
+{:ok, %{project: project}} = PS.parse_args() 
 
-PG.clear() 
+# Clear the screen
+PS.clear() 
 
-PG.start()
+# Start a timer
+PS.start()
 
-PG.validate "CHECK ENVIRONMENT",  PV.Basics, [:no_mix, :no_git, {:no_dir, project}]
-PG.command  "GEN PHX PROJECT",    "mix igniter.new #{project} --with=phx.new --with-args --no-ecto"
+if PS.cli_vals().force do 
+  PS.command "CLEANUP OLD PROJECT", "rm -rf #{project}"
+end
 
-PG.cd(project)
-PG.command "COMPILE",            "mix compile"
+# exit if validations do not pass
+# LSP hover on PV.Basics for definitions
+PS.validate "CHECK ENVIRONMENT",  PV.Basics, [:no_mix, :no_git, {:no_dir, project}]
 
-PG.finish()
+# generate project using igniter
+PS.command  "GEN PHX PROJECT",    "mix igniter.new #{project} --with=phx.new --with-args --no-ecto"
+
+# Change to the project directory
+PS.cd(project)
+
+# Compile Code 
+PS.command "COMPILE", "mix compile"
+
+# Report the elapsed time
+PS.finish()
 ```
 
 ## pg_phx_ecto
@@ -195,7 +225,60 @@ A basic phoenix generator that includes an Ecto database.
 
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 
-PG.puts "UNDER CONSTRUCTION"
+alias ProGen.Script,    as: PS
+alias ProGen.Validate,  as: PV
+
+# Declare the CLI schema.
+# These values can be retrieved using PS.cli_args()
+PS.cli_args( 
+  description: "Phoenix Project Generator with Ecto database", 
+  allow_unknown_args: false, 
+  args: [
+    project: [
+      value_name: "PROJECT",
+      help: "Phoenix Project name", 
+      required: true, 
+      parser: :string
+    ]
+  ],
+  flags: [ 
+    force: [
+      short: "-f", 
+      long: "--force", 
+      help: "Overwrite project directory if it exists"
+    ]
+  ]
+)
+
+# Parse the CLI args and grab the project name
+{:ok, %{project: project}} = PS.parse_args() 
+
+# Clear the screen
+PS.clear() 
+
+# Start a timer
+PS.start()
+
+if PS.cli_vals().force do 
+  PS.command "CLEANUP OLD PROJECT", "rm -rf #{project}"
+end
+
+# exit if validations do not pass
+# LSP hover on PV.Basics for definitions
+PS.validate "CHECK ENVIRONMENT",  PV.Basics, [:no_mix, :no_git, {:no_dir, project}]
+
+# generate project using igniter
+PS.command  "GEN PHX PROJECT",    "mix igniter.new #{project} --with=phx.new"
+
+# Change to the project directory
+PS.cd(project)
+
+# compile and setup database
+PS.command "COMPILE",  "mix compile"
+PS.command "SETUP DB", "mix do ecto.drop, ecto.create, ecto.migrate"
+
+# Report the elapsed time
+PS.finish()
 ```
 
 ## pg_phx_max
