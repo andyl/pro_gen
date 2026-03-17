@@ -127,7 +127,67 @@ Generates a phoenix app with an Ash datalayer.
 
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 
-PG.puts "UNDER CONSTRUCTION"
+alias ProGen.Script,    as: PS
+alias ProGen.Validate,  as: PV
+
+# Declare the CLI schema.
+# These values can be retrieved using PS.cli_args()
+PS.cli_args( 
+  description: "Phoenix Project Generator with Ecto database", 
+  allow_unknown_args: false, 
+  args: [
+    project: [
+      value_name: "PROJECT",
+      help: "Phoenix Project name", 
+      required: true, 
+      parser: :string
+    ]
+  ],
+  flags: [ 
+    force: [
+      short: "-f", 
+      long: "--force", 
+      help: "Overwrite project directory if it exists"
+    ]
+  ]
+)
+
+# Parse the CLI args and grab the project name
+{:ok, %{project: project}} = PS.parse_args() 
+
+# Clear the screen
+PS.clear() 
+
+# Start a timer
+PS.start()
+
+if PS.cli_vals().force do 
+  PS.command "CLEANUP OLD PROJECT", "rm -rf #{project}"
+end
+
+# exit if validations do not pass
+# LSP hover on PV.Basics for definitions
+PS.validate "CHECK ENVIRONMENT",  PV.Basics, [:no_mix, :no_git, {:no_dir, project}]
+
+# generate project using igniter
+PS.command  "GEN PHX PROJECT",    "mix igniter.new #{project} --with=phx.new"
+
+# Change to the project directory
+PS.cd(project)
+
+# compile and setup app
+PS.command "Compile",          "mix compile"
+PS.command "Add ash",          "mix igniter.install ash --yes"
+PS.command "Add ash_phoenix",  "mix igniter.install ash_phoenix --yes"
+PS.command "Add ash_postgres", "mix igniter.install ash_postgres --yes"
+PS.command "Add auth",         "mix igniter.install ash_authentication --auth-strategy password --yes"
+PS.command "Add auth_phx",     "mix igniter.install ash_authentication_phoenix --auth-strategy password --yes"
+PS.command "Add migration",    "mix ash.codegen auth_migration"
+PS.command "Setup database",   "mix ecto.drop ; mix ash.setup"
+PS.command "Add ash_admin",    "mix igniter.install ash_admin --yes"
+
+# Report the elapsed time
+PS.finish()
 ```
 
 ## pg_phx_base

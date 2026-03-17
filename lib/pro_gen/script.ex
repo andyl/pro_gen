@@ -292,6 +292,14 @@ defmodule ProGen.Script do
   def git(arg_list) when is_list(arg_list),
     do: ProGen.Sys.syscmd("git", arg_list)
 
+  # --- String Conversion Utility ---
+
+  def to_pascal_case(string) when is_binary(string) do
+    string
+    |> String.split("_")
+    |> Enum.map_join(&String.capitalize/1)
+  end
+
   # --- Private helpers ---
 
   defp normalize_action_opts(action_name, opts) do
