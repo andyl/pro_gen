@@ -1,6 +1,6 @@
-defmodule ProGen.Action.Tableau.New do
+defmodule ProGen.Action.Phoenix.New do
   @moduledoc """
-  Creates a new Tableau application using the `tableau_new` Mix archive.
+  Creates a new Phoenix application using the `phx_new` Mix archive.
 
   Skips creation when the project directory already exists.
   Pass `force: true` to regenerate regardless.
@@ -9,13 +9,13 @@ defmodule ProGen.Action.Tableau.New do
   use ProGen.Action
   alias ProGen.Sys
 
-  @description "Create a new Tableau application"
+  @description "Create a new Phoenix application"
   @option_schema [
-    project: [type: :string, required: true, doc: "Name of the Tableau project to create"]
+    project: [type: :string, required: true, doc: "Name of the phx project to create"]
   ]
 
   @impl true
-  def depends_on(_args), do: ["igniter.install", "tableau.install"]
+  def depends_on(_args), do: ["igniter.install", "phx.install"]
 
   @impl true
   def needed?(args) do
@@ -27,7 +27,7 @@ defmodule ProGen.Action.Tableau.New do
   def perform(args) do
     project = Keyword.fetch!(args, :project)
     Sys.cmd("rm -rf #{project}")
-    Sys.cmd("mix igniter.new #{project} --with=tableau.new --with-args '--template heex --css tailwind'")
+    Sys.cmd("mix igniter.new #{project} --with=phx.new --with-args '--template heex --css tailwind'")
   end
 
   @impl true
