@@ -24,16 +24,19 @@ defmodule ProGen.Env do
   def put(pairs) when is_list(pairs) do
     ensure_table()
     :ets.insert(@table, pairs)
+    pairs
   end
 
   def put(pairs) when is_map(pairs) do
     ensure_table()
     :ets.insert(@table, Map.to_list(pairs))
+    pairs
   end
 
   def put(key, value) do
     ensure_table()
     :ets.insert(@table, {key, value})
+    value
   end
 
   @doc """

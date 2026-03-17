@@ -5,12 +5,13 @@
 
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 
-alias ProGen.Script, as: PG
+alias ProGen.Script, as: PS
 
-PG.cli_args(
-  name: "greet",
+# Declare the CLI schema.
+# These values can be retrieved using PS.cli_args()
+#
+PS.cli_args(
   description: "A simple greeting script",
-  version: "0.1.0",
   args: [
     name: [
       value_name: "NAME", 
@@ -26,16 +27,24 @@ PG.cli_args(
       help: "Greet loudly"
     ]
   ]
-)
+) 
 
-PG.parse_args()
+# Parse the CLI args, returning an error message for invalid args.
+# CLI args can be retrieved using PS.cli_vals()
+PS.parse_args() 
 
-PG.start()
-PG.inspect "CLI Values", PG.cli_vals()
+# Start a timer.
+PS.start()
 
-name = PG.cli_vals().name
-output = if PG.cli_vals().loud, do: String.upcase(name), else: name
+# Get the input name using cli_vals
+name = PS.cli_vals().name
 
-PG.puts "Hello #{output}"
+if PS.cli_vals().loud do 
+  PS.puts "HELLO #{String.upcase(name)}" 
+else 
+  PS.puts "Hello #{name}"
+end
 
-PG.finish()
+# Report the elapsed time.
+PS.finish()
+

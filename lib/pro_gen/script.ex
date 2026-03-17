@@ -37,7 +37,7 @@ defmodule ProGen.Script do
 
   # --- Schema storage ---
 
-  @doc \"""
+  @doc """
   Stores an Optimus schema in `ProGen.Env` under `:pg_cli_args`.
   """
   def cli_args(schema) do
@@ -93,11 +93,11 @@ defmodule ProGen.Script do
 
       :help ->
         usage() |> IO.puts()
-        :help
+        do_halt(1)
 
       :version ->
         IO.puts(schema[:version] || "unknown")
-        :version
+        do_halt(1)
 
       {:error, errors} ->
         IO.puts(:stderr, "\nError:")

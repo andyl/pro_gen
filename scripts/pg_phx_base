@@ -5,10 +5,9 @@
 
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 
-alias ProGen.Script,   as: PG
-alias ProGen.Validate, as: PV
+alias ProGen.Script,   as: PS
 
-PG.cli_args( 
+PS.cli_args( 
   name: "gen_phx1",
   description: "Phoenix Generator 1", 
   allow_unknown_args: false, 
@@ -22,16 +21,16 @@ PG.cli_args(
   ]
 )
 
-{:ok, %{project: project}} = PG.parse_args() 
+{:ok, %{project: project}} = PS.parse_args() 
 
-PG.clear() 
+PS.clear() 
 
-PG.start()
+PS.start()
 
-PG.validate "CHECK ENVIRONMENT",  PV.Basics, [:no_mix, :no_git, {:no_dir, project}]
-PG.command  "GEN PHX PROJECT",    "mix igniter.new #{project} --with=phx.new --with-args --no-ecto"
+PS.validate "CHECK ENVIRONMENT",  PV.Basics, [:no_mix, :no_git, {:no_dir, project}]
+PS.command  "GEN PHX PROJECT",    "mix igniter.new #{project} --with=phx.new --with-args --no-ecto"
 
-PG.cd(project)
-PG.command "COMPILE",            "mix compile"
+PS.cd(project)
+PS.command "COMPILE",            "mix compile"
 
-PG.finish()
+PS.finish()
