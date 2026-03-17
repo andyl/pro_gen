@@ -7,9 +7,8 @@ Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 
 alias ProGen.Script, as: PS
 
-# Declare the CLI schema.
+# Declare the CLI schema
 # These values can be retrieved using PS.cli_args()
-#
 PS.cli_args(
   description: "A simple greeting script",
   args: [
@@ -33,7 +32,7 @@ PS.cli_args(
 # CLI args can be retrieved using PS.cli_vals()
 PS.parse_args() 
 
-# Start a timer.
+# Start a timer
 PS.start()
 
 # Get the input name using cli_vals
@@ -45,6 +44,6 @@ else
   PS.puts "Hello #{name}"
 end
 
-# Report the elapsed time.
+# Report the elapsed time
 PS.finish()
 
