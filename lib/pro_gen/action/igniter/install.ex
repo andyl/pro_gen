@@ -7,7 +7,7 @@ defmodule ProGen.Action.Igniter.Install do
   alias ProGen.Sys
 
   @option_schema [
-    project: [type: :string, required: true, doc: "Name of the phx project to create"]
+    dependency: [type: :string, required: true, doc: "The dependency to install"]
   ]
 
   @impl true
@@ -15,8 +15,9 @@ defmodule ProGen.Action.Igniter.Install do
 
   @impl true
   def needed?(args) do
-    project = Keyword.fetch!(args, :project)
-    not File.dir?(project)
+    # check the Mix.exs file (in deps) to see if the dependency has been installed
+    # there is a mix task (mix deps) that could be grepped...
+    true
   end
 
   @impl true
