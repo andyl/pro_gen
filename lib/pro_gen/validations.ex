@@ -4,7 +4,7 @@ defmodule ProGen.Validations do
 
   Validators are auto-discovered from modules whose name starts with `ProGen.Validate.`.
   The validator name is derived from the segments after `ProGen.Validate`, downcased and
-  dot-joined into a string (e.g. `ProGen.Validate.Basics` → `"basics"`).
+  dot-joined into a string (e.g. `ProGen.Validate.Filesys` → `"filesys"`).
   """
 
   @type validation_map :: %{String.t() => module()}

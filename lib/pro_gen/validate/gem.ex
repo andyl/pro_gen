@@ -1,6 +1,6 @@
-defmodule ProGen.Validate.Basics do
+defmodule ProGen.Validate.Gem do
   @moduledoc """
-  Basic filesystem and tool checks.
+  Gem validator — bundles filesystem and hex tool checks.
 
   Provides built-in validation checks for common preconditions:
   file existence, directory existence, tool availability, etc.
@@ -10,7 +10,7 @@ defmodule ProGen.Validate.Basics do
 
   use ProGen.Validate
 
-  @description "Basic filesystem and tool checks"
+  @description "Bundled filesystem and hex tool checks"
 
   defcheck :has_mix do
     desc "Pass if mix.exs exists"

@@ -2,14 +2,24 @@ defmodule ProGen.ValidationsTest do
   use ExUnit.Case
 
   describe "list_validations/0" do
-    test "includes 'basics'" do
-      assert {"basics", "Basic filesystem and tool checks"} in ProGen.Validations.list_validations()
+    test "includes all four validators" do
+      validations = ProGen.Validations.list_validations()
+      names = Enum.map(validations, &elem(&1, 0))
+
+      assert "filesys" in names
+      assert "gem" in names
+      assert "hex" in names
+      assert "lang" in names
     end
   end
 
   describe "validation_module/1" do
-    test "returns the correct module for 'basics'" do
-      assert {:ok, ProGen.Validate.Basics} = ProGen.Validations.validation_module("basics")
+    test "returns the correct module for 'filesys'" do
+      assert {:ok, ProGen.Validate.Filesys} = ProGen.Validations.validation_module("filesys")
+    end
+
+    test "returns the correct module for 'gem'" do
+      assert {:ok, ProGen.Validate.Gem} = ProGen.Validations.validation_module("gem")
     end
 
     test "returns :error for unknown validator" do
@@ -18,13 +28,21 @@ defmodule ProGen.ValidationsTest do
   end
 
   describe "validation_info/1" do
-    test "returns metadata map for 'basics'" do
-      assert {:ok, info} = ProGen.Validations.validation_info("basics")
-      assert info.module == ProGen.Validate.Basics
-      assert info.name == "basics"
-      assert info.description == "Basic filesystem and tool checks"
+    test "returns metadata map for 'filesys'" do
+      assert {:ok, info} = ProGen.Validations.validation_info("filesys")
+      assert info.module == ProGen.Validate.Filesys
+      assert info.name == "filesys"
+      assert is_binary(info.description)
       assert is_list(info.checks)
-      assert length(info.checks) > 0
+      assert length(info.checks) == 8
+    end
+
+    test "returns metadata map for 'gem'" do
+      assert {:ok, info} = ProGen.Validations.validation_info("gem")
+      assert info.module == ProGen.Validate.Gem
+      assert info.name == "gem"
+      assert is_list(info.checks)
+      assert length(info.checks) == 12
     end
 
     test "returns error for unknown validator" do
@@ -35,11 +53,11 @@ defmodule ProGen.ValidationsTest do
 
   describe "run/2" do
     test "executes checks and returns :ok" do
-      assert :ok = ProGen.Validations.run("basics", checks: [:has_mix])
+      assert :ok = ProGen.Validations.run("filesys", checks: [:has_mix])
     end
 
     test "returns error on failed check" do
-      assert {:error, msg} = ProGen.Validations.run("basics", checks: [:no_mix])
+      assert {:error, msg} = ProGen.Validations.run("filesys", checks: [:no_mix])
       assert msg =~ "mix.exs"
     end
 
@@ -49,7 +67,7 @@ defmodule ProGen.ValidationsTest do
     end
 
     test "returns validation error for missing :checks option" do
-      assert {:error, msg} = ProGen.Validations.run("basics", [])
+      assert {:error, msg} = ProGen.Validations.run("filesys", [])
       assert is_binary(msg)
       assert msg =~ "checks"
     end
@@ -57,16 +75,17 @@ defmodule ProGen.ValidationsTest do
 
   describe "run/2 with module" do
     test "executes checks and returns :ok with a valid module" do
-      assert :ok = ProGen.Validations.run(ProGen.Validate.Basics, checks: [:has_mix])
+      assert :ok = ProGen.Validations.run(ProGen.Validate.Filesys, checks: [:has_mix])
     end
 
     test "returns error on failed check with a valid module" do
-      assert {:error, msg} = ProGen.Validations.run(ProGen.Validate.Basics, checks: [:no_mix])
+      assert {:error, msg} = ProGen.Validations.run(ProGen.Validate.Filesys, checks: [:no_mix])
       assert msg =~ "mix.exs"
     end
 
     test "returns error for non-existent module" do
-      assert {:error, msg} = ProGen.Validations.run(ProGen.Validate.DoesNotExist, checks: [:has_mix])
+      assert {:error, msg} =
+               ProGen.Validations.run(ProGen.Validate.DoesNotExist, checks: [:has_mix])
       assert msg =~ "does not exist or could not be loaded"
     end
 
@@ -75,29 +94,4 @@ defmodule ProGen.ValidationsTest do
       assert msg =~ "is not a ProGen.Validate validator"
     end
   end
-
-  # describe "duplicate detection" do
-  #   test "raises ArgumentError for duplicate validator names" do
-  #     Code.compile_string("""
-  #     defmodule ProGen.Validate.Dup do
-  #       use ProGen.Validate
-  #       @description "First"
-  #     end
-  #     """)
-  #
-  #     Code.compile_string("""
-  #     defmodule ProGen.FakeValidateNs.Dup do
-  #       use ProGen.Validate
-  #       @description "Second"
-  #     end
-  #     """)
-  #
-  #     assert_raise ArgumentError, ~r/Duplicate validator name detected: "dup"/, fn ->
-  #       ProGen.Validations.build_validation_map([
-  #         ProGen.Validate.Dup,
-  #         ProGen.FakeValidateNs.Dup
-  #       ])
-  #     end
-  #   end
-  # end
 end

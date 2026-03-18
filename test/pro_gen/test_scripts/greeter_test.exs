@@ -181,11 +181,11 @@ defmodule ProGen.ScriptTest do
 
   describe "validate/3" do
     test "accepts check list" do
-      assert :ok = ProGen.Script.validate("Test", "basics", [:has_mix])
+      assert :ok = ProGen.Script.validate("Test", "filesys", [:has_mix])
     end
 
     test "multiple checks" do
-      assert :ok = ProGen.Script.validate("Test", "basics", [:has_mix, :has_git])
+      assert :ok = ProGen.Script.validate("Test", "filesys", [:has_mix, :has_git])
     end
   end
 
