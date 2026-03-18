@@ -19,6 +19,18 @@ defmodule ProGen.Validate.Lang do
     test fn _ -> not eval_test(:has_elixir) end
   end
 
+  defcheck :has_erlang do
+    desc "Pass if erlang is installed"
+    fail "No erlang - please install"
+    test fn _ -> System.find_executable("erl") != nil end
+  end
+
+  defcheck :no_erlang do
+    desc "Pass if erlang is installed"
+    fail "erlang is not installed"
+    test fn _ -> not eval_test(:has_erlang) end
+  end
+
   defcheck :has_ruby do
     desc "Pass if ruby is installed"
     fail "No Ruby - please install"
@@ -31,16 +43,16 @@ defmodule ProGen.Validate.Lang do
     test fn _ -> not eval_test(:has_ruby) end
   end
 
-  defcheck :has_erlang do
-    desc "Pass if erlang is installed"
-    fail "No erlang - please install"
-    test fn _ -> System.find_executable("erl") != nil end
+  defcheck :has_npm do
+    desc "Pass if npm is installed"
+    fail "No NPM - please install"
+    test fn _ -> System.find_executable("npm") != nil end
   end
 
-  defcheck :no_erlang do
-    desc "Pass if erlang is installed"
-    fail "erlang is not installed"
-    test fn _ -> not eval_test(:has_erlang) end
+  defcheck :no_npm do
+    desc "Pass if NPM is installed"
+    fail "NPM is not installed"
+    test fn _ -> not eval_test(:has_npm) end
   end
 
 end

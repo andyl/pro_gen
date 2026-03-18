@@ -11,7 +11,7 @@ defmodule ProGen.Action.Igniter.Install do
   ]
 
   @impl true
-  def depends_on(_args), do: ["igniter.install", "phx.install"]
+  def depends_on(_args), do: ["igniter_new.install"]
 
   @impl true
   def needed?(args) do

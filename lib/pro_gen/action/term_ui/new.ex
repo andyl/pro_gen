@@ -14,7 +14,7 @@ defmodule ProGen.Action.TermUI.New do
   ]
 
   @impl true
-  def depends_on(_args), do: ["igniter.install"]
+  def depends_on(_args), do: ["igniter_new.install"]
 
   @impl true
   def needed?(args) do

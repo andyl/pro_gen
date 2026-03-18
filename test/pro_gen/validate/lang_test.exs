@@ -40,7 +40,7 @@ defmodule ProGen.Validate.LangTest do
     test "returns a non-empty list of {term, desc} tuples" do
       checks = ProGen.Validate.Lang.checks()
       assert is_list(checks)
-      assert length(checks) == 6
+      assert length(checks) == 8
 
       Enum.each(checks, fn entry ->
         assert {term, desc} = entry
@@ -49,15 +49,17 @@ defmodule ProGen.Validate.LangTest do
       end)
     end
 
-    test "contains all 6 language check terms" do
+    test "contains all 8 language check terms" do
       terms = Enum.map(ProGen.Validate.Lang.checks(), &elem(&1, 0))
 
       assert ":has_elixir" in terms
       assert ":no_elixir" in terms
-      assert ":has_ruby" in terms
-      assert ":no_ruby" in terms
       assert ":has_erlang" in terms
       assert ":no_erlang" in terms
+      assert ":has_ruby" in terms
+      assert ":no_ruby" in terms
+      assert ":has_npm" in terms
+      assert ":no_npm" in terms
     end
   end
 

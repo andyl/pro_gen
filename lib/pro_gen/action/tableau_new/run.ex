@@ -14,7 +14,7 @@ defmodule ProGen.Action.TableauNew.Run do
   ]
 
   @impl true
-  def depends_on(_args), do: ["igniter.install", "tableau.install"]
+  def depends_on(_args), do: ["igniter_new.install", "tableau_new.install"]
 
   @impl true
   def needed?(args) do

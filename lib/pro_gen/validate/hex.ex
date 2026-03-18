@@ -7,9 +7,9 @@ defmodule ProGen.Validate.Hex do
 
   use ProGen.Validate
 
-  defcheck :has_igniter do
-    desc "Pass if igniter is installed"
-    fail "No igniter (install with 'mix archive.install hex igniter_new --force')"
+  defcheck :has_igniter_new do
+    desc "Pass if igniter_new is installed"
+    fail "No igniter_new (install with 'mix archive.install hex igniter_new --force')"
     test fn _ -> elem(System.cmd("mix", ["help"]), 0) =~ "igniter" end
   end
 
@@ -29,5 +29,17 @@ defmodule ProGen.Validate.Hex do
     desc "Pass if phx_new is not installed"
     fail "phx_new is installed"
     test fn _ -> not eval_test(:has_phx_new) end
+  end
+
+  defcheck :has_tableau_new do
+    desc "Pass if tableau_new is installed"
+    fail "No tableau_new (install with 'mix archive.install hex tableau_new_new --force')"
+    test fn _ -> elem(System.cmd("mix", ["help"]), 0) =~ "tableau.new" end
+  end
+
+  defcheck :no_tableau_new do
+    desc "Pass if tableau_new is not installed"
+    fail "tableau_new is installed"
+    test fn _ -> not eval_test(:has_tableau_new) end
   end
 end

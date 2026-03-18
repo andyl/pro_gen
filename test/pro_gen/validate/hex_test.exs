@@ -8,7 +8,7 @@ defmodule ProGen.Validate.HexTest do
     test "returns a non-empty list of {term, desc} tuples" do
       checks = ProGen.Validate.Hex.checks()
       assert is_list(checks)
-      assert length(checks) == 4
+      assert length(checks) == 6
 
       Enum.each(checks, fn entry ->
         assert {term, desc} = entry
@@ -17,13 +17,15 @@ defmodule ProGen.Validate.HexTest do
       end)
     end
 
-    test "contains all 4 hex check terms" do
+    test "contains all 6 hex check terms" do
       terms = Enum.map(ProGen.Validate.Hex.checks(), &elem(&1, 0))
 
-      assert ":has_igniter" in terms
+      assert ":has_igniter_new" in terms
       assert ":no_igniter" in terms
       assert ":has_phx_new" in terms
       assert ":no_phx_new" in terms
+      assert ":has_tableau_new" in terms
+      assert ":no_tableau_new" in terms
     end
   end
 
