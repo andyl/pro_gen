@@ -67,6 +67,7 @@ defmodule ProGen.MixProject do
   defp deps do
     [
       {:igniter, "~> 0.6"},
+      {:sourceror, "~> 1.11"},
       {:usage_rules, "~> 1.0"},
       {:nimble_options, "~> 1.0"},
       {:optimus, "~> 0.5"},
