@@ -1,6 +1,6 @@
 # Example Scripts
 
-## pg_base_cli
+## progen_base_cli
 
 A simple greeting script that demonstrates CLI argument parsing,
 flags, and basic ProGen.Script usage.
@@ -8,10 +8,10 @@ flags, and basic ProGen.Script usage.
 **Run it:**
 
 ```bash
-./scripts/pg_base_cli --help
+./scripts/progen_base_cli --help
 ```
 
-**Source:** [`scripts/pg_base_cli`](https://github.com/andyl/pro_gen/blob/master/scripts/pg_base_cli)
+**Source:** [`scripts/progen_base_cli`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_base_cli)
 
 ```elixir
 #!/usr/bin/env elixir
@@ -64,17 +64,17 @@ end
 PS.finish()
 ```
 
-## pg_deploy_fly
+## progen_deploy_fly
 
 Generates a simple phoenix app which can be deployed using Fly
 
 **Run it:**
 
 ```bash
-./scripts/pg_deploy_fly --help
+./scripts/progen_deploy_fly --help
 ```
 
-**Source:** [`scripts/pg_deploy_fly`](https://github.com/andyl/pro_gen/blob/master/scripts/pg_deploy_fly)
+**Source:** [`scripts/progen_deploy_fly`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_deploy_fly)
 
 ```elixir
 #!/usr/bin/env elixir
@@ -86,17 +86,17 @@ Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 PG.puts "UNDER CONSTRUCTION"
 ```
 
-## pg_deploy_kamal
+## progen_deploy_kamal
 
 Generates a simple phoenix app which can be deployed using Kamal
 
 **Run it:**
 
 ```bash
-./scripts/pg_deploy_kamal --help
+./scripts/progen_deploy_kamal --help
 ```
 
-**Source:** [`scripts/pg_deploy_kamal`](https://github.com/andyl/pro_gen/blob/master/scripts/pg_deploy_kamal)
+**Source:** [`scripts/progen_deploy_kamal`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_deploy_kamal)
 
 ```elixir
 #!/usr/bin/env elixir
@@ -108,17 +108,17 @@ Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 PG.puts "UNDER CONSTRUCTION"
 ```
 
-## pg_phx_ash
+## progen_phx_ash
 
 Generates a phoenix app with an Ash datalayer.
 
 **Run it:**
 
 ```bash
-./scripts/pg_phx_ash --help
+./scripts/progen_phx_ash --help
 ```
 
-**Source:** [`scripts/pg_phx_ash`](https://github.com/andyl/pro_gen/blob/master/scripts/pg_phx_ash)
+**Source:** [`scripts/progen_phx_ash`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_phx_ash)
 
 ```elixir
 #!/usr/bin/env elixir
@@ -190,7 +190,7 @@ PS.command "Add ash_admin",    "mix igniter.install ash_admin --yes"
 PS.finish()
 ```
 
-## pg_phx_base
+## progen_phx_base
 
 A Phoenix project generator that demonstrates validation checks,
 system commands, and directory navigation with ProGen.Script.
@@ -198,10 +198,10 @@ system commands, and directory navigation with ProGen.Script.
 **Run it:**
 
 ```bash
-./scripts/pg_phx_base --help
+./scripts/progen_phx_base --help
 ```
 
-**Source:** [`scripts/pg_phx_base`](https://github.com/andyl/pro_gen/blob/master/scripts/pg_phx_base)
+**Source:** [`scripts/progen_phx_base`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_phx_base)
 
 ```elixir
 #!/usr/bin/env elixir
@@ -266,17 +266,17 @@ PS.command "COMPILE", "mix compile"
 PS.finish()
 ```
 
-## pg_phx_ecto
+## progen_phx_ecto
 
 A basic phoenix generator that includes an Ecto database.
 
 **Run it:**
 
 ```bash
-./scripts/pg_phx_ecto --help
+./scripts/progen_phx_ecto --help
 ```
 
-**Source:** [`scripts/pg_phx_ecto`](https://github.com/andyl/pro_gen/blob/master/scripts/pg_phx_ecto)
+**Source:** [`scripts/progen_phx_ecto`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_phx_ecto)
 
 ```elixir
 #!/usr/bin/env elixir
@@ -341,17 +341,17 @@ PS.command "SETUP DB", "mix do ecto.drop, ecto.create, ecto.migrate"
 PS.finish()
 ```
 
-## pg_phx_max
+## progen_phx_max
 
 Generates a phoenix app with many configuration options.
 
 **Run it:**
 
 ```bash
-./scripts/pg_phx_max --help
+./scripts/progen_phx_max --help
 ```
 
-**Source:** [`scripts/pg_phx_max`](https://github.com/andyl/pro_gen/blob/master/scripts/pg_phx_max)
+**Source:** [`scripts/progen_phx_max`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_phx_max)
 
 ```elixir
 #!/usr/bin/env elixir
@@ -363,17 +363,17 @@ Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 PG.puts "UNDER CONSTRUCTION"
 ```
 
-## pg_phx_pwa
+## progen_phx_pwa
 
 Generates a phoenix app with a PWA interface.
 
 **Run it:**
 
 ```bash
-./scripts/pg_phx_pwa --help
+./scripts/progen_phx_pwa --help
 ```
 
-**Source:** [`scripts/pg_phx_pwa`](https://github.com/andyl/pro_gen/blob/master/scripts/pg_phx_pwa)
+**Source:** [`scripts/progen_phx_pwa`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_phx_pwa)
 
 ```elixir
 #!/usr/bin/env elixir
@@ -385,17 +385,17 @@ Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 PG.puts "UNDER CONSTRUCTION"
 ```
 
-## pg_tableau_base
+## progen_tableau_base
 
 Generates a basic tableau app.
 
 **Run it:**
 
 ```bash
-./scripts/pg_tableau_base --help
+./scripts/progen_tableau_base --help
 ```
 
-**Source:** [`scripts/pg_tableau_base`](https://github.com/andyl/pro_gen/blob/master/scripts/pg_tableau_base)
+**Source:** [`scripts/progen_tableau_base`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_tableau_base)
 
 ```elixir
 #!/usr/bin/env elixir
@@ -405,17 +405,17 @@ Generates a basic tableau app.
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 ```
 
-## pg_tableau_pwa
+## progen_tableau_pwa
 
 Generates a tableau app with a PWA interface.
 
 **Run it:**
 
 ```bash
-./scripts/pg_tableau_pwa --help
+./scripts/progen_tableau_pwa --help
 ```
 
-**Source:** [`scripts/pg_tableau_pwa`](https://github.com/andyl/pro_gen/blob/master/scripts/pg_tableau_pwa)
+**Source:** [`scripts/progen_tableau_pwa`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_tableau_pwa)
 
 ```elixir
 #!/usr/bin/env elixir
@@ -427,17 +427,17 @@ Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 PG.puts "UNDER CONSTRUCTION"
 ```
 
-## pg_termui_base
+## progen_termui_base
 
 Generates a basic TermUI app.
 
 **Run it:**
 
 ```bash
-./scripts/pg_termui_base --help
+./scripts/progen_termui_base --help
 ```
 
-**Source:** [`scripts/pg_termui_base`](https://github.com/andyl/pro_gen/blob/master/scripts/pg_termui_base)
+**Source:** [`scripts/progen_termui_base`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_termui_base)
 
 ```elixir
 #!/usr/bin/env elixir
