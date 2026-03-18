@@ -54,6 +54,10 @@ ProGen has three pillars (Actions are implemented; Scripts and Menus are stubs/f
 
 **Usage:** Create a `.exs` file that does `Mix.install([{:pro_gen, ...}])`, then call `ProGen.Script.parse_args(schema, System.argv())`. See `examples/greeter.exs`. Note: top-level `import` doesn't work with `Mix.install` scripts (Elixir compile-time limitation); use qualified calls or wrap in a module.
 
+### Utilities
+
+**`ProGen.CodeMods.MixFile`** — Programmatic, idempotent modifications to mix.exs files. Uses Sourceror/Igniter for AST-based code transformations. Two public functions: `add_to_project/3` (inserts a key-value entry into the `project/0` keyword list) and `add_defp/4` (appends a private function to the module). Both are no-ops if the target already exists.
+
 ### Menus (Future)
 
 YAML-defined TUI menus for interactive script generation. Not yet implemented.
