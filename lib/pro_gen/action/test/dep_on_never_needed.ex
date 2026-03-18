@@ -1,9 +1,8 @@
 defmodule ProGen.Action.Test.DepOnNeverNeeded do
-  @moduledoc false
+  @moduledoc "Depends on never_needed to test force non-propagation (test fixture)"
 
   use ProGen.Action
 
-  @description "Depends on never_needed to test force non-propagation (test fixture)"
   @option_schema [
     message: [type: :string, required: true, doc: "Passed to satisfy never_needed's schema"]
   ]

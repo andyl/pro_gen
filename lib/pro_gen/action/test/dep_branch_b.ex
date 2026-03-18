@@ -1,9 +1,8 @@
 defmodule ProGen.Action.Test.DepBranchB do
-  @moduledoc false
+  @moduledoc "Branch B depends on dep_base (test fixture)"
 
   use ProGen.Action
 
-  @description "Branch B depends on dep_base (test fixture)"
   @option_schema []
 
   @impl true

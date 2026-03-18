@@ -1,11 +1,10 @@
 defmodule ProGen.Action.Git.Init do
   @moduledoc """
-  Initializes a git repository in the current working directory.
+  Initialize a git repository.
   """
 
   use ProGen.Action
 
-  @description "Initialize a git repository"
   @option_schema []
 
   @impl true

@@ -1,9 +1,8 @@
 defmodule ProGen.Action.Test.DepDiamond do
-  @moduledoc false
+  @moduledoc "Diamond top depends on both branches (test fixture)"
 
   use ProGen.Action
 
-  @description "Diamond top depends on both branches (test fixture)"
   @option_schema []
 
   @impl true

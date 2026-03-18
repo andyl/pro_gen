@@ -1,6 +1,6 @@
-defmodule ProGen.Action.TermUI.New do
+defmodule ProGen.Action.IgniterNew.Run do
   @moduledoc """
-  Create a new TermUI application.
+  Create a new Igniter application.
 
   Skips creation when the project directory already exists.
   Pass `force: true` to regenerate regardless.
@@ -10,7 +10,8 @@ defmodule ProGen.Action.TermUI.New do
   alias ProGen.Sys
 
   @option_schema [
-    project: [type: :string, required: true, doc: "Name of the TermUI project to create"]
+    project: [type: :string, required: true, doc: "Name of the igniter project to create"],
+    packages: [type: :string, required: false, doc: "Comma-seperated list of packages to install"]
   ]
 
   @impl true
@@ -26,7 +27,12 @@ defmodule ProGen.Action.TermUI.New do
   def perform(args) do
     project = Keyword.fetch!(args, :project)
     Sys.cmd("rm -rf #{project}")
-    Sys.cmd("mix igniter.new #{project} --install term_ui")
+    case Keyword.fetch!(args, :installs) do
+      nil ->
+        Sys.cmd("mix igniter.new #{project}")
+      packages ->
+        Sys.cmd("mix igniter.new #{project} --install #{packages}")
+    end
   end
 
   @impl true

@@ -1,11 +1,10 @@
 defmodule ProGen.Action.Git.Commit do
   @moduledoc """
-  Stages all changes and commits with the given message.
+  Stage all changes and commit.
   """
 
   use ProGen.Action
 
-  @description "Stage all changes and commit"
   @option_schema [
     message: [type: :string, required: true, doc: "Commit message"]
   ]

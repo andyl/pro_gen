@@ -1,9 +1,8 @@
 defmodule ProGen.Action.Test.NeverNeeded do
-  @moduledoc false
+  @moduledoc "Action that is never needed (test fixture)"
 
   use ProGen.Action
 
-  @description "Action that is never needed (test fixture)"
   @option_schema [
     message: [type: :string, required: true, doc: "A message"]
   ]

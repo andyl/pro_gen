@@ -16,15 +16,15 @@ defmodule ProGen.Action do
   the validated args. Return `:ok` to accept the result or `{:error, reason}` to
   signal a confirmation failure (wrapped as `{:error, {:confirmation_failed, reason}}`).
 
-  Action metadata is declared via module attributes:
+  Action metadata:
 
-    * `@description`   — Short human-readable description (required)
+    * The description is derived from the first line of `@moduledoc` (required)
     * `@option_schema` — [NimbleOptions](https://github.com/dashbitco/nimble_options) schema describing accepted options (defaults to `[]`)
 
   Using this module injects:
 
     * `name/0`          — Auto-derived namespaced action name (string, e.g. `"test.echo"`)
-    * `description/0`   — Returns the declared description
+    * `description/0`   — First line of `@moduledoc`
     * `option_schema/0` — Returns the declared option schema
     * `validate_args/1`  — Validates a keyword list against the schema
     * `usage/0`          — Auto-generated usage text from the schema (overridable)
@@ -39,7 +39,6 @@ defmodule ProGen.Action do
     quote do
       @behaviour ProGen.Action
 
-      Module.register_attribute(__MODULE__, :description, persist: true)
       Module.register_attribute(__MODULE__, :option_schema, persist: true)
 
       @before_compile ProGen.Action
@@ -85,14 +84,23 @@ defmodule ProGen.Action do
   end
 
   defmacro __before_compile__(env) do
-    description = Module.get_attribute(env.module, :description)
+    moduledoc = Module.get_attribute(env.module, :moduledoc)
     option_schema = Module.get_attribute(env.module, :option_schema) || []
 
-    unless description do
+    doc_text =
+      case moduledoc do
+        {_line, text} when is_binary(text) -> text
+        text when is_binary(text) -> text
+        _ -> nil
+      end
+
+    unless doc_text do
       raise CompileError,
         description:
-          "module #{inspect(env.module)} must set @description when using ProGen.Action"
+          "module #{inspect(env.module)} must set @moduledoc when using ProGen.Action"
     end
+
+    description = doc_text |> String.trim_leading() |> String.split("\n", parts: 2) |> hd()
 
     name =
       env.module

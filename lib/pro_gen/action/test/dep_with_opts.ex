@@ -1,9 +1,8 @@
 defmodule ProGen.Action.Test.DepWithOpts do
-  @moduledoc false
+  @moduledoc "Captures args from dependency opts (test fixture)"
 
   use ProGen.Action
 
-  @description "Captures args from dependency opts (test fixture)"
   @option_schema [
     message: [type: :string, required: true, doc: "A message"]
   ]

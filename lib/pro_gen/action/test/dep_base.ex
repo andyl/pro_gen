@@ -1,9 +1,8 @@
 defmodule ProGen.Action.Test.DepBase do
-  @moduledoc false
+  @moduledoc "Base dependency action (test fixture)"
 
   use ProGen.Action
 
-  @description "Base dependency action (test fixture)"
   @option_schema []
 
   @impl true

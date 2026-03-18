@@ -1,9 +1,8 @@
 defmodule ProGen.Action.Test.DepConditional do
-  @moduledoc false
+  @moduledoc "Conditionally depends on dep_base (test fixture)"
 
   use ProGen.Action
 
-  @description "Conditionally depends on dep_base (test fixture)"
   @option_schema [
     with_dep: [type: :boolean, default: false, doc: "Whether to include dependency"]
   ]

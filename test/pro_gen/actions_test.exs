@@ -57,8 +57,8 @@ defmodule ProGen.ActionsTest do
       # but the remainder is the same.
       Code.compile_string("""
       defmodule ProGen.Action.Dup do
+        @moduledoc "First"
         use ProGen.Action
-        @description "First"
         @impl true
         def perform(_), do: :ok
       end
@@ -66,8 +66,8 @@ defmodule ProGen.ActionsTest do
 
       Code.compile_string("""
       defmodule ProGen.FakeNs.Dup do
+        @moduledoc "Second"
         use ProGen.Action
-        @description "Second"
         @impl true
         def perform(_), do: :ok
       end
@@ -224,7 +224,7 @@ defmodule ProGen.ActionsTest do
       assert {:ok, info} = ProGen.Actions.action_info("run")
       assert info.module == ProGen.Action.Run
       assert info.name == "run"
-      assert info.description == "Run a system command"
+      assert info.description == "Run a system command."
       assert is_list(info.option_schema)
       assert Keyword.has_key?(info.option_schema, :command)
       assert is_binary(info.usage)

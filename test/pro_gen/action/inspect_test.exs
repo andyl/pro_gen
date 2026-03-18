@@ -53,7 +53,7 @@ defmodule ProGen.Action.InspectTest do
     end
 
     test "is auto-discovered by the registry" do
-      assert {"inspect", "Inspect an Elixir term to stdout"} in ProGen.Actions.list_actions()
+      assert {"inspect", "Inspect an Elixir term to stdout."} in ProGen.Actions.list_actions()
     end
   end
 end

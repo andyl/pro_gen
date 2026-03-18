@@ -36,7 +36,7 @@ defmodule ProGen.Action.EchoTest do
     end
 
     test "is auto-discovered by the registry" do
-      assert {"echo", "Echo a message to stdout"} in ProGen.Actions.list_actions()
+      assert {"echo", "Echo a message to stdout."} in ProGen.Actions.list_actions()
     end
   end
 end

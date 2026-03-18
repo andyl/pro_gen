@@ -6,8 +6,8 @@ defmodule ProGen.ActionTest do
       assert ProGen.Action.Run.name() == "run"
     end
 
-    test "description/0 returns the declared description" do
-      assert ProGen.Action.Run.description() == "Run a system command"
+    test "description/0 returns first line of @moduledoc" do
+      assert ProGen.Action.Run.description() == "Run a system command."
     end
 
     test "option_schema/0 returns the declared schema" do
@@ -35,10 +35,11 @@ defmodule ProGen.ActionTest do
       assert output =~ "hi"
     end
 
-    test "missing @description raises CompileError" do
-      assert_raise CompileError, ~r/must set @description/, fn ->
+    test "missing @moduledoc raises CompileError" do
+      assert_raise CompileError, ~r/must set @moduledoc/, fn ->
         Code.compile_string("""
         defmodule ProGen.Action.NoDesc do
+          @moduledoc false
           use ProGen.Action
 
           @impl true
@@ -67,9 +68,9 @@ defmodule ProGen.ActionTest do
     test "needed?/1 can be overridden" do
       Code.compile_string("""
       defmodule ProGen.Action.Test.OverrideNeeded do
+        @moduledoc "Action that overrides needed?/1"
         use ProGen.Action
 
-        @description "Action that overrides needed?/1"
         @option_schema []
 
         @impl true

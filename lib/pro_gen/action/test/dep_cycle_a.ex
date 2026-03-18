@@ -1,9 +1,8 @@
 defmodule ProGen.Action.Test.DepCycleA do
-  @moduledoc false
+  @moduledoc "Cycle A depends on cycle B (test fixture)"
 
   use ProGen.Action
 
-  @description "Cycle A depends on cycle B (test fixture)"
   @option_schema []
 
   @impl true

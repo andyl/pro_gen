@@ -1,9 +1,8 @@
 defmodule ProGen.Action.Test.DepFailing do
-  @moduledoc false
+  @moduledoc "Always fails in confirm (test fixture)"
 
   use ProGen.Action
 
-  @description "Always fails in confirm (test fixture)"
   @option_schema []
 
   @impl true

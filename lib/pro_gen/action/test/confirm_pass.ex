@@ -1,9 +1,8 @@
 defmodule ProGen.Action.Test.ConfirmPass do
-  @moduledoc false
+  @moduledoc "Action whose confirm/2 always passes (test fixture)"
 
   use ProGen.Action
 
-  @description "Action whose confirm/2 always passes (test fixture)"
   @option_schema [
     message: [type: :string, required: true, doc: "A message"]
   ]

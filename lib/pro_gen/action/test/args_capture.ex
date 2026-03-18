@@ -1,9 +1,8 @@
 defmodule ProGen.Action.Test.ArgsCapture do
-  @moduledoc false
+  @moduledoc "Captures args to process dict (test fixture)"
 
   use ProGen.Action
 
-  @description "Captures args to process dict (test fixture)"
   @option_schema [
     message: [type: :string, required: true, doc: "A message"]
   ]

@@ -1,9 +1,8 @@
 defmodule ProGen.Action.Test.DepPassesOpts do
-  @moduledoc false
+  @moduledoc "Depends on dep_with_opts with specific options (test fixture)"
 
   use ProGen.Action
 
-  @description "Depends on dep_with_opts with specific options (test fixture)"
   @option_schema []
 
   @impl true

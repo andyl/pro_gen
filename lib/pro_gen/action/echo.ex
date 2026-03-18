@@ -1,11 +1,10 @@
 defmodule ProGen.Action.Echo do
   @moduledoc """
-  Echoes a message to stdout.
+  Echo a message to stdout.
   """
 
   use ProGen.Action
 
-  @description "Echo a message to stdout"
   @option_schema [
     message: [type: :string, required: true, doc: "The message to print"]
   ]

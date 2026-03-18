@@ -1,9 +1,8 @@
 defmodule ProGen.Action.Test.DepOnFailing do
-  @moduledoc false
+  @moduledoc "Depends on dep_failing (test fixture)"
 
   use ProGen.Action
 
-  @description "Depends on dep_failing (test fixture)"
   @option_schema []
 
   @impl true

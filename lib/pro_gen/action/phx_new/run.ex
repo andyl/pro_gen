@@ -1,6 +1,9 @@
-defmodule ProGen.Action.Igniter.Install do
+defmodule ProGen.Action.PhxNew do
   @moduledoc """
   Create a new Phoenix application.
+
+  Skips creation when the project directory already exists.
+  Pass `force: true` to regenerate regardless.
   """
 
   use ProGen.Action

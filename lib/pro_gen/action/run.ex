@@ -1,11 +1,10 @@
 defmodule ProGen.Action.Run do
   @moduledoc """
-  Runs a system command.
+  Run a system command.
   """
 
   use ProGen.Action
 
-  @description "Run a system command"
   @option_schema [
     command: [type: :string, required: true, doc: "The command to execute"],
     args: [type: {:list, :string}, default: [], doc: "Arguments to pass"],
