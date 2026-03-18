@@ -83,16 +83,4 @@ defmodule ProGen.Validate.Basics do
     fail "phx_new is installed"
     test fn _ -> not eval_test(:has_phx_new) end
   end
-
-  defcheck :has_elixir do
-    desc "Pass if elixir is installed"
-    fail "No elixir - please install"
-    test fn _ -> System.find_executable("elixir") != nil end
-  end
-
-  defcheck :no_elixir do
-    desc "Pass if elixir is not installed"
-    fail "elixir is installed"
-    test fn _ -> not eval_test(:has_elixir) end
-  end
 end
