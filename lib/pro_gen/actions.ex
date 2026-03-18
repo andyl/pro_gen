@@ -70,6 +70,7 @@ defmodule ProGen.Actions do
            name: mod.name(),
            description: mod.description(),
            option_schema: mod.option_schema(),
+           validate: mod.validate(),
            usage: mod.usage()
          }}
 
@@ -191,7 +192,10 @@ defmodule ProGen.Actions do
               :ok ->
                 result =
                   if force or mod.needed?(validated_args) do
-                    perform_and_confirm(mod, validated_args)
+                    case run_validations(mod) do
+                      :ok -> perform_and_confirm(mod, validated_args)
+                      {:error, _} = err -> err
+                    end
                   else
                     {:ok, :skipped}
                   end
@@ -243,6 +247,16 @@ defmodule ProGen.Actions do
       :ok -> result
       {:error, reason} -> {:error, {:confirmation_failed, reason}}
     end
+  end
+
+  defp run_validations(mod) do
+    mod.validate()
+    |> Enum.reduce_while(:ok, fn {validator_name, checks}, :ok ->
+      case ProGen.Validations.run(validator_name, checks: checks) do
+        :ok -> {:cont, :ok}
+        {:error, _} = err -> {:halt, err}
+      end
+    end)
   end
 
   # ---------------------------------------------------------------------------

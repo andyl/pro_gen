@@ -20,12 +20,16 @@ defmodule ProGen.Action do
 
     * The description is derived from the first line of `@moduledoc` (required)
     * `@option_schema` — [NimbleOptions](https://github.com/dashbitco/nimble_options) schema describing accepted options (defaults to `[]`)
+    * `@validate` — List of `{validator_name, checks}` tuples declaring preconditions
+      checked before `perform/1` (defaults to `[]`). Each tuple is passed to
+      `ProGen.Validations.run/2`. Example: `@validate [{"filesys", [:has_mix, :has_git]}]`
 
   Using this module injects:
 
     * `name/0`          — Auto-derived namespaced action name (string, e.g. `"test.echo"`)
     * `description/0`   — First line of `@moduledoc`
     * `option_schema/0` — Returns the declared option schema
+    * `validate/0`      — Returns the declared `@validate` list (default `[]`)
     * `validate_args/1`  — Validates a keyword list against the schema
     * `usage/0`          — Auto-generated usage text from the schema (overridable)
   """
@@ -40,6 +44,7 @@ defmodule ProGen.Action do
       @behaviour ProGen.Action
 
       Module.register_attribute(__MODULE__, :option_schema, persist: true)
+      Module.register_attribute(__MODULE__, :validate, persist: true)
 
       @before_compile ProGen.Action
 
@@ -86,6 +91,7 @@ defmodule ProGen.Action do
   defmacro __before_compile__(env) do
     moduledoc = Module.get_attribute(env.module, :moduledoc)
     option_schema = Module.get_attribute(env.module, :option_schema) || []
+    validate = Module.get_attribute(env.module, :validate) || []
 
     doc_text =
       case moduledoc do
@@ -96,8 +102,7 @@ defmodule ProGen.Action do
 
     unless doc_text do
       raise CompileError,
-        description:
-          "module #{inspect(env.module)} must set @moduledoc when using ProGen.Action"
+        description: "module #{inspect(env.module)} must set @moduledoc when using ProGen.Action"
     end
 
     description = doc_text |> String.trim_leading() |> String.split("\n", parts: 2) |> hd()
@@ -113,6 +118,7 @@ defmodule ProGen.Action do
       def name, do: unquote(name)
       def description, do: unquote(description)
       def option_schema, do: unquote(Macro.escape(option_schema))
+      def validate, do: unquote(Macro.escape(validate))
     end
   end
 end

@@ -219,6 +219,38 @@ defmodule ProGen.ActionsTest do
     end
   end
 
+  describe "@validate integration" do
+    test "action with passing @validate runs perform successfully" do
+      assert :ok = ProGen.Actions.run("test.validate_pass", [])
+    end
+
+    test "action with failing @validate returns error and does not run perform" do
+      Process.delete(:validate_fail_performed)
+      assert {:error, msg} = ProGen.Actions.run("test.validate_fail", [])
+      assert msg =~ "mix.exs"
+      refute Process.get(:validate_fail_performed)
+    end
+
+    test "validation is skipped when needed?/1 returns false" do
+      assert {:ok, :skipped} = ProGen.Actions.run("test.validate_skip", [])
+    end
+
+    test "existing actions without @validate continue to work unchanged" do
+      assert {output, 0} = ProGen.Actions.run("run", command: "echo", args: ["ok"])
+      assert String.trim(output) == "ok"
+    end
+
+    test "action_info includes :validate key" do
+      assert {:ok, info} = ProGen.Actions.action_info("test.validate_pass")
+      assert info.validate == [{"filesys", [:has_mix]}]
+    end
+
+    test "action_info :validate is [] for actions without @validate" do
+      assert {:ok, info} = ProGen.Actions.action_info("run")
+      assert info.validate == []
+    end
+  end
+
   describe "ProGen.Actions.action_info/1" do
     test "returns a map with all fields populated" do
       assert {:ok, info} = ProGen.Actions.action_info("run")

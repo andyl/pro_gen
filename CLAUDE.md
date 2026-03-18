@@ -30,7 +30,7 @@ ProGen has three pillars (Actions are implemented; Scripts and Menus are stubs/f
 
 **Running actions:** `ProGen.Actions.run("action_name", opts)` resolves dependencies declared by `depends_on/1`, validates args against the schema, then calls `perform/1`. Dependencies are idempotent (each runs at most once per top-level call) and cycle-safe. Pass `force: true` to bypass `needed?/1` (does not propagate to deps). Returns `{:ok, result}` or `{:error, message}`. Action names are strings (e.g., `"run"`, `"test.echo2"`).
 
-**Adding a new action:** Create a module under `lib/pro_gen/action/` named `ProGen.Action.<Name>` that does `use ProGen.Action` and implements the required callbacks (`perform/1`, `@description`, `@option_schema`). Optionally override `depends_on/1` (returns list of dependency action names or `{name, opts}` tuples), `needed?/1`, and `confirm/2`. It will be auto-discovered — no manual registration needed. Action names must be unique across all modules.
+**Adding a new action:** Create a module under `lib/pro_gen/action/` named `ProGen.Action.<Name>` that does `use ProGen.Action` and implements the required callbacks (`perform/1`, `@description`, `@option_schema`). Optionally override `depends_on/1` (returns list of dependency action names or `{name, opts}` tuples), `needed?/1`, and `confirm/2`. Declare `@validate` with a list of `{validator_name, checks}` tuples to add precondition checks before `perform/1` (e.g., `@validate [{"filesys", [:has_mix, :has_git]}]`). It will be auto-discovered — no manual registration needed. Action names must be unique across all modules.
 
 ### Scripts — End-User Generation Workflows
 

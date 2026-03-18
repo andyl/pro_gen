@@ -50,6 +50,20 @@ defmodule ProGen.ActionTest do
     end
   end
 
+  describe "validate/0 accessor" do
+    test "returns [] by default (no @validate declared)" do
+      assert ProGen.Action.Run.validate() == []
+    end
+
+    test "returns declared list when @validate is set" do
+      assert ProGen.Action.Test.ValidatePass.validate() == [{"filesys", [:has_mix]}]
+    end
+
+    test "returns declared list for failing fixture" do
+      assert ProGen.Action.Test.ValidateFail.validate() == [{"filesys", [:no_mix]}]
+    end
+  end
+
   describe "confirm/2 callback" do
     test "default confirm/2 returns :ok" do
       assert ProGen.Action.Run.confirm(:ok, []) == :ok
