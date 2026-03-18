@@ -40,7 +40,7 @@ if PS.cli_vals().force do
 end
 
 # exit if validations do not pass
-PS.validate "CHECK ENVIRONMENT",  "filesys", [:no_mix, :no_git, {:no_dir, project}]
+PS.validate "CHECK ENVIRONMENT",  "filesys", [:no_mix, :no_git]
 
 # generate project using igniter
 PS.action  "GEN TABLEAU PROJECT", "tableau_new.run", [project: project]
@@ -57,6 +57,7 @@ PS.action "ADD UsageRules", "igniter.install", [dependency: "usage_rules"]
 # run_cmd "Fix CSS"          "sed -i 's/\"$/\";/' assets/css/site.css"
 # run_cmd "Generate RULES"   "echo 0 | mix usage_rules.sync RULES.md --link-to-folder RULES --all"
 # run_cmd "Add completions"  "mix complete.bash > /dev/null"
+PS.action "Add Completions", "mix_completions.run", []
 
 # Report the elapsed time
 PS.finish()

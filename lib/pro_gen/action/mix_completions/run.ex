@@ -7,39 +7,33 @@ defmodule ProGen.Action.MixCompletions.Run do
   """
 
   use ProGen.Action
-  alias ProGen.Sys
 
   @opts_def []
+  @validate [{"filesys", [{:has_file, "mix.exs"}]}]
+
+  @cache_file ".mix_complete.cache"
 
   @impl true
-  def depends_on(_args), do: ["igniter_new.install"]
+  def depends_on(_args), do: ["mix_completions.install"]
 
   @impl true
-  def needed?(args) do
-    project = Keyword.fetch!(args, :project)
-    not File.dir?(project)
+  def needed?(_args) do
+    # always run - even if @cache_file exists
+    # it rebuilds cache if mix tasks have changed
+    true
   end
 
   @impl true
-  def perform(args) do
-    project = Keyword.fetch!(args, :project)
-    Sys.cmd("rm -rf #{project}")
-    case Keyword.fetch!(args, :installs) do
-      nil ->
-        Sys.cmd("mix igniter.new #{project}")
-      packages ->
-        Sys.cmd("mix igniter.new #{project} --install #{packages}")
-    end
+  def perform(_args) do
+    ProGen.Sys.cmd("mix complete.bash > @cache_file")
   end
 
   @impl true
-  def confirm(_result, args) do
-    project = Keyword.fetch!(args, :project)
-
-    if File.dir?(project) do
+  def confirm(_result, _args) do
+    if File.exists?(@cache_file) do
       :ok
     else
-      {:error, "project directory \"#{project}\" was not created"}
+      {:error, "cache file '#{@cache_file}' was not created"}
     end
   end
 end
