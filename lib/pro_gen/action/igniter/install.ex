@@ -26,12 +26,12 @@ defmodule ProGen.Action.Igniter.Install do
 
   @impl true
   def confirm(_result, args) do
-    dependency = Keyword.fetch!(args, :dependency)
+    dep = Keyword.fetch!(args, :dependency)
 
-    if File.dir?(dependency) do
+    if find_dep(dep) do
       :ok
     else
-      {:error, "dependency \"#{dependency}\" was not installed"}
+      {:error, "dependency \"#{dep}\" was not installed"}
     end
   end
 
