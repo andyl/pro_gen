@@ -6,8 +6,7 @@ defmodule ProGen.Sys do
   """
 
   def cmd(cmd_string) when is_binary(cmd_string) do
-    [cmd | args] = OptionParser.split(cmd_string)
-    cmd(cmd, args)
+    cmd("sh", ["-c", cmd_string])
   end
 
   def cmd(cmd, arg_list) do

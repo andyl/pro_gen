@@ -209,5 +209,22 @@ defmodule ProGen.ScriptTest do
       capture_io(fn -> send(self(), ProGen.Sys.cmd("false", [])) end)
       assert_received {:error, code} when is_integer(code)
     end
+
+    test "handles shell redirects" do
+      output_path = Path.join(System.tmp_dir!(), "pro_gen_sys_redirect_test_#{System.unique_integer([:positive])}")
+
+      try do
+        capture_io(fn -> send(self(), ProGen.Sys.cmd("echo asdf > #{output_path}")) end)
+        assert_received :ok
+        assert File.read!(output_path) =~ "asdf"
+      after
+        File.rm(output_path)
+      end
+    end
+
+    test "handles shell pipes" do
+      {_result, output} = with_io(fn -> ProGen.Sys.cmd("echo hello world | tr h H") end)
+      assert output =~ "Hello"
+    end
   end
 end
