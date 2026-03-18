@@ -403,6 +403,11 @@ Generates a basic tableau app.
 # Generates a basic tableau app.
 
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
+
+alias ProGen.Script, as: PS 
+alias ProGen.Validate, as: PV
+
+PS.puts("Under Construction")
 ```
 
 ## progen_tableau_pwa
