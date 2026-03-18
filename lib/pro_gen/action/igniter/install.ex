@@ -14,8 +14,8 @@ defmodule ProGen.Action.Igniter.Install do
 
   @impl true
   def needed?(args) do
-    Keyword.fetch!(args, :dependency)
-    |> find_dep()
+    dep = Keyword.fetch!(args, :dependency)
+    not find_dep(dep)
   end
 
   @impl true
@@ -35,9 +35,10 @@ defmodule ProGen.Action.Igniter.Install do
     end
   end
 
-  defp find_dep(_dep) do
-    # check the Mix.exs file (in deps) to see if the dependency has been installed
-    # there is a mix task (mix deps) that could be grepped...
-    true
+  defp find_dep(dep) do
+    case File.read("mix.exs") do
+      {:ok, contents} -> String.contains?(contents, ":#{dep}")
+      {:error, _} -> false
+    end
   end
 end
