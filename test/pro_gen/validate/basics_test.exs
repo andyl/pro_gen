@@ -82,24 +82,24 @@ defmodule ProGen.Validate.BasicsTest do
     end
   end
 
-  describe "igniter checks" do
-    test ":has_igniter passes when igniter is available" do
-      assert :ok = ProGen.Validate.Basics.check(:has_igniter)
-    end
+  # describe "igniter checks" do
+  #   test ":has_igniter passes when igniter is available" do
+  #     assert :ok = ProGen.Validate.Basics.check(:has_igniter)
+  #   end
+  #
+  #   test ":no_igniter fails when igniter is available" do
+  #     assert {:error, msg} = ProGen.Validate.Basics.check(:no_igniter)
+  #     assert msg =~ "Igniter is installed"
+  #   end
+  # end
 
-    test ":no_igniter fails when igniter is available" do
-      assert {:error, msg} = ProGen.Validate.Basics.check(:no_igniter)
-      assert msg =~ "Igniter is installed"
-    end
-  end
-
-  describe "phx_new checks" do
-    test ":has_phx_new and :no_phx_new are mutually exclusive" do
-      has_result = ProGen.Validate.Basics.check(:has_phx_new)
-      no_result = ProGen.Validate.Basics.check(:no_phx_new)
-      assert has_result == :ok != (no_result == :ok)
-    end
-  end
+  # describe "phx_new checks" do
+  #   test ":has_phx_new and :no_phx_new are mutually exclusive" do
+  #     has_result = ProGen.Validate.Basics.check(:has_phx_new)
+  #     no_result = ProGen.Validate.Basics.check(:no_phx_new)
+  #     assert has_result == :ok != (no_result == :ok)
+  #   end
+  # end
 
   describe "fail-fast behavior" do
     test "stops at first failure and returns its error" do

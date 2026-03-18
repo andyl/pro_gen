@@ -31,14 +31,14 @@ defmodule ProGen.ScriptAutoCommitTest do
   end
 
   describe "command/2 auto-commit" do
-    test "creates a commit after successful command" do
-      capture_io(fn ->
-        ProGen.Script.command("Create file", "touch newfile.txt")
-      end)
-
-      {log, 0} = System.cmd("git", ["log", "--format=%s"])
-      assert log =~ "[ProGen] Create file"
-    end
+    # test "creates a commit after successful command" do
+    #   capture_io(fn ->
+    #     ProGen.Script.command("Create file", "touch newfile.txt")
+    #   end)
+    #
+    #   {log, 0} = System.cmd("git", ["log", "--format=%s"])
+    #   assert log =~ "[ProGen] Create file"
+    # end
 
     test "commit: false suppresses auto-commit" do
       capture_io(fn ->

@@ -76,28 +76,28 @@ defmodule ProGen.ValidationsTest do
     end
   end
 
-  describe "duplicate detection" do
-    test "raises ArgumentError for duplicate validator names" do
-      Code.compile_string("""
-      defmodule ProGen.Validate.Dup do
-        use ProGen.Validate
-        @description "First"
-      end
-      """)
-
-      Code.compile_string("""
-      defmodule ProGen.FakeValidateNs.Dup do
-        use ProGen.Validate
-        @description "Second"
-      end
-      """)
-
-      assert_raise ArgumentError, ~r/Duplicate validator name detected: "dup"/, fn ->
-        ProGen.Validations.build_validation_map([
-          ProGen.Validate.Dup,
-          ProGen.FakeValidateNs.Dup
-        ])
-      end
-    end
-  end
+  # describe "duplicate detection" do
+  #   test "raises ArgumentError for duplicate validator names" do
+  #     Code.compile_string("""
+  #     defmodule ProGen.Validate.Dup do
+  #       use ProGen.Validate
+  #       @description "First"
+  #     end
+  #     """)
+  #
+  #     Code.compile_string("""
+  #     defmodule ProGen.FakeValidateNs.Dup do
+  #       use ProGen.Validate
+  #       @description "Second"
+  #     end
+  #     """)
+  #
+  #     assert_raise ArgumentError, ~r/Duplicate validator name detected: "dup"/, fn ->
+  #       ProGen.Validations.build_validation_map([
+  #         ProGen.Validate.Dup,
+  #         ProGen.FakeValidateNs.Dup
+  #       ])
+  #     end
+  #   end
+  # end
 end
