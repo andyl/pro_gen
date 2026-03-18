@@ -10,8 +10,6 @@ defmodule ProGen.Validate.Filesys do
 
   use ProGen.Validate
 
-  @description "Basic filesystem and tool checks"
-
   defcheck :has_mix do
     desc "Pass if mix.exs exists"
     fail "File 'mix.exs' not found"

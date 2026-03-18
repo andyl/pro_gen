@@ -10,8 +10,6 @@ defmodule ProGen.Validate.Gem do
 
   use ProGen.Validate
 
-  @description "Bundled filesystem and hex tool checks"
-
   defcheck :has_mix do
     desc "Pass if mix.exs exists"
     fail "File 'mix.exs' not found"

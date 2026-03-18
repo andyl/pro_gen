@@ -7,14 +7,10 @@ defmodule ProGen.Validate do
     * `checks/0`  — Returns a list of available check terms with descriptions
     * `check/1`   — Runs a single check term and returns `:ok` or `{:error, message}`
 
-  Validation metadata is declared via module attributes:
-
-    * `@description` — Short human-readable description (required)
-
   Using this module injects:
 
-    * `name/0`          — Auto-derived validator name (string, e.g. `"basics"`)
-    * `description/0`   — Returns the declared description
+    * `name/0`          — Auto-derived validator name (string, e.g. `"filesys"`)
+    * `description/0`   — First line of `@moduledoc`
     * `option_schema/0` — Returns the option schema (`[checks: ...]`)
     * `validate_args/1`  — Validates a keyword list against the schema
     * `check/1`         — Default implementation that looks up term in `all_checks/0`
@@ -74,7 +70,6 @@ defmodule ProGen.Validate do
     quote do
       @behaviour ProGen.Validate
 
-      Module.register_attribute(__MODULE__, :description, persist: true)
       Module.register_attribute(__MODULE__, :check_defs, accumulate: true)
       Module.register_attribute(__MODULE__, :check_asts, accumulate: true)
 
@@ -142,13 +137,22 @@ defmodule ProGen.Validate do
   end
 
   defmacro __before_compile__(env) do
-    description = Module.get_attribute(env.module, :description)
+    moduledoc = Module.get_attribute(env.module, :moduledoc)
 
-    unless description do
+    doc_text =
+      case moduledoc do
+        {_line, text} when is_binary(text) -> text
+        text when is_binary(text) -> text
+        _ -> nil
+      end
+
+    unless doc_text do
       raise CompileError,
         description:
-          "module #{inspect(env.module)} must set @description when using ProGen.Validate"
+          "module #{inspect(env.module)} must set @moduledoc when using ProGen.Validate"
     end
+
+    description = doc_text |> String.trim_leading() |> String.split("\n", parts: 2) |> hd()
 
     name =
       env.module
@@ -165,14 +169,7 @@ defmodule ProGen.Validate do
 
     # Build markdown table for docs
     if check_defs != [] do
-      existing_doc = Module.get_attribute(env.module, :moduledoc)
-
-      base_doc =
-        case existing_doc do
-          {_line, text} when is_binary(text) -> text
-          text when is_binary(text) -> text
-          _ -> ""
-        end
+      base_doc = doc_text || ""
 
       rows =
         Enum.map_join(check_defs, "\n", fn %{term: term, desc: desc} ->

@@ -7,8 +7,6 @@ defmodule ProGen.Validate.Lang do
 
   use ProGen.Validate
 
-  @description "Validation checks for common languages (elixir, erlang, python, etc.)"
-
   defcheck :has_elixir do
     desc "Pass if Elixir is installed"
     fail "No Elixir - please install"

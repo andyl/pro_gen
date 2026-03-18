@@ -7,8 +7,6 @@ defmodule ProGen.Validate.Hex do
 
   use ProGen.Validate
 
-  @description "Validation checks for hex packages."
-
   defcheck :has_igniter do
     desc "Pass if igniter is installed"
     fail "No igniter (install with 'mix archive.install hex igniter_new --force')"

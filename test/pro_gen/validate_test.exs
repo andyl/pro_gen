@@ -19,11 +19,12 @@ defmodule ProGen.ValidateTest do
     end
   end
 
-  describe "missing @description" do
+  describe "missing @moduledoc" do
     test "raises CompileError" do
-      assert_raise CompileError, ~r/must set @description/, fn ->
+      assert_raise CompileError, ~r/must set @moduledoc/, fn ->
         Code.compile_string("""
-        defmodule ProGen.Validate.NoDesc do
+        defmodule ProGen.Validate.NoDoc do
+          @moduledoc false
           use ProGen.Validate
         end
         """)
@@ -35,9 +36,8 @@ defmodule ProGen.ValidateTest do
     test "nested module segments are dot-joined" do
       Code.compile_string("""
       defmodule ProGen.Validate.Test.Nested do
+        @moduledoc "Nested test validator"
         use ProGen.Validate
-
-        @description "Nested test validator"
       end
       """)
 
