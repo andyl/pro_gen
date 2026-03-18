@@ -1,4 +1,4 @@
-defmodule ProGen.Action.Igniter.Install do
+defmodule ProGen.Action.Deps.Install do
   @moduledoc """
   Use igniter to install a dependency in your mix.exs file.
   """
@@ -6,27 +6,27 @@ defmodule ProGen.Action.Igniter.Install do
   use ProGen.Action
   alias ProGen.Sys
 
-  @opts_def [ dependency: [type: :string, required: true, doc: "The dependency to install"] ]
-  # @validate [{"filesys", [:has_mix, :has_git]}]
-  #
-  # @impl true
-  # def depends_on(_args), do: ["igniter_new.install"]
+  @opts_def [ dep: [type: :string, required: true, doc: "The dependency to install"] ]
+  @validate [{"filesys", [:has_mix, :has_git]}]
+
+  @impl true
+  def depends_on(_args), do: ["archive.install"]
 
   @impl true
   def needed?(args) do
-    dep = Keyword.fetch!(args, :dependency)
+    dep = Keyword.fetch!(args, :dep)
     not find_dep(dep)
   end
 
   @impl true
   def perform(args) do
-    dependency = Keyword.fetch!(args, :dependency)
+    dependency = Keyword.fetch!(args, :dep)
     Sys.cmd("mix igniter.install #{dependency} --yes")
   end
 
   @impl true
   def confirm(_result, args) do
-    dep = Keyword.fetch!(args, :dependency)
+    dep = Keyword.fetch!(args, :dep)
 
     if find_dep(dep) do
       :ok

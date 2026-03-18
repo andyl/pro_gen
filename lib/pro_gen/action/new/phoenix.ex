@@ -14,7 +14,9 @@ defmodule ProGen.Action.PhxNew do
   ]
 
   @impl true
-  def depends_on(_args), do: ["igniter_new.install", "phx_new.install"]
+  def depends_on(_args) do
+    [{"archive.install", package: "phx_new"}]
+  end
 
   @impl true
   def needed?(args) do

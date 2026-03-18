@@ -30,7 +30,7 @@ PS.cli_args(
 {:ok, %{project: project}} = PS.parse_args() 
 
 # Clear the screen
-PS.clear() 
+# PS.clear() 
 
 # Start a timer
 PS.start()
@@ -43,20 +43,19 @@ end
 PS.validate "CHECK ENVIRONMENT",  "filesys", [:no_mix, :no_git]
 
 # generate project using igniter
-PS.action  "GEN TABLEAU PROJECT", "tableau_new.run", [project: project]
+PS.action  "GEN TABLEAU PROJECT", "new.tableau", [project: project]
 
 # Change to the project directory
 PS.cd(project)
 
 # Compile Code 
-PS.command "COMPILE", "mix compile"
-PS.action "ADD HeroIcons", "igniter.install", [dependency: "heroicons"]
-PS.action "ADD UsageRules", "igniter.install", [dependency: "usage_rules"]
+PS.command "COMPILE",          "mix compile"
+PS.action "ADD HeroIcons",     "igniter.install",    [dependency: "heroicons"]
+PS.action "ADD UsageRules",    "igniter.install",    [dependency: "usage_rules"]
+PS.action "CONFIG UsageRules", "config.usage_rules", []
 # run_cmd "Add Daisy"        "npm i -D daisyui@latest" 
 # run_cmd "Update CSS"       "echo '@plugin \"daisyui\";' >> assets/css/site.css"
 # run_cmd "Fix CSS"          "sed -i 's/\"$/\";/' assets/css/site.css"
-# run_cmd "Generate RULES"   "echo 0 | mix usage_rules.sync RULES.md --link-to-folder RULES --all"
-# run_cmd "Add completions"  "mix complete.bash > /dev/null"
 PS.action "Add Completions", "mix_completions.run", []
 
 # Report the elapsed time

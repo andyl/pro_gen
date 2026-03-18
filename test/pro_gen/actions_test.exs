@@ -1,18 +1,21 @@
 defmodule ProGen.ActionsTest do
   use ExUnit.Case
+  import ExUnit.CaptureIO
 
   describe "ProGen.Actions.run/2" do
     test "validates and performs a valid action" do
-      assert {output, 0} =
-               ProGen.Actions.run("run", command: "echo", args: ["hello"])
+      output =
+        capture_io(fn ->
+          assert :ok = ProGen.Actions.run("io.echo", message: "hello")
+        end)
 
-      assert String.trim(output) == "hello"
+      assert output == "hello\n"
     end
 
     test "returns error for missing required args" do
-      assert {:error, message} = ProGen.Actions.run("run", [])
+      assert {:error, message} = ProGen.Actions.run("io.echo", [])
       assert is_binary(message)
-      assert message =~ "command"
+      assert message =~ "message"
     end
 
     test "returns error for unknown action" do
@@ -23,15 +26,13 @@ defmodule ProGen.ActionsTest do
 
   describe "run/2 with module" do
     test "validates and performs a valid action module" do
-      import ExUnit.CaptureIO
-
       assert capture_io(fn ->
-               assert :ok = ProGen.Actions.run(ProGen.Action.Echo, message: "hello")
+               assert :ok = ProGen.Actions.run(ProGen.Action.IO.Echo, message: "hello")
              end) == "hello\n"
     end
 
     test "returns error for missing required args" do
-      assert {:error, msg} = ProGen.Actions.run(ProGen.Action.Echo, [])
+      assert {:error, msg} = ProGen.Actions.run(ProGen.Action.IO.Echo, [])
       assert msg =~ "message"
     end
 
@@ -111,10 +112,12 @@ defmodule ProGen.ActionsTest do
 
   describe "confirm/2 integration" do
     test "action with no confirm/2 override still works unchanged" do
-      assert {output, 0} =
-               ProGen.Actions.run("run", command: "echo", args: ["hello"])
+      output =
+        capture_io(fn ->
+          assert :ok = ProGen.Actions.run("io.echo", message: "hello")
+        end)
 
-      assert String.trim(output) == "hello"
+      assert output == "hello\n"
     end
 
     test "action with confirm/2 returning :ok passes through perform result (string)" do
@@ -236,8 +239,12 @@ defmodule ProGen.ActionsTest do
     end
 
     test "existing actions without @validate continue to work unchanged" do
-      assert {output, 0} = ProGen.Actions.run("run", command: "echo", args: ["ok"])
-      assert String.trim(output) == "ok"
+      output =
+        capture_io(fn ->
+          assert :ok = ProGen.Actions.run("io.echo", message: "ok")
+        end)
+
+      assert output == "ok\n"
     end
 
     test "action_info includes :validate key" do
@@ -246,19 +253,19 @@ defmodule ProGen.ActionsTest do
     end
 
     test "action_info :validate is [] for actions without @validate" do
-      assert {:ok, info} = ProGen.Actions.action_info("run")
+      assert {:ok, info} = ProGen.Actions.action_info("io.echo")
       assert info.validate == []
     end
   end
 
   describe "ProGen.Actions.action_info/1" do
     test "returns a map with all fields populated" do
-      assert {:ok, info} = ProGen.Actions.action_info("run")
-      assert info.module == ProGen.Action.Run
-      assert info.name == "run"
-      assert info.description == "Run a system command."
+      assert {:ok, info} = ProGen.Actions.action_info("io.echo")
+      assert info.module == ProGen.Action.IO.Echo
+      assert info.name == "io.echo"
+      assert info.description == "Echo a message to stdout."
       assert is_list(info.opts_def)
-      assert Keyword.has_key?(info.opts_def, :command)
+      assert Keyword.has_key?(info.opts_def, :message)
       assert is_binary(info.usage)
     end
   end

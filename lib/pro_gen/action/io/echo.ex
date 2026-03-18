@@ -1,4 +1,4 @@
-defmodule ProGen.Action.Echo do
+defmodule ProGen.Action.IO.Echo do
   @moduledoc """
   Echo a message to stdout.
   """

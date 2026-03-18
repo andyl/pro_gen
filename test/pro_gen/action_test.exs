@@ -3,19 +3,17 @@ defmodule ProGen.ActionTest do
 
   describe "ProGen.Action attribute accessors" do
     test "name/0 returns the derived string name" do
-      assert ProGen.Action.Run.name() == "run"
+      assert ProGen.Action.IO.Echo.name() == "io.echo"
     end
 
     test "description/0 returns first line of @moduledoc" do
-      assert ProGen.Action.Run.description() == "Run a system command."
+      assert ProGen.Action.IO.Echo.description() == "Echo a message to stdout."
     end
 
     test "opts_def/0 returns the declared schema" do
-      schema = ProGen.Action.Run.opts_def()
+      schema = ProGen.Action.IO.Echo.opts_def()
       assert is_list(schema)
-      assert Keyword.has_key?(schema, :command)
-      assert Keyword.has_key?(schema, :args)
-      assert Keyword.has_key?(schema, :dir)
+      assert Keyword.has_key?(schema, :message)
     end
 
     test "name/0 returns a dot-joined namespace for nested modules" do
@@ -52,7 +50,7 @@ defmodule ProGen.ActionTest do
 
   describe "validate/0 accessor" do
     test "returns [] by default (no @validate declared)" do
-      assert ProGen.Action.Run.validate() == []
+      assert ProGen.Action.IO.Echo.validate() == []
     end
 
     test "returns declared list when @validate is set" do
@@ -66,7 +64,7 @@ defmodule ProGen.ActionTest do
 
   describe "confirm/2 callback" do
     test "default confirm/2 returns :ok" do
-      assert ProGen.Action.Run.confirm(:ok, []) == :ok
+      assert ProGen.Action.IO.Echo.confirm(:ok, []) == :ok
     end
 
     test "confirm/2 can be overridden" do
@@ -76,7 +74,7 @@ defmodule ProGen.ActionTest do
 
   describe "needed?/1 predicate" do
     test "default needed?/1 returns true" do
-      assert ProGen.Action.Run.needed?([]) == true
+      assert ProGen.Action.IO.Echo.needed?([]) == true
     end
 
     test "needed?/1 can be overridden" do

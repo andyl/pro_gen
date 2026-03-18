@@ -56,7 +56,7 @@ defmodule ProGen.ScriptAutoCommitTest do
       File.write!("action_test.txt", "test content")
 
       capture_io(fn ->
-        ProGen.Script.action("Echo test", "echo", message: "hello")
+        ProGen.Script.action("Echo test", "io.echo", message: "hello")
       end)
 
       {log, 0} = System.cmd("git", ["log", "--format=%s"])
@@ -67,7 +67,7 @@ defmodule ProGen.ScriptAutoCommitTest do
       File.write!("action_test2.txt", "test content")
 
       capture_io(fn ->
-        ProGen.Script.action("Echo test", "echo", message: "hello", commit: false)
+        ProGen.Script.action("Echo test", "io.echo", message: "hello", commit: false)
       end)
 
       {log, 0} = System.cmd("git", ["log", "--format=%s"])

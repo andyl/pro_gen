@@ -1,4 +1,4 @@
-defmodule ProGen.Action.Inspect do
+defmodule ProGen.Action.IO.Inspect do
   @moduledoc """
   Inspect an Elixir term to stdout.
   """

@@ -1,6 +1,6 @@
-defmodule ProGen.Action.TermUI.New do
+defmodule ProGen.Action.New.Tableau do
   @moduledoc """
-  Create a new TermUI application.
+  Create a new Tableau application.
 
   Skips creation when the project directory already exists.
   Pass `force: true` to regenerate regardless.
@@ -10,11 +10,13 @@ defmodule ProGen.Action.TermUI.New do
   alias ProGen.Sys
 
   @opts_def [
-    project: [type: :string, required: true, doc: "Name of the TermUI project to create"]
+    project: [type: :string, required: true, doc: "Name of the Tableau project to create"]
   ]
 
   @impl true
-  def depends_on(_args), do: ["igniter_new.install"]
+  def depends_on(_args) do
+    [{"archive.install", package: "tableau_new"}]
+  end
 
   @impl true
   def needed?(args) do
@@ -26,7 +28,8 @@ defmodule ProGen.Action.TermUI.New do
   def perform(args) do
     project = Keyword.fetch!(args, :project)
     Sys.cmd("rm -rf #{project}")
-    Sys.cmd("mix igniter.new #{project} --install term_ui")
+    arg = "mix igniter.new #{project} --with=tableau.new --with-args '--template heex --css tailwind'"
+    Sys.cmd(arg)
   end
 
   @impl true

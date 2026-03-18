@@ -14,7 +14,9 @@ defmodule ProGen.Action.MixCompletions.Run do
   @cache_file ".mix_complete.cache"
 
   @impl true
-  def depends_on(_args), do: ["mix_completions.install"]
+  def depends_on(_args) do
+    [{"archive.install", [package: "mix_completions"]}]
+  end
 
   @impl true
   def needed?(_args) do
