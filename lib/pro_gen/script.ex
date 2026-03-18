@@ -170,7 +170,12 @@ defmodule ProGen.Script do
     {commit_opts, action_opts} = Keyword.split(opts, [:commit])
 
     log(desc)
-    result = mod |> ProGen.Actions.run(action_opts) |> halt_on_error()
+
+    result =
+      mod
+      |> ProGen.Actions.run(action_opts)
+      |> halt_on_error()
+
     auto_commit(desc, commit_opts)
     result
   end
@@ -305,8 +310,12 @@ defmodule ProGen.Script do
     if Application.get_env(:pro_gen, :auto_commit, true) and
          Keyword.get(opts, :commit, true) do
       case ProGen.Actions.run("git.commit", message: "[ProGen] #{desc}") do
-        :ok -> :ok
-        {:ok, :skipped} -> :ok
+        :ok ->
+          :ok
+
+        {:ok, :skipped} ->
+          :ok
+
         {:error, reason} ->
           require Logger
           Logger.warning("Auto-commit failed: #{inspect(reason)}")
@@ -343,7 +352,7 @@ defmodule ProGen.Script do
   defp halt_on_error(:ok), do: :ok
 
   defp halt_on_error({:error, message}) do
-    IO.puts(:stderr, "Error: #{message}")
+    IO.puts(:stderr, "Error: #{inspect(message)}")
     do_halt(1)
   end
 

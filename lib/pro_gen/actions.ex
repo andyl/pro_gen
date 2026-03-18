@@ -120,6 +120,8 @@ defmodule ProGen.Actions do
   end
 
   def run(action_name, args) when is_binary(action_name) do
+    IO.inspect({action_name, args}, label: "ENTER1")
+
     top_level? = Process.get(@ran_set_key) == nil
 
     if top_level? do

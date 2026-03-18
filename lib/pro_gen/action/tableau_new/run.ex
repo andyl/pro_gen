@@ -13,8 +13,8 @@ defmodule ProGen.Action.TableauNew.Run do
     project: [type: :string, required: true, doc: "Name of the Tableau project to create"]
   ]
 
-  @impl true
-  def depends_on(_args), do: ["igniter_new.install", "tableau_new.install"]
+  # @impl true
+  # def depends_on(_args), do: ["igniter_new.install", "tableau_new.install"]
 
   @impl true
   def needed?(args) do
@@ -26,7 +26,9 @@ defmodule ProGen.Action.TableauNew.Run do
   def perform(args) do
     project = Keyword.fetch!(args, :project)
     Sys.cmd("rm -rf #{project}")
-    Sys.cmd("mix igniter.new #{project} --with=tableau.new --with-args '--template heex --css tailwind'")
+    arg = ~s(mix igniter.new #{project} --with=tableau.new --with-args "--template heex --css tailwind")
+                                             |> IO.inspect(label: "TONG")
+    Sys.cmd(arg)
   end
 
   @impl true
