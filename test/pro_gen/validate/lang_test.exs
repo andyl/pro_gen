@@ -1,5 +1,5 @@
 defmodule ProGen.Validate.LangTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   # Tests run in an environment where elixir and erlang are installed.
 

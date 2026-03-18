@@ -1,5 +1,5 @@
 defmodule ProGen.Validate.GemTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   # We run tests from the project root, so mix.exs, lib/, and .git exist.
 

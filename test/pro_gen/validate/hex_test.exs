@@ -1,5 +1,5 @@
 defmodule ProGen.Validate.HexTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   # Skipping runtime checks for has_igniter, no_igniter, has_phx_new, no_phx_new
   # because they shell out to `mix help` which is slow and environment-dependent.

@@ -1,5 +1,5 @@
 defmodule ProGen.Action.InspectTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   import ExUnit.CaptureIO
 
   describe "ProGen.Action.Inspect" do

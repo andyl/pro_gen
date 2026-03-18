@@ -1,5 +1,5 @@
 defmodule ProGen.ValidationsTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   describe "list_validations/0" do
     test "includes all four validators" do

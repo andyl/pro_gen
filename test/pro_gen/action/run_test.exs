@@ -1,5 +1,5 @@
 defmodule ProGen.Action.RunTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   describe "Run option_schema validation" do
     test "accepts valid args" do
