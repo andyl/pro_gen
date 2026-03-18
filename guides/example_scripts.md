@@ -403,8 +403,6 @@ Generates a basic tableau app.
 # Generates a basic tableau app.
 
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
-
-PG.puts "UNDER CONSTRUCTION"
 ```
 
 ## pg_tableau_pwa
@@ -427,4 +425,76 @@ Generates a tableau app with a PWA interface.
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 
 PG.puts "UNDER CONSTRUCTION"
+```
+
+## pg_termui_base
+
+Generates a basic TermUI app.
+
+**Run it:**
+
+```bash
+./scripts/pg_termui_base --help
+```
+
+**Source:** [`scripts/pg_termui_base`](https://github.com/andyl/pro_gen/blob/master/scripts/pg_termui_base)
+
+```elixir
+#!/usr/bin/env elixir
+
+# Generates a basic TermUI app.
+
+Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
+
+alias ProGen.Script,    as: PS
+alias ProGen.Validate,  as: PV
+
+PS.cli_args( 
+  description: "Basic TermUI Project Generator", 
+  allow_unknown_args: false, 
+  args: [
+    project: [
+      value_name: "PROJECT",
+      help: "TermUI Project name", 
+      required: true, 
+      parser: :string
+    ]
+  ],
+  flags: [ 
+    force: [
+      short: "-f", 
+      long: "--force", 
+      help: "Overwrite project directory if it exists"
+    ]
+  ]
+)
+  
+# Parse the CLI args and grab the project name
+{:ok, %{project: project}} = PS.parse_args() 
+
+# Clear the screen
+PS.clear() 
+
+# Start a timer
+PS.start()
+
+# exit if validations do not pass
+# LSP hover on PV.Basics for definitions
+PS.validate "CHECK ENVIRONMENT",  PV.Basics, [:no_mix, :no_git, {:no_dir, project}]
+
+if PS.cli_vals().force do 
+  PS.command "CLEANUP OLD PROJECT", "rm -rf #{project}"
+end
+
+# generate TermUI project 
+PS.action  "GEN TermUI PROJECT", "termui.new", [project: project]
+
+# Change to the project directory
+PS.cd(project)
+
+# Compile Code 
+PS.command "COMPILE", "mix compile"
+
+# Report the elapsed time
+PS.finish()
 ```
