@@ -1,41 +1,43 @@
 defmodule ProGen.Action.Igniter.Install do
   @moduledoc """
-  Create a new Phoenix application.
+  Use igniter to install a dependency in your mix.exs file.
   """
 
   use ProGen.Action
   alias ProGen.Sys
 
-  @opts_def [
-    dependency: [type: :string, required: true, doc: "The dependency to install"]
-  ]
+  @opts_def [ dependency: [type: :string, required: true, doc: "The dependency to install"] ]
   @validate [{"filesys", [:has_mix, :has_git]}]
 
   @impl true
   def depends_on(_args), do: ["igniter_new.install"]
 
   @impl true
-  def needed?(_args) do
-    # check the Mix.exs file (in deps) to see if the dependency has been installed
-    # there is a mix task (mix deps) that could be grepped...
-    true
+  def needed?(args) do
+    Keyword.fetch!(args, :dependency)
+    |> find_dep()
   end
 
   @impl true
   def perform(args) do
-    project = Keyword.fetch!(args, :project)
-    Sys.cmd("rm -rf #{project}")
-    Sys.cmd("mix igniter.new #{project} --with=phx.new --with-args '--template heex --css tailwind'")
+    dependency = Keyword.fetch!(args, :dependency)
+    Sys.cmd("mix igniter.install #{dependency} --yes")
   end
 
   @impl true
   def confirm(_result, args) do
-    project = Keyword.fetch!(args, :project)
+    dependency = Keyword.fetch!(args, :dependency)
 
-    if File.dir?(project) do
+    if File.dir?(dependency) do
       :ok
     else
-      {:error, "project directory \"#{project}\" was not created"}
+      {:error, "dependency \"#{dependency}\" was not installed"}
     end
+  end
+
+  defp find_dep(_dep) do
+    # check the Mix.exs file (in deps) to see if the dependency has been installed
+    # there is a mix task (mix deps) that could be grepped...
+    true
   end
 end

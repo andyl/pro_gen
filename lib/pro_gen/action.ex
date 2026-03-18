@@ -5,9 +5,9 @@ defmodule ProGen.Action do
   Defines four callbacks:
 
     * `depends_on/1` — Optional list of dependency action names to run first (default: `[]`)
-    * `needed?/1`  — Optional predicate checked before `perform/1` (default: `true`)
-    * `perform/1`  — Executes the action with validated keyword args
-    * `confirm/2`  — Optional postcondition checked after `perform/1` (default: `:ok`)
+    * `needed?/1`    — Optional predicate checked before `perform/1` (default: `true`)
+    * `perform/1`    — Executes the action with validated keyword args
+    * `confirm/2`    — Optional postcondition checked after `perform/1` (default: `:ok`)
 
   When `needed?/1` returns `false`, the framework skips `perform/1` and returns
   `{:ok, :skipped}`. Pass `force: true` to `ProGen.Actions.run/2` to bypass the check.
