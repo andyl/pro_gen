@@ -3,7 +3,7 @@ defmodule ProGen.Action.Test.ConfirmFail do
 
   use ProGen.Action
 
-  @option_schema [
+  @opts_def [
     message: [type: :string, required: true, doc: "A message"]
   ]
 

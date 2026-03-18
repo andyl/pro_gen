@@ -257,8 +257,8 @@ defmodule ProGen.ActionsTest do
       assert info.module == ProGen.Action.Run
       assert info.name == "run"
       assert info.description == "Run a system command."
-      assert is_list(info.option_schema)
-      assert Keyword.has_key?(info.option_schema, :command)
+      assert is_list(info.opts_def)
+      assert Keyword.has_key?(info.opts_def, :command)
       assert is_binary(info.usage)
     end
   end

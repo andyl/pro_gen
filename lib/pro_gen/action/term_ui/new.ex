@@ -9,7 +9,7 @@ defmodule ProGen.Action.TermUI.New do
   use ProGen.Action
   alias ProGen.Sys
 
-  @option_schema [
+  @opts_def [
     project: [type: :string, required: true, doc: "Name of the TermUI project to create"]
   ]
 

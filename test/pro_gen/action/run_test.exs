@@ -1,7 +1,7 @@
 defmodule ProGen.Action.RunTest do
   use ExUnit.Case, async: true
 
-  describe "Run option_schema validation" do
+  describe "Run opts_def validation" do
     test "accepts valid args" do
       args = [command: "echo", args: ["hello"], dir: "/tmp"]
       assert {:ok, validated} = ProGen.Action.Run.validate_args(args)

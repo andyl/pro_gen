@@ -9,7 +9,7 @@ defmodule ProGen.Action.IgniterNew.Run do
   use ProGen.Action
   alias ProGen.Sys
 
-  @option_schema [
+  @opts_def [
     project: [type: :string, required: true, doc: "Name of the igniter project to create"],
     packages: [type: :string, required: false, doc: "Comma-seperated list of packages to install"]
   ]

@@ -9,7 +9,7 @@ defmodule ProGen.Action.TableauNew.Run do
   use ProGen.Action
   alias ProGen.Sys
 
-  @option_schema [
+  @opts_def [
     project: [type: :string, required: true, doc: "Name of the Tableau project to create"]
   ]
 

@@ -3,7 +3,7 @@ defmodule ProGen.Action.Test.DepDiamond do
 
   use ProGen.Action
 
-  @option_schema []
+  @opts_def []
 
   @impl true
   def depends_on(_args), do: ["test.dep_branch_a", "test.dep_branch_b"]

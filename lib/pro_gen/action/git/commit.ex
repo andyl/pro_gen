@@ -5,7 +5,7 @@ defmodule ProGen.Action.Git.Commit do
 
   use ProGen.Action
 
-  @option_schema [
+  @opts_def [
     message: [type: :string, required: true, doc: "Commit message"]
   ]
 

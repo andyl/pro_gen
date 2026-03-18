@@ -58,7 +58,7 @@ defmodule ProGen.Actions do
   @doc """
   Returns metadata for the given action name.
 
-  Returns `{:ok, map}` with `:module`, `:name`, `:description`, `:option_schema`,
+  Returns `{:ok, map}` with `:module`, `:name`, `:description`, `:opts_def`,
   and `:usage` keys, or `{:error, message}` if not found.
   """
   def action_info(action_name) when is_binary(action_name) do
@@ -69,7 +69,7 @@ defmodule ProGen.Actions do
            module: mod,
            name: mod.name(),
            description: mod.description(),
-           option_schema: mod.option_schema(),
+           opts_def: mod.opts_def(),
            validate: mod.validate(),
            usage: mod.usage()
          }}

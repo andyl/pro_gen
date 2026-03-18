@@ -5,7 +5,7 @@ defmodule ProGen.Action.Run do
 
   use ProGen.Action
 
-  @option_schema [
+  @opts_def [
     command: [type: :string, required: true, doc: "The command to execute"],
     args: [type: {:list, :string}, default: [], doc: "Arguments to pass"],
     dir: [type: :string, default: ".", doc: "Working directory"]

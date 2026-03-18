@@ -3,7 +3,7 @@ defmodule ProGen.Action.Test.DepOnNeverNeeded do
 
   use ProGen.Action
 
-  @option_schema [
+  @opts_def [
     message: [type: :string, required: true, doc: "Passed to satisfy never_needed's schema"]
   ]
 

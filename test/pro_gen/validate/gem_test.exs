@@ -147,8 +147,8 @@ defmodule ProGen.Validate.GemTest do
       assert desc != ""
     end
 
-    test "option_schema/0 includes :checks" do
-      schema = ProGen.Validate.Gem.option_schema()
+    test "opts_def/0 includes :checks" do
+      schema = ProGen.Validate.Gem.opts_def()
       assert is_list(schema)
       assert Keyword.has_key?(schema, :checks)
     end

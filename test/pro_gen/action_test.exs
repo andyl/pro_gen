@@ -10,8 +10,8 @@ defmodule ProGen.ActionTest do
       assert ProGen.Action.Run.description() == "Run a system command."
     end
 
-    test "option_schema/0 returns the declared schema" do
-      schema = ProGen.Action.Run.option_schema()
+    test "opts_def/0 returns the declared schema" do
+      schema = ProGen.Action.Run.opts_def()
       assert is_list(schema)
       assert Keyword.has_key?(schema, :command)
       assert Keyword.has_key?(schema, :args)
@@ -85,7 +85,7 @@ defmodule ProGen.ActionTest do
         @moduledoc "Action that overrides needed?/1"
         use ProGen.Action
 
-        @option_schema []
+        @opts_def []
 
         @impl true
         def needed?(_args), do: false

@@ -5,7 +5,7 @@ defmodule ProGen.Action.Inspect do
 
   use ProGen.Action
 
-  @option_schema [
+  @opts_def [
     element: [type: :any, required: true, doc: "The Elixir term to inspect"]
   ]
 

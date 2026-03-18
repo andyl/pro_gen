@@ -3,7 +3,7 @@ defmodule ProGen.Action.Test.DefaultCheck do
 
   use ProGen.Action
 
-  @option_schema [
+  @opts_def [
     label: [type: :string, default: "default_value", doc: "A label"]
   ]
 

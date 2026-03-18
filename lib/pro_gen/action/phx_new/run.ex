@@ -9,7 +9,7 @@ defmodule ProGen.Action.PhxNew do
   use ProGen.Action
   alias ProGen.Sys
 
-  @option_schema [
+  @opts_def [
     project: [type: :string, required: true, doc: "Name of the phx project to create"]
   ]
 

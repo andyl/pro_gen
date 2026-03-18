@@ -11,7 +11,7 @@ defmodule ProGen.Validate do
 
     * `name/0`          — Auto-derived validator name (string, e.g. `"filesys"`)
     * `description/0`   — First line of `@moduledoc`
-    * `option_schema/0` — Returns the option schema (`[checks: ...]`)
+    * `opts_def/0` — Returns the option schema (`[checks: ...]`)
     * `validate_args/1`  — Validates a keyword list against the schema
     * `check/1`         — Default implementation that looks up term in `all_checks/0`
     * `checks/0`        — Default implementation that maps `all_checks/0` to `%{term:, desc:}`
@@ -78,7 +78,7 @@ defmodule ProGen.Validate do
       @before_compile ProGen.Validate
 
       def validate_args(args) do
-        NimbleOptions.validate(args, option_schema())
+        NimbleOptions.validate(args, opts_def())
       end
 
       def check(term) do
@@ -193,7 +193,7 @@ defmodule ProGen.Validate do
     quote do
       def name, do: unquote(name)
       def description, do: unquote(description)
-      def option_schema, do: unquote(Macro.escape(option_schema))
+      def opts_def, do: unquote(Macro.escape(option_schema))
 
       defp all_checks do
         unquote(check_asts)

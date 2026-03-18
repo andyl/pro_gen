@@ -74,8 +74,8 @@ defmodule ProGen.Validate.LangTest do
       assert desc != ""
     end
 
-    test "option_schema/0 includes :checks" do
-      schema = ProGen.Validate.Lang.option_schema()
+    test "opts_def/0 includes :checks" do
+      schema = ProGen.Validate.Lang.opts_def()
       assert is_list(schema)
       assert Keyword.has_key?(schema, :checks)
     end

@@ -46,8 +46,8 @@ defmodule ProGen.Action.InspectTest do
       assert desc != ""
     end
 
-    test "option_schema/0 includes :element" do
-      schema = ProGen.Action.Inspect.option_schema()
+    test "opts_def/0 includes :element" do
+      schema = ProGen.Action.Inspect.opts_def()
       assert is_list(schema)
       assert Keyword.has_key?(schema, :element)
     end

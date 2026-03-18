@@ -324,7 +324,7 @@ defmodule ProGen.Script do
       case ProGen.Actions.action_module(action_name) do
         {:ok, mod} ->
           required_list_keys =
-            for {key, config} <- mod.option_schema(),
+            for {key, config} <- mod.opts_def(),
                 config[:required] == true,
                 match?({:list, _}, config[:type]),
                 do: key

@@ -29,8 +29,8 @@ defmodule ProGen.Action.EchoTest do
       assert desc != ""
     end
 
-    test "option_schema/0 includes :message" do
-      schema = ProGen.Action.Echo.option_schema()
+    test "opts_def/0 includes :message" do
+      schema = ProGen.Action.Echo.opts_def()
       assert is_list(schema)
       assert Keyword.has_key?(schema, :message)
     end

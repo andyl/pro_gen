@@ -3,7 +3,7 @@ defmodule ProGen.Action.Test.ArgsCapture do
 
   use ProGen.Action
 
-  @option_schema [
+  @opts_def [
     message: [type: :string, required: true, doc: "A message"]
   ]
 

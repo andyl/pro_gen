@@ -3,7 +3,7 @@ defmodule ProGen.Action.Test.DepFailing do
 
   use ProGen.Action
 
-  @option_schema []
+  @opts_def []
 
   @impl true
   def perform(_args), do: :ok

@@ -3,7 +3,7 @@ defmodule ProGen.Action.Test.DepConditional do
 
   use ProGen.Action
 
-  @option_schema [
+  @opts_def [
     with_dep: [type: :boolean, default: false, doc: "Whether to include dependency"]
   ]
 

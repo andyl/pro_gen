@@ -19,7 +19,7 @@ defmodule ProGen.Action do
   Action metadata:
 
     * The description is derived from the first line of `@moduledoc` (required)
-    * `@option_schema` — [NimbleOptions](https://github.com/dashbitco/nimble_options) schema describing accepted options (defaults to `[]`)
+    * `@opts_def` — [NimbleOptions](https://github.com/dashbitco/nimble_options) schema describing accepted options (defaults to `[]`)
     * `@validate` — List of `{validator_name, checks}` tuples declaring preconditions
       checked before `perform/1` (defaults to `[]`). Each tuple is passed to
       `ProGen.Validations.run/2`. Example: `@validate [{"filesys", [:has_mix, :has_git]}]`
@@ -28,7 +28,7 @@ defmodule ProGen.Action do
 
     * `name/0`          — Auto-derived namespaced action name (string, e.g. `"test.echo"`)
     * `description/0`   — First line of `@moduledoc`
-    * `option_schema/0` — Returns the declared option schema
+    * `opts_def/0` — Returns the declared option schema
     * `validate/0`      — Returns the declared `@validate` list (default `[]`)
     * `validate_args/1`  — Validates a keyword list against the schema
     * `usage/0`          — Auto-generated usage text from the schema (overridable)
@@ -43,18 +43,18 @@ defmodule ProGen.Action do
     quote do
       @behaviour ProGen.Action
 
-      Module.register_attribute(__MODULE__, :option_schema, persist: true)
+      Module.register_attribute(__MODULE__, :opts_def, persist: true)
       Module.register_attribute(__MODULE__, :validate, persist: true)
 
       @before_compile ProGen.Action
 
       @doc """
-      Validates `args` against this action's `option_schema/0`.
+      Validates `args` against this action's `opts_def/0`.
 
       Returns `{:ok, validated_args}` or `{:error, %NimbleOptions.ValidationError{}}`.
       """
       def validate_args(args) do
-        NimbleOptions.validate(args, option_schema())
+        NimbleOptions.validate(args, opts_def())
       end
 
       @doc """
@@ -77,11 +77,11 @@ defmodule ProGen.Action do
       def confirm(_result, _args), do: :ok
 
       @doc """
-      Auto-generated usage text derived from `option_schema/0`.
+      Auto-generated usage text derived from `opts_def/0`.
       Override this function to provide custom usage text.
       """
       def usage do
-        NimbleOptions.docs(option_schema())
+        NimbleOptions.docs(opts_def())
       end
 
       defoverridable usage: 0, depends_on: 1, needed?: 1, confirm: 2
@@ -90,7 +90,7 @@ defmodule ProGen.Action do
 
   defmacro __before_compile__(env) do
     moduledoc = Module.get_attribute(env.module, :moduledoc)
-    option_schema = Module.get_attribute(env.module, :option_schema) || []
+    option_schema = Module.get_attribute(env.module, :opts_def) || []
     validate = Module.get_attribute(env.module, :validate) || []
 
     doc_text =
@@ -117,7 +117,7 @@ defmodule ProGen.Action do
     quote do
       def name, do: unquote(name)
       def description, do: unquote(description)
-      def option_schema, do: unquote(Macro.escape(option_schema))
+      def opts_def, do: unquote(Macro.escape(option_schema))
       def validate, do: unquote(Macro.escape(validate))
     end
   end

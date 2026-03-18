@@ -8,7 +8,7 @@ defmodule ProGen.Action.PhxNew.Install do
 
   use ProGen.Action
 
-  @option_schema []
+  @opts_def []
 
   @impl true
   def needed?(_args) do

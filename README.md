@@ -26,7 +26,7 @@ defmodule ProGen.Action.Run do
   use ProGen.Action
 
   @description "Run a system command"
-  @option_schema [
+  @opts_def [
     command: [type: :string, required: true, doc: "The command to execute"],
     args: [type: {:list, :string}, default: [], doc: "Arguments to pass"],
     dir: [type: :string, default: ".", doc: "Working directory"]
@@ -46,9 +46,9 @@ end
 **Action metadata** is declared via module attributes:
 
 - `@description` — Short human-readable description (required)
-- `@option_schema` — [NimbleOptions](https://github.com/dashbitco/nimble_options) schema describing accepted options (defaults to `[]`)
+- `@opts_def` — [NimbleOptions](https://github.com/dashbitco/nimble_options) schema describing accepted options (defaults to `[]`)
 
-Using `ProGen.Action` injects: `name/0`, `description/0`, `option_schema/0`,
+Using `ProGen.Action` injects: `name/0`, `description/0`, `opts_def/0`,
 `validate_args/1`, and `usage/0` (overridable).
 
 **Auto-discovery:** Any module named `ProGen.Action.<Name>` is automatically
@@ -75,7 +75,7 @@ ProGen.Actions.list_actions()
 #=> ["echo", "inspect", "run", "test.echo2", "validate"]
 
 ProGen.Actions.action_info("run")
-#=> {:ok, %{module: ProGen.Action.Run, name: "run", description: "Run a system command", usage: "...", option_schema: [...]}}
+#=> {:ok, %{module: ProGen.Action.Run, name: "run", description: "Run a system command", usage: "...", opts_def: [...]}}
 ```
 
 ### Scripts
@@ -164,7 +164,7 @@ defmodule ProGen.Action.MyCustom do
   use ProGen.Action
 
   @description "Does something custom"
-  @option_schema [
+  @opts_def [
     name: [type: :string, required: true, doc: "The name"]
   ]
 

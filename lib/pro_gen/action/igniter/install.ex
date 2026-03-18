@@ -6,15 +6,16 @@ defmodule ProGen.Action.Igniter.Install do
   use ProGen.Action
   alias ProGen.Sys
 
-  @option_schema [
+  @opts_def [
     dependency: [type: :string, required: true, doc: "The dependency to install"]
   ]
+  @validate [{"filesys", [:has_mix, :has_git]}]
 
   @impl true
   def depends_on(_args), do: ["igniter_new.install"]
 
   @impl true
-  def needed?(args) do
+  def needed?(_args) do
     # check the Mix.exs file (in deps) to see if the dependency has been installed
     # there is a mix task (mix deps) that could be grepped...
     true

@@ -5,7 +5,7 @@ defmodule ProGen.Action.Test.Echo2 do
 
   use ProGen.Action
 
-  @option_schema [
+  @opts_def [
     message: [type: :string, required: true, doc: "The message to print"]
   ]
 
