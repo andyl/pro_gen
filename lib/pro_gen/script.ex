@@ -205,7 +205,9 @@ defmodule ProGen.Script do
 
   def validate(desc, mod, checks) when is_atom(mod) do
     log(desc)
-    mod |> ProGen.Validations.run(checks: checks) |> halt_on_error()
+    mod
+    |> ProGen.Validations.run(checks: checks)
+    |> halt_on_error()
   end
 
   def validate(desc, validator_name, checks) do
@@ -350,6 +352,10 @@ defmodule ProGen.Script do
   end
 
   defp halt_on_error(:ok), do: :ok
+  defp halt_on_error({:ok, :skipped}) do
+    IO.puts("skipped...")
+    :ok
+  end
 
   defp halt_on_error({:error, message}) do
     IO.puts(:stderr, "Error: #{inspect(message)}")
