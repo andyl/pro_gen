@@ -7,10 +7,10 @@ defmodule ProGen.Action.Igniter.Install do
   alias ProGen.Sys
 
   @opts_def [ dependency: [type: :string, required: true, doc: "The dependency to install"] ]
-  @validate [{"filesys", [:has_mix, :has_git]}]
-
-  @impl true
-  def depends_on(_args), do: ["igniter_new.install"]
+  # @validate [{"filesys", [:has_mix, :has_git]}]
+  #
+  # @impl true
+  # def depends_on(_args), do: ["igniter_new.install"]
 
   @impl true
   def needed?(args) do

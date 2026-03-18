@@ -5,7 +5,6 @@
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 
 alias ProGen.Script, as: PS 
-alias ProGen.Validate, as: PV
 
 PS.cli_args( 
   description: "Basic Tableau Project Generator", 
@@ -51,10 +50,8 @@ PS.cd(project)
 
 # Compile Code 
 PS.command "COMPILE", "mix compile"
-
-# run_cmd "Update deps"      "mix deps.update --all"
-# run_cmd "Add Heroicons"    "mix igniter.install heroicons --yes"
-# run_cmd "Add UsageRules"   "mix igniter.install usage_rules --yes"
+PS.action "ADD HeroIcons", "igniter.install", [dependency: "heroicons"]
+PS.action "ADD UsageRules", "igniter.install", [dependency: "usage_rules"]
 # run_cmd "Add Daisy"        "npm i -D daisyui@latest" 
 # run_cmd "Update CSS"       "echo '@plugin \"daisyui\";' >> assets/css/site.css"
 # run_cmd "Fix CSS"          "sed -i 's/\"$/\";/' assets/css/site.css"
