@@ -10,7 +10,7 @@ defmodule ProGen.Action.Deps.Install do
   @validate [{"filesys", [:has_mix, :has_git]}]
 
   @impl true
-  def depends_on(_args), do: ["archive.install"]
+  def depends_on(_args), do: [{"archive.install", package: "igniter_new"}]
 
   @impl true
   def needed?(args) do

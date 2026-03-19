@@ -8,7 +8,6 @@ defmodule ProGen.Action.MixCompletions.Run do
 
   use ProGen.Action
 
-  @opts_def []
   @validate [{"filesys", [{:has_file, "mix.exs"}]}]
 
   @cache_file ".mix_complete.cache"

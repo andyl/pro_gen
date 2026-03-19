@@ -17,25 +17,41 @@ defmodule ProGen.CodeMods.MixFile do
     * `:path` - path to the mix.exs file (default: `"mix.exs"`)
   """
   def add_to_project(key, value_code, opts \\ []) when is_atom(key) and is_binary(value_code) do
-    path = Keyword.get(opts, :path, "mix.exs")
+    path = Keyword.get(opts, :path, "mix.exs") |> Path.expand()
 
-    with {:ok, source} <- File.read(path),
-         {:ok, zipper} <- parse_and_zip(source),
-         {:ok, zipper} <- Igniter.Code.Function.move_to_def(zipper, :project, 0) do
+    with {:ok, source} <- File.read(path) |> IO.inspect(label: "111"),
+         {:ok, zipper} <- parse_and_zip(source) |> IO.inspect(label: "222"),
+         {:ok, zipper} <-
+           Igniter.Code.Function.move_to_def(zipper, :project, 0) |> IO.inspect(label: "333") do
+      IO.puts("AAA")
       zipper = Igniter.Code.Common.maybe_move_to_single_child_block(zipper)
+
+      IO.puts("BBB")
 
       case Igniter.Code.Keyword.get_key(zipper, key) do
         {:ok, _} ->
+          IO.puts("CCC")
           {:ok, :already_exists}
 
         :error ->
+          IO.puts("DDD")
           value_ast = Sourceror.parse_string!(value_code)
+          IO.puts("EEE")
 
-          case Igniter.Code.Keyword.set_keyword_key(zipper, key, value_ast) do
+          ProGen.Sys.cmd("ls -al")
+          val =
+            with_clean_sourceror(fn ->
+              Igniter.Code.Keyword.set_keyword_key(zipper, key, value_ast)
+            end)
+            |> IO.inspect(label: "F1F")
+
+          case val do
             {:ok, updated} ->
+              IO.puts("FFF")
               write_back(updated, path)
 
             :error ->
+              IO.puts("GGG")
               {:error, "failed to add key #{inspect(key)} to project/0 in #{path}"}
           end
       end
@@ -65,7 +81,7 @@ defmodule ProGen.CodeMods.MixFile do
   """
   def add_defp(name, arity, body, opts \\ [])
       when is_atom(name) and is_integer(arity) and is_binary(body) do
-    path = Keyword.get(opts, :path, "mix.exs")
+    path = Keyword.get(opts, :path, "mix.exs") |> Path.expand()
 
     with {:ok, source} <- File.read(path),
          {:ok, zipper} <- parse_and_zip(source) do
@@ -74,7 +90,12 @@ defmodule ProGen.CodeMods.MixFile do
           {:ok, :already_exists}
 
         :error ->
-          case append_to_module(zipper, body) do
+          result =
+            with_clean_sourceror(fn ->
+              append_to_module(zipper, body)
+            end)
+
+          case result do
             {:ok, updated} ->
               write_back(updated, path)
 
@@ -85,6 +106,46 @@ defmodule ProGen.CodeMods.MixFile do
     else
       {:error, reason} when is_binary(reason) -> {:error, reason}
       {:error, _} -> {:error, "could not read or parse #{path}"}
+    end
+  end
+
+  # Ensures Sourceror.to_string() (called internally by Igniter) can resolve
+  # locals_without_parens without crashing. The crash happens because
+  # Sourceror.locals_without_parens/0 calls Mix.Tasks.Format.formatter_for_file/2
+  # which requires (a) a Mix project on the stack and (b) all formatter plugins
+  # to be loadable. When running from a Mix.install script, neither is guaranteed.
+  #
+  # This function temporarily cds to a clean temp directory with a minimal
+  # .formatter.exs (no plugins) and pushes a fallback Mix project if needed.
+  defp with_clean_sourceror(fun) do
+    needs_project = is_nil(Mix.Project.get())
+    original_dir = File.cwd!()
+    tmp_dir = Path.join(System.tmp_dir!(), "pro_gen_codegen")
+    File.mkdir_p!(tmp_dir)
+    File.write!(Path.join(tmp_dir, ".formatter.exs"), "[]\n")
+
+    if needs_project do
+      mod = Module.concat([__MODULE__, FallbackProject])
+
+      unless Code.ensure_loaded?(mod) do
+        Module.create(mod, quote do
+          def project, do: [app: :pro_gen_codegen, version: "0.0.0", compilers: [], elixirc_paths: []]
+        end, Macro.Env.location(__ENV__))
+      end
+
+      Mix.Project.push(mod)
+    end
+
+    File.cd!(tmp_dir)
+
+    try do
+      fun.()
+    after
+      File.cd!(original_dir)
+
+      if needs_project do
+        Mix.Project.pop()
+      end
     end
   end
 
@@ -99,7 +160,7 @@ defmodule ProGen.CodeMods.MixFile do
     new_source =
       zipper
       |> Zipper.root()
-      |> Sourceror.to_string()
+      |> Sourceror.to_string(locals_without_parens: [])
 
     case File.write(path, new_source <> "\n") do
       :ok -> {:ok, :updated}
