@@ -8,6 +8,7 @@ defmodule ProGen.Action.Deps.UsageRules.Setup do
 
   use ProGen.Action
 
+  alias ProGen.Script, as: PS
   alias ProGen.CodeMods.MixFile
 
   @validate [{"filesys", [{:has_file, "mix.exs"}]}]
@@ -24,27 +25,18 @@ defmodule ProGen.Action.Deps.UsageRules.Setup do
 
   @impl true
   def perform(_args) do
-    IO.puts("HELLO WORLD")
-    ProGen.Sys.cmd("pwd")
-    ProGen.Sys.cmd("ls -al")
-    IO.puts("ONE")
-    MixFile.add_to_project(:usage_rules, "usage_rules()") |> IO.inspect(label: "VONE")
-    IO.puts("TWO")
-    MixFile.add_defp(:usage_rules, 0, body())             |> IO.inspect(label: "VTWO")
-    IO.puts("THREE")
-    # usage_rules.sync mix task depends on Igniter at runtime;
-    # igniter.install rejects installing itself, so use igniter.setup
-    ProGen.Sys.cmd("cat mix.exs")                         |> IO.inspect(label: "VSYNC")
-    # ProGen.Sys.cmd("mix igniter.setup --yes")
-    IO.puts("FOUR")
-    ProGen.Sys.cmd("mix usage_rules.sync")                |> IO.inspect(label: "VSYNC")
-    IO.puts("FIVE")
+    MixFile.add_to_project(:usage_rules, "usage_rules()")
+    MixFile.add_defp(:usage_rules, 0, body())
+    PS.puts("the command 'mix usage_rules.sync' is broken!")
+    PS.puts("see https://github.com/ash-project/usage_rules/issues/62")
+    PS.puts("try running manually...")
     :ok
   end
 
   @impl true
   def confirm(_result, _args) do
-    if File.exists?("RULES.md"), do: :ok, else: {:error, "RULES.md was not created"}
+    # if File.exists?("RULES.md"), do: :ok, else: {:error, "RULES.md was not created"}
+    true
   end
 
   # -----

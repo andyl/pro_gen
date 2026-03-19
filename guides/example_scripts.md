@@ -385,64 +385,94 @@ Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 PG.puts "UNDER CONSTRUCTION"
 ```
 
-## progen_tableau_base
+## progen_tableau
 
-Generates a basic tableau app.
+Generates a [tableau](https://github.com/elixir-tools/tableau) app.
 
 **Run it:**
 
 ```bash
-./scripts/progen_tableau_base --help
+./scripts/progen_tableau --help
 ```
 
-**Source:** [`scripts/progen_tableau_base`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_tableau_base)
+**Source:** [`scripts/progen_tableau`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_tableau)
 
 ```elixir
 #!/usr/bin/env elixir
 
-# Generates a basic tableau app.
+# Generates a [tableau](https://github.com/elixir-tools/tableau) app.
 
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 
 alias ProGen.Script, as: PS 
-alias ProGen.Validate, as: PV
 
-PS.puts("Under Construction")
+PS.cli_args( 
+  description: "Basic Tableau Project Generator", 
+  allow_unknown_args: false, 
+  args: [
+    project: [
+      value_name: "PROJECT",
+      help: "Tableau Project name", 
+      required: true, 
+      parser: :string
+    ]
+  ],
+  flags: [ 
+    force: [
+      short: "-f", 
+      long: "--force", 
+      help: "Overwrite project directory if it exists"
+    ]
+  ]
+)
+
+# Parse the CLI args and grab the project name
+{:ok, %{project: project}} = PS.parse_args() 
+
+# Clear the screen
+PS.clear() 
+
+# Start a timer
+PS.start()
+
+if PS.cli_vals().force do 
+  PS.command "CLEANUP OLD PROJECT", "rm -rf #{project}"
+end
+
+# exit if validations do not pass
+PS.validate "CHECK ENVIRONMENT",  "filesys", [:no_mix, :no_git]
+
+# generate project using igniter
+PS.action  "GEN TABLEAU PROJECT", "new.tableau", [project: project]
+
+# Change to the project directory
+PS.cd(project)
+
+# Compile Code 
+PS.command "COMPILE",           "mix compile"
+PS.action "Install HeroIcons",  "deps.install",           [dep: "heroicons"]
+PS.action "Install UsageRules", "deps.install",           [dep: "usage_rules"]
+PS.action "Setup UsageRules",   "deps.usage_rules.setup", []
+# run_cmd "Add Daisy"        "npm i -D daisyui@latest" 
+# run_cmd "Update CSS"       "echo '@plugin \"daisyui\";' >> assets/css/site.css"
+# run_cmd "Fix CSS"          "sed -i 's/\"$/\";/' assets/css/site.css"
+PS.action "Add Completions", "mix_completions.run", []
+
+# Report the elapsed time
+PS.finish()
 ```
 
-## progen_tableau_pwa
-
-Generates a tableau app with a PWA interface.
-
-**Run it:**
-
-```bash
-./scripts/progen_tableau_pwa --help
-```
-
-**Source:** [`scripts/progen_tableau_pwa`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_tableau_pwa)
-
-```elixir
-#!/usr/bin/env elixir
-
-# Generates a tableau app with a PWA interface.
-
-Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
-
-PG.puts "UNDER CONSTRUCTION"
-```
-
-## progen_termui_base
+## progen_termui
 
 Generates a basic TermUI app.
 
 **Run it:**
 
 ```bash
-./scripts/progen_termui_base --help
+./scripts/progen_termui --help
 ```
 
-**Source:** [`scripts/progen_termui_base`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_termui_base)
+**Source:** [`scripts/progen_termui`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_termui)
 
 ```elixir
 #!/usr/bin/env elixir

@@ -19,39 +19,29 @@ defmodule ProGen.CodeMods.MixFile do
   def add_to_project(key, value_code, opts \\ []) when is_atom(key) and is_binary(value_code) do
     path = Keyword.get(opts, :path, "mix.exs") |> Path.expand()
 
-    with {:ok, source} <- File.read(path) |> IO.inspect(label: "111"),
-         {:ok, zipper} <- parse_and_zip(source) |> IO.inspect(label: "222"),
+    with {:ok, source} <- File.read(path)
+         {:ok, zipper} <- parse_and_zip(source)
          {:ok, zipper} <-
-           Igniter.Code.Function.move_to_def(zipper, :project, 0) |> IO.inspect(label: "333") do
-      IO.puts("AAA")
+           Igniter.Code.Function.move_to_def(zipper, :project, 0)
       zipper = Igniter.Code.Common.maybe_move_to_single_child_block(zipper)
-
-      IO.puts("BBB")
 
       case Igniter.Code.Keyword.get_key(zipper, key) do
         {:ok, _} ->
-          IO.puts("CCC")
           {:ok, :already_exists}
 
         :error ->
-          IO.puts("DDD")
           value_ast = Sourceror.parse_string!(value_code)
-          IO.puts("EEE")
 
-          ProGen.Sys.cmd("ls -al")
           val =
             with_clean_sourceror(fn ->
               Igniter.Code.Keyword.set_keyword_key(zipper, key, value_ast)
             end)
-            |> IO.inspect(label: "F1F")
 
           case val do
             {:ok, updated} ->
-              IO.puts("FFF")
               write_back(updated, path)
 
             :error ->
-              IO.puts("GGG")
               {:error, "failed to add key #{inspect(key)} to project/0 in #{path}"}
           end
       end
