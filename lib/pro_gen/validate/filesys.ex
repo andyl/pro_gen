@@ -9,16 +9,17 @@ defmodule ProGen.Validate.Filesys do
   """
 
   use ProGen.Validate
+  alias ProGen.Validate
 
   defcheck :has_mix do
-    desc "Pass if mix.exs exists"
-    fail "File 'mix.exs' not found"
-    test fn _ -> File.exists?("mix.exs") end
+    desc "Pass if 'mix.exs' exists"
+    fail "File 'mix.exs' does not exist"
+    test fn _ -> Validate.Mix.eval_test(:has_mixfile) end
   end
 
   defcheck :no_mix do
-    desc "Pass if mix.exs does not exist"
-    fail "File 'mix.exs' already exists"
+    desc "Pass if 'mix.exs' exists"
+    fail "File 'mix.exs' does not exist"
     test fn _ -> not eval_test(:has_mix) end
   end
 

@@ -115,7 +115,7 @@ defmodule ProGen.Validate do
 
       defoverridable check: 1, checks: 0, perform: 1
 
-      defp eval_test(term) do
+      def eval_test(term) do
         case find_check(term) do
           nil -> raise "Unknown term: #{inspect(term)}"
           entry -> entry.test.(term)

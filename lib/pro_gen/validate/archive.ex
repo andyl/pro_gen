@@ -1,4 +1,4 @@
-defmodule ProGen.Validate.Hex do
+defmodule ProGen.Validate.Archive do
   @moduledoc """
   Validation checks for hex packages.
 
