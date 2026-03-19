@@ -19,10 +19,9 @@ defmodule ProGen.CodeMods.MixFile do
   def add_to_project(key, value_code, opts \\ []) when is_atom(key) and is_binary(value_code) do
     path = Keyword.get(opts, :path, "mix.exs") |> Path.expand()
 
-    with {:ok, source} <- File.read(path)
-         {:ok, zipper} <- parse_and_zip(source)
-         {:ok, zipper} <-
-           Igniter.Code.Function.move_to_def(zipper, :project, 0)
+    with {:ok, source} <- File.read(path),
+         {:ok, zipper} <- parse_and_zip(source),
+         {:ok, zipper} <- Igniter.Code.Function.move_to_def(zipper, :project, 0) do
       zipper = Igniter.Code.Common.maybe_move_to_single_child_block(zipper)
 
       case Igniter.Code.Keyword.get_key(zipper, key) do

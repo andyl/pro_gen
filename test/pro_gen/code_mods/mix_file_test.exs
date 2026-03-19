@@ -1,5 +1,5 @@
 defmodule ProGen.CodeMods.MixFileTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   alias ProGen.CodeMods.MixFile
 

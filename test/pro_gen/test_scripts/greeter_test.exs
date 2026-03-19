@@ -167,7 +167,7 @@ defmodule ProGen.ScriptTest do
   describe "puts/1" do
     test "prints formatted message" do
       output = capture_io(fn -> ProGen.Script.puts("hello") end)
-      assert output =~ ">>> hello"
+      assert output =~ ">>> " <> IO.ANSI.magenta() <> "hello" <> IO.ANSI.reset()
     end
   end
 
