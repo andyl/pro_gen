@@ -1,6 +1,50 @@
 # Example Scripts
 
-## progen_base_cli
+## progen_deploy_fly
+
+Generates a simple phoenix app which can be deployed using Fly
+
+**Run it:**
+
+```bash
+./scripts/progen_deploy_fly --help
+```
+
+**Source:** [`scripts/progen_deploy_fly`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_deploy_fly)
+
+```elixir
+#!/usr/bin/env elixir
+
+# Generates a simple phoenix app which can be deployed using Fly
+
+Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
+
+PG.puts "UNDER CONSTRUCTION"
+```
+
+## progen_deploy_kamal
+
+Generates a simple phoenix app which can be deployed using Kamal
+
+**Run it:**
+
+```bash
+./scripts/progen_deploy_kamal --help
+```
+
+**Source:** [`scripts/progen_deploy_kamal`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_deploy_kamal)
+
+```elixir
+#!/usr/bin/env elixir
+
+# Generates a simple phoenix app which can be deployed using Kamal
+
+Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
+
+PG.puts "UNDER CONSTRUCTION"
+```
+
+## progen_hello_world
 
 A simple greeting script that demonstrates CLI argument parsing,
 flags, and basic ProGen.Script usage.
@@ -8,10 +52,10 @@ flags, and basic ProGen.Script usage.
 **Run it:**
 
 ```bash
-./scripts/progen_base_cli --help
+./scripts/progen_hello_world --help
 ```
 
-**Source:** [`scripts/progen_base_cli`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_base_cli)
+**Source:** [`scripts/progen_hello_world`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_hello_world)
 
 ```elixir
 #!/usr/bin/env elixir
@@ -64,133 +108,7 @@ end
 PS.finish()
 ```
 
-## progen_deploy_fly
-
-Generates a simple phoenix app which can be deployed using Fly
-
-**Run it:**
-
-```bash
-./scripts/progen_deploy_fly --help
-```
-
-**Source:** [`scripts/progen_deploy_fly`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_deploy_fly)
-
-```elixir
-#!/usr/bin/env elixir
-
-# Generates a simple phoenix app which can be deployed using Fly
-
-Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
-
-PG.puts "UNDER CONSTRUCTION"
-```
-
-## progen_deploy_kamal
-
-Generates a simple phoenix app which can be deployed using Kamal
-
-**Run it:**
-
-```bash
-./scripts/progen_deploy_kamal --help
-```
-
-**Source:** [`scripts/progen_deploy_kamal`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_deploy_kamal)
-
-```elixir
-#!/usr/bin/env elixir
-
-# Generates a simple phoenix app which can be deployed using Kamal
-
-Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
-
-PG.puts "UNDER CONSTRUCTION"
-```
-
-## progen_phx_ash
-
-Generates a phoenix app with an Ash datalayer.
-
-**Run it:**
-
-```bash
-./scripts/progen_phx_ash --help
-```
-
-**Source:** [`scripts/progen_phx_ash`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_phx_ash)
-
-```elixir
-#!/usr/bin/env elixir
-
-# Generates a phoenix app with an Ash datalayer.
-
-Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
-
-alias ProGen.Script,    as: PS
-alias ProGen.Validate,  as: PV
-
-# Declare the CLI schema.
-# These values can be retrieved using PS.cli_args()
-PS.cli_args( 
-  description: "Phoenix Project Generator with Ecto database", 
-  allow_unknown_args: false, 
-  args: [
-    project: [
-      value_name: "PROJECT",
-      help: "Phoenix Project name", 
-      required: true, 
-      parser: :string
-    ]
-  ],
-  flags: [ 
-    force: [
-      short: "-f", 
-      long: "--force", 
-      help: "Overwrite project directory if it exists"
-    ]
-  ]
-)
-
-# Parse the CLI args and grab the project name
-{:ok, %{project: project}} = PS.parse_args() 
-
-# Clear the screen
-PS.clear() 
-
-# Start a timer
-PS.start()
-
-if PS.cli_vals().force do 
-  PS.command "CLEANUP OLD PROJECT", "rm -rf #{project}"
-end
-
-# exit if validations do not pass
-# LSP hover on PV.Basics for definitions
-PS.validate "CHECK ENVIRONMENT",  PV.Basics, [:no_mix, :no_git, {:no_dir, project}]
-
-# generate project using igniter
-PS.command  "GEN PHX PROJECT",    "mix igniter.new #{project} --with=phx.new"
-
-# Change to the project directory
-PS.cd(project)
-
-# compile and setup app
-PS.command "Compile",          "mix compile"
-PS.command "Add ash",          "mix igniter.install ash --yes"
-PS.command "Add ash_phoenix",  "mix igniter.install ash_phoenix --yes"
-PS.command "Add ash_postgres", "mix igniter.install ash_postgres --yes"
-PS.command "Add auth",         "mix igniter.install ash_authentication --auth-strategy password --yes"
-PS.command "Add auth_phx",     "mix igniter.install ash_authentication_phoenix --auth-strategy password --yes"
-PS.command "Add migration",    "mix ash.codegen auth_migration"
-PS.command "Setup database",   "mix ecto.drop ; mix ash.setup"
-PS.command "Add ash_admin",    "mix igniter.install ash_admin --yes"
-
-# Report the elapsed time
-PS.finish()
-```
-
-## progen_phx_base
+## progen_phoenix
 
 A Phoenix project generator that demonstrates validation checks,
 system commands, and directory navigation with ProGen.Script.
@@ -198,10 +116,10 @@ system commands, and directory navigation with ProGen.Script.
 **Run it:**
 
 ```bash
-./scripts/progen_phx_base --help
+./scripts/progen_phoenix --help
 ```
 
-**Source:** [`scripts/progen_phx_base`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_phx_base)
+**Source:** [`scripts/progen_phoenix`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_phoenix)
 
 ```elixir
 #!/usr/bin/env elixir
@@ -232,6 +150,11 @@ PS.cli_args(
       short: "-f", 
       long: "--force", 
       help: "Overwrite project directory if it exists"
+    ], 
+    ecto: [
+      short: "-e", 
+      long: "--ecto", 
+      help: "Generate ecto files"
     ]
   ]
 )
@@ -245,16 +168,15 @@ PS.clear()
 # Start a timer
 PS.start()
 
-if PS.cli_vals().force do 
-  PS.command "CLEANUP OLD PROJECT", "rm -rf #{project}"
-end
+if PS.cli_vals().force, do: PS.command "CLEANUP OLD PROJECT", "rm -rf #{project}"
 
 # exit if validations do not pass
-# LSP hover on PV.Basics for definitions
-PS.validate "CHECK ENVIRONMENT",  PV.Basics, [:no_mix, :no_git, {:no_dir, project}]
-
+PS.validate "CHECK ENVIRONMENT", PV.Filesys, [:no_mix, :no_git, {:no_dir, project}]
+  
 # generate project using igniter
-PS.command  "GEN PHX PROJECT",    "mix igniter.new #{project} --with=phx.new --with-args --no-ecto"
+phx_gen_opts = if PS.cli_vals().ecto, do: "", else: "--with-args --no-ecto"
+phx_gen_cmd = "mix igniter.new #{project} --with=phx.new #{phx_gen_opts}"
+PS.command  "GEN PHX PROJECT", phx_gen_cmd
 
 # Change to the project directory
 PS.cd(project)
@@ -266,128 +188,9 @@ PS.command "COMPILE", "mix compile"
 PS.finish()
 ```
 
-## progen_phx_ecto
-
-A basic phoenix generator that includes an Ecto database.
-
-**Run it:**
-
-```bash
-./scripts/progen_phx_ecto --help
-```
-
-**Source:** [`scripts/progen_phx_ecto`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_phx_ecto)
-
-```elixir
-#!/usr/bin/env elixir
-
-# A basic phoenix generator that includes an Ecto database.
-
-Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
-
-alias ProGen.Script,    as: PS
-alias ProGen.Validate,  as: PV
-
-# Declare the CLI schema.
-# These values can be retrieved using PS.cli_args()
-PS.cli_args( 
-  description: "Phoenix Project Generator with Ecto database", 
-  allow_unknown_args: false, 
-  args: [
-    project: [
-      value_name: "PROJECT",
-      help: "Phoenix Project name", 
-      required: true, 
-      parser: :string
-    ]
-  ],
-  flags: [ 
-    force: [
-      short: "-f", 
-      long: "--force", 
-      help: "Overwrite project directory if it exists"
-    ]
-  ]
-)
-
-# Parse the CLI args and grab the project name
-{:ok, %{project: project}} = PS.parse_args() 
-
-# Clear the screen
-PS.clear() 
-
-# Start a timer
-PS.start()
-
-if PS.cli_vals().force do 
-  PS.command "CLEANUP OLD PROJECT", "rm -rf #{project}"
-end
-
-# exit if validations do not pass
-# LSP hover on PV.Basics for definitions
-PS.validate "CHECK ENVIRONMENT",  PV.Basics, [:no_mix, :no_git, {:no_dir, project}]
-
-# generate project using igniter
-PS.command  "GEN PHX PROJECT",    "mix igniter.new #{project} --with=phx.new"
-
-# Change to the project directory
-PS.cd(project)
-
-# compile and setup database
-PS.command "COMPILE",  "mix compile"
-PS.command "SETUP DB", "mix do ecto.drop, ecto.create, ecto.migrate"
-
-# Report the elapsed time
-PS.finish()
-```
-
-## progen_phx_max
-
-Generates a phoenix app with many configuration options.
-
-**Run it:**
-
-```bash
-./scripts/progen_phx_max --help
-```
-
-**Source:** [`scripts/progen_phx_max`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_phx_max)
-
-```elixir
-#!/usr/bin/env elixir
-
-# Generates a phoenix app with many configuration options.
-
-Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
-
-PG.puts "UNDER CONSTRUCTION"
-```
-
-## progen_phx_pwa
-
-Generates a phoenix app with a PWA interface.
-
-**Run it:**
-
-```bash
-./scripts/progen_phx_pwa --help
-```
-
-**Source:** [`scripts/progen_phx_pwa`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_phx_pwa)
-
-```elixir
-#!/usr/bin/env elixir
-
-# Generates a phoenix app with a PWA interface.
-
-Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
-
-PG.puts "UNDER CONSTRUCTION"
-```
-
 ## progen_tableau
 
-Generates a [tableau](https://github.com/elixir-tools/tableau) app.
+Generates a [Tableau](https://github.com/elixir-tools/tableau) app.
 
 **Run it:**
 
@@ -400,7 +203,7 @@ Generates a [tableau](https://github.com/elixir-tools/tableau) app.
 ```elixir
 #!/usr/bin/env elixir
 
-# Generates a [tableau](https://github.com/elixir-tools/tableau) app.
+# Generates a [Tableau](https://github.com/elixir-tools/tableau) app.
 
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 
@@ -464,7 +267,7 @@ PS.finish()
 
 ## progen_termui
 
-Generates a basic TermUI app.
+Generates a [TermUI](https://github.com/pcharbon70/term_ui) app.
 
 **Run it:**
 
@@ -477,7 +280,7 @@ Generates a basic TermUI app.
 ```elixir
 #!/usr/bin/env elixir
 
-# Generates a basic TermUI app.
+# Generates a [TermUI](https://github.com/pcharbon70/term_ui) app.
 
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env elixir
 
-# A basic phoenix generator that includes an Ecto database.
+# A Phoenix project generator that demonstrates validation checks,
+# system commands, and directory navigation with ProGen.Script.
 
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 
@@ -10,7 +11,7 @@ alias ProGen.Validate,  as: PV
 # Declare the CLI schema.
 # These values can be retrieved using PS.cli_args()
 PS.cli_args( 
-  description: "Phoenix Project Generator with Ecto database", 
+  description: "Basic Phoenix Project Generator", 
   allow_unknown_args: false, 
   args: [
     project: [
@@ -25,6 +26,11 @@ PS.cli_args(
       short: "-f", 
       long: "--force", 
       help: "Overwrite project directory if it exists"
+    ], 
+    ecto: [
+      short: "-e", 
+      long: "--ecto", 
+      help: "Generate ecto files"
     ]
   ]
 )
@@ -38,23 +44,21 @@ PS.clear()
 # Start a timer
 PS.start()
 
-if PS.cli_vals().force do 
-  PS.command "CLEANUP OLD PROJECT", "rm -rf #{project}"
-end
+if PS.cli_vals().force, do: PS.command "CLEANUP OLD PROJECT", "rm -rf #{project}"
 
 # exit if validations do not pass
-# LSP hover on PV.Basics for definitions
-PS.validate "CHECK ENVIRONMENT",  PV.Basics, [:no_mix, :no_git, {:no_dir, project}]
-
+PS.validate "CHECK ENVIRONMENT", PV.Filesys, [:no_mix, :no_git, {:no_dir, project}]
+  
 # generate project using igniter
-PS.command  "GEN PHX PROJECT",    "mix igniter.new #{project} --with=phx.new"
+phx_gen_opts = if PS.cli_vals().ecto, do: "", else: "--with-args --no-ecto"
+phx_gen_cmd = "mix igniter.new #{project} --with=phx.new #{phx_gen_opts}"
+PS.command  "GEN PHX PROJECT", phx_gen_cmd
 
 # Change to the project directory
 PS.cd(project)
 
-# compile and setup database
-PS.command "COMPILE",  "mix compile"
-PS.command "SETUP DB", "mix do ecto.drop, ecto.create, ecto.migrate"
+# Compile Code 
+PS.command "COMPILE", "mix compile"
 
 # Report the elapsed time
 PS.finish()
