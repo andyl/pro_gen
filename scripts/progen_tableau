@@ -1,6 +1,6 @@
 #!/usr/bin/env elixir
 
-# Generates a basic tableau app.
+# Generates a [Tableau](https://github.com/elixir-tools/tableau) app.
 
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 
