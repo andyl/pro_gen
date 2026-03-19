@@ -36,7 +36,7 @@ defmodule ProGen.Action.Deps.UsageRules.Setup do
   @impl true
   def confirm(_result, _args) do
     # if File.exists?("RULES.md"), do: :ok, else: {:error, "RULES.md was not created"}
-    true
+    :ok
   end
 
   # -----
