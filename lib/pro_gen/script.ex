@@ -222,7 +222,8 @@ defmodule ProGen.Script do
   Prints a formatted message prefixed with `>>>`.
   """
   def puts(text) do
-    IO.puts(">>> #{text}")
+    output = IO.ANSI.magenta() <> text <> IO.ANSI.reset()
+    IO.puts(">>> #{output}")
   end
 
   @doc """
