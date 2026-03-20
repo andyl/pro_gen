@@ -48,15 +48,12 @@ PS.action  "GEN TABLEAU PROJECT", "new.tableau", [project: project]
 # Change to the project directory
 PS.cd(project)
 
-# Compile Code 
 PS.command "COMPILE",           "mix compile"
 PS.action "Install HeroIcons",  "deps.install",           [dep: "heroicons"]
 PS.action "Install UsageRules", "deps.install",           [dep: "usage_rules"]
 PS.action "Setup UsageRules",   "deps.usage_rules.setup", []
-# run_cmd "Add Daisy"        "npm i -D daisyui@latest" 
-# run_cmd "Update CSS"       "echo '@plugin \"daisyui\";' >> assets/css/site.css"
-# run_cmd "Fix CSS"          "sed -i 's/\"$/\";/' assets/css/site.css"
-PS.action "Add Completions", "mix_completions.run", []
+PS.action "Setup Daisy",        "deps.tableau.daisy",     []
+PS.action "Add Completions",    "mix_completions.run",    []
 
 # Report the elapsed time
 PS.finish()

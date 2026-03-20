@@ -19,16 +19,16 @@ defmodule ProGen.Validate.Mix do
     test fn _ -> not eval_test(:has_mixfile) end
   end
 
-  defcheck :has_dep do
-    desc "Pass if igniter_new is installed"
-    fail "No igniter_new (install with 'mix archive.install hex igniter_new --force')"
-    test fn _ -> elem(System.cmd("mix", ["help"]), 0) =~ "igniter" end
+  defcheck {:has_dep, "dep"} do
+    desc "Pass if <dep> is installed"
+    fail fn {:has_dep, dep} -> "No #{dep} found in mix.exs" end
+    test fn {:has_dep, dep} -> elem(System.cmd("mix", ["help"]), 0) =~ dep end
   end
 
-  defcheck :no_dep do
-    desc "Pass if igniter is not installed"
-    fail "Igniter is installed"
-    test fn _ -> not eval_test(:has_igniter) end
+  defcheck {:no_dep, "dep"} do
+    desc "Pass if <dep> is not installed"
+    fail fn {:has_dep, dep} -> "Dependency #{dep} found in mix.exs" end
+    test fn {:has_dep, dep} -> not eval_test({:has_dep, dep}) end
   end
 
 end
