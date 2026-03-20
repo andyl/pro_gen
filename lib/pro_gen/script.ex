@@ -224,8 +224,13 @@ defmodule ProGen.Script do
   Prints a formatted message prefixed with `>>>`.
   """
   def puts(text) do
-    output = IO.ANSI.color(208) <> text <> IO.ANSI.reset()
-    IO.puts("> #{output}")
+    text
+    |> String.trim_trailing()
+    |> String.split("\n")
+    |> Enum.each(fn line ->
+      output = IO.ANSI.color(208) <> line <> IO.ANSI.reset()
+      IO.puts("> #{output}")
+    end)
   end
 
   @doc """
