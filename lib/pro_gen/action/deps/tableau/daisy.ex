@@ -8,8 +8,6 @@ defmodule ProGen.Action.Deps.Tableau.Daisy do
 
   use ProGen.Action
 
-  alias ProGen.CodeMods.File
-
   @css_file "assets/css/site.css"
 
   @validate [
@@ -32,10 +30,10 @@ defmodule ProGen.Action.Deps.Tableau.Daisy do
 
   @impl true
   def perform(_args) do
-    # add CSS plugin
-    File.append_line(@css_file, ~s(@plugin "daisyui"))
-    # update CSS file
-    File.sed_file(@css_file, ~s(s/\"$/\";/))
+    # add CSS plugin (idempotent)
+    ProGen.CodeMods.File.append_line(@css_file, ~s(@plugin "daisyui"))
+    # update CSS file (idempotent)
+    ProGen.CodeMods.File.sed_file(@css_file, ~s(s/\"$/\";/))
     :ok
   end
 
