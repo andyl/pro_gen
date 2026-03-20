@@ -1,50 +1,6 @@
 # Example Scripts
 
-## progen_deploy_fly
-
-Generates a simple phoenix app which can be deployed using Fly
-
-**Run it:**
-
-```bash
-./scripts/progen_deploy_fly --help
-```
-
-**Source:** [`scripts/progen_deploy_fly`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_deploy_fly)
-
-```elixir
-#!/usr/bin/env elixir
-
-# Generates a simple phoenix app which can be deployed using Fly
-
-Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
-
-PG.puts "UNDER CONSTRUCTION"
-```
-
-## progen_deploy_kamal
-
-Generates a simple phoenix app which can be deployed using Kamal
-
-**Run it:**
-
-```bash
-./scripts/progen_deploy_kamal --help
-```
-
-**Source:** [`scripts/progen_deploy_kamal`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_deploy_kamal)
-
-```elixir
-#!/usr/bin/env elixir
-
-# Generates a simple phoenix app which can be deployed using Kamal
-
-Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
-
-PG.puts "UNDER CONSTRUCTION"
-```
-
-## progen_hello_world
+## progen_greet
 
 A simple greeting script that demonstrates CLI argument parsing,
 flags, and basic ProGen.Script usage.
@@ -52,10 +8,10 @@ flags, and basic ProGen.Script usage.
 **Run it:**
 
 ```bash
-./scripts/progen_hello_world --help
+./scripts/progen_greet --help
 ```
 
-**Source:** [`scripts/progen_hello_world`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_hello_world)
+**Source:** [`scripts/progen_greet`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_greet)
 
 ```elixir
 #!/usr/bin/env elixir
@@ -188,6 +144,83 @@ PS.command "COMPILE", "mix compile"
 PS.finish()
 ```
 
+## progen_phoenix_kamal
+
+Generates a simple phoenix app which can be deployed using Kamal
+
+**Run it:**
+
+```bash
+./scripts/progen_phoenix_kamal --help
+```
+
+**Source:** [`scripts/progen_phoenix_kamal`](https://github.com/andyl/pro_gen/blob/master/scripts/progen_phoenix_kamal)
+
+```elixir
+#!/usr/bin/env elixir
+
+# Generates a simple phoenix app which can be deployed using Kamal
+
+Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
+
+alias ProGen.Script, as: PS 
+
+PS.cli_args( 
+  description: "Phoenix Project and Kamal Deploy Generator", 
+  allow_unknown_args: false, 
+  args: [
+    project: [
+      value_name: "PROJECT",
+      help: "Phoenix Project name", 
+      required: true, 
+      parser: :string
+    ], 
+    server: [
+      value_name: "HOST",
+      help: "Deployment Host", 
+      required: true, 
+      parser: :string
+    ], 
+  ],
+  flags: [ 
+    ecto: [
+      short: "-e", 
+      long: "--ecto", 
+      help: "Generate ecto files"
+    ], 
+    force: [
+      short: "-f", 
+      long: "--force", 
+      help: "Overwrite project directory if it exists"
+    ], 
+  ]
+)
+
+PS.puts "= UNDER CONSTRUCTION =\n... Script Outline ..."
+
+outline = """
+mix igniter.new myapp --with phx.new --with-args=--no-ecto --yes
+# MANUAL EDIT: remove [:dev, :test] from igniter
+cd myapp 
+git init && git add . && git commit -am'First commit'
+mix igniter.install kamal_plug@github:andyl/kamal_plug
+echo "/rel/" >> .gitignore
+mix phx.gen.release 
+MIX_ENV=prod mix release
+# see DOCKERFILE_TIMEOUT_ISSUE below...
+rerun mix phx.gen.release --docker   
+docker build -t myapp . 
+kamal init 
+echo 'SECRET_KEY_BASE=$SECRET_KEY_BASE' > .kamal/secrets 
+# MANUAL EDIT: config/deploy.yml 
+# make sure you can ssh to root@<target>  (USE KEYSEND root@<target>)
+kamal setup 
+kamal deploy
+"""
+
+PS.puts outline
+```
+
 ## progen_tableau
 
 Generates a [Tableau](https://github.com/elixir-tools/tableau) app.
@@ -251,15 +284,12 @@ PS.action  "GEN TABLEAU PROJECT", "new.tableau", [project: project]
 # Change to the project directory
 PS.cd(project)
 
-# Compile Code 
 PS.command "COMPILE",           "mix compile"
 PS.action "Install HeroIcons",  "deps.install",           [dep: "heroicons"]
 PS.action "Install UsageRules", "deps.install",           [dep: "usage_rules"]
 PS.action "Setup UsageRules",   "deps.usage_rules.setup", []
-# run_cmd "Add Daisy"        "npm i -D daisyui@latest" 
-# run_cmd "Update CSS"       "echo '@plugin \"daisyui\";' >> assets/css/site.css"
-# run_cmd "Fix CSS"          "sed -i 's/\"$/\";/' assets/css/site.css"
-PS.action "Add Completions", "mix_completions.run", []
+PS.action "Setup Daisy",        "deps.tableau.daisy",     []
+PS.action "Add Completions",    "mix_completions.run",    []
 
 # Report the elapsed time
 PS.finish()

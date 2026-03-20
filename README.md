@@ -2,80 +2,78 @@
 
 A scriptable Elixir project generator.
 
-Code generation is based on [Igniter](https://github.com/ash-project/igniter),
-possible future to handle things like deployment, CI/CD, monitoring, and DevOps
-tasks.
+ProGen is a coordination layer that combines Elixir code generators,
+Igniter/Sourceror code mods, and basic OS commands in a composable / extensible
+system.
+
+The goal is full-lifecycle project generation: configuration, CI/CD,
+deployment, DevOps, etc.
 
 **Status:** Early-stage development (v0.0.1)
 
-## Core Architecture
+## Architecture
 
-| Element     | Purpose                        | Implementation |
-|-------------|--------------------------------|----------------|
-| **Actions** | Composable generation tasks    | Elixir Modules |
-| **Scripts** | Shareable generation workflows | Elixir Scripts |
+ProGen has a extensible library of Scripts, Actions, Validations and CodeMods.
+
+```mermaid 
+flowchart TD
+    Scripts["<b>Scripts</b><br><small>Generation workflows as Elixir scripts</small>"]
+    Actions["<b>Actions</b><br><small>Composable generation tasks</small>"]
+    Validations["<b>Validations</b><br><small>Environment & Dependencies</small>"]
+    CodeMods["<b>CodeMods</b><br><small>Low-level code-mod utilities</small>"]
+
+    Scripts --> Actions
+    Actions --> Validations
+    Actions --> CodeMods
+```
 
 ### Actions
 
-Actions are small, composable units of work, implemented in a standalone
-module.  ProGen comes with a collection of built-in Actions.  Third parties can
-independently write their own actions.
+Actions can be composed into a graph tailored for a particular workflow.  For example:
 
-```elixir
-defmodule ProGen.Action.Run do
-  use ProGen.Action
+```mermaid 
+flowchart BT
+    Deploy["<b>Deploy</b><br><small>Deploy a Phoenix Project</small>"]
+    Generate["<b>Generate</b><br><small>Generate a Phoenix Project</small>"]
+    Language["<b>Language</b><br><small>Install Elixir</small>"]
+    Database["<b>Database</b><br><small>Install Postgres</small>"]
 
-  @description "Run a system command"
-  @opts_def [
-    command: [type: :string, required: true, doc: "The command to execute"],
-    args: [type: {:list, :string}, default: [], doc: "Arguments to pass"],
-    dir: [type: :string, default: ".", doc: "Working directory"]
-  ]
-
-  @impl true
-  def perform(args) do
-    command = Keyword.fetch!(args, :command)
-    cmd_args = Keyword.get(args, :args, [])
-    dir = Keyword.get(args, :dir, ".")
-
-    System.cmd(command, cmd_args, cd: dir)
-  end
-end
+    Deploy --> Generate
+    Generate --> Language
+    Generate --> Database
 ```
 
-**Action metadata** is declared via module attributes:
+Actions are modules that implement the `Action` behavior
 
-- `@description` — Short human-readable description (required)
-- `@opts_def` — [NimbleOptions](https://github.com/dashbitco/nimble_options) schema describing accepted options (defaults to `[]`)
-
-Using `ProGen.Action` injects: `name/0`, `description/0`, `opts_def/0`,
-`validate_args/1`, and `usage/0` (overridable).
+| Callback   | Description                            |
+|------------|----------------------------------------|
+| depends_on | list of other actions to run prior     |
+| validate   | environment and dependency checks      |
+| needed?    | idempotency test                       |
+| perform    | generation and code-mod logic          |
+| confirm    | test to ensure correct performance     |
 
 **Auto-discovery:** Any module named `ProGen.Action.<Name>` is automatically
 registered. The name is derived from the segments after `ProGen.Action`,
-downcased/underscored and dot-joined (e.g. `ProGen.Action.Run` becomes `"run"`,
-`ProGen.Action.Test.Echo2` becomes `"test.echo2"`). Namespaces are arbitrarily
-deep. No manual registration needed. Goal is to make it easy to create custom
-actions.
+downcased/underscored and dot-joined (e.g. `ProGen.Action.Test.Echo` becomes
+`"test.echo"`). Namespaces are arbitrarily deep. No manual registration needed.
+Goal is to make it easy to create custom actions.
 
 **Running actions:**
 
 ```elixir
-ProGen.Actions.run("run", command: "echo", args: ["hello"])
+ProGen.Actions.run("test.echo", [message: "hello"])
 #=> {"hello\n", 0}
-
-ProGen.Actions.run("run", [])
-#=> {:error, "required option :command not found..."}
 ```
 
 **Inspecting actions:**
 
 ```elixir
 ProGen.Actions.list_actions()
-#=> ["echo", "inspect", "run", "test.echo2", "validate"]
+#=> ["echo", "inspect", "test.echo", "phoenix.new"]
 
-ProGen.Actions.action_info("run")
-#=> {:ok, %{module: ProGen.Action.Run, name: "run", description: "Run a system command", usage: "...", opts_def: [...]}}
+ProGen.Actions.action_info("phoenix.new")
+#=> {:ok, %{module: ProGen.Action.Phoenix.New, name: "phoenix.new", description: "...", usage: "...", opts_def: [...]}}
 ```
 
 ### Scripts
@@ -89,20 +87,23 @@ end-user generation workflows. CLI parsing is handled by
 ```elixir
 #!/usr/bin/env elixir
 
-Mix.install([{:pro_gen, path: "."}])
+# A simple greeting script that demonstrates CLI argument parsing,
+# flags, and basic ProGen.Script usage.
 
-alias ProGen.Script, as: PG
+Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 
-PG.cli_args(
-  name: "greet",
+alias ProGen.Script, as: PS
+
+# Declare the CLI schema
+# These values can be retrieved using PS.cli_args()
+PS.cli_args(
   description: "A simple greeting script",
-  version: "0.1.0",
-  options: [
+  args: [
     name: [
-      short: "-n",
-      long: "--name",
+      value_name: "NAME", 
       help: "Name to greet",
-      required: true
+      required: true, 
+      parser: :string
     ]
   ],
   flags: [
@@ -112,45 +113,39 @@ PG.cli_args(
       help: "Greet loudly"
     ]
   ]
-)
+) 
 
-PG.parse_args()
+# Parse the CLI args, returning an error message for invalid args.
+# CLI args can be retrieved using PS.cli_vals()
+PS.parse_args() 
 
-PG.puts "HELLO WORLD"
+# Get the input name using cli_vals
+name = PS.cli_vals().name
+
+if PS.cli_vals().loud do 
+  PS.puts "HELLO #{String.upcase(name)}" 
+else 
+  PS.puts "Hello #{name}"
+end
 ```
 
 Run it:
 
 ```bash
-./scripts/greet --name World
+./scripts/progen_greet --name World
 ```
 
-**Script functions:**
+**Core script functions:**
 
-| Function             | Description                                               |
-|----------------------|-----------------------------------------------------------|
-| `cli_args/1`         | Store an Optimus schema in `ProGen.Env`                   |
-| `cli_args/0`         | Retrieve the stored schema                                |
-| `cli_vals/0`         | Retrieve the parsed CLI values                            |
-| `parse_args/2`       | Parse argv against an explicit schema                     |
-| `parse_args/1`       | Parse argv using the stored schema (merges into flat map) |
-| `parse_args/0`       | Parse `System.argv()` using the stored schema             |
-| `usage/1`            | Generate help text from an explicit schema                |
-| `usage/0`            | Generate help text from the stored schema                 |
-| `puts/1`             | Print a formatted message                                 |
-| `log/1`              | Log an info message via Logger                            |
-| `command/2`          | Print description, then run a system command              |
-| `action/3`           | Run a ProGen action                                       |
-| `git/1`              | Run a git command (string or list)                        |
-| `commit/1`           | Stage all files and commit                                |
-| `start/1`            | Log a start message and record the start time             |
-| `finish/1`           | Log a finish message with elapsed time                    |
-| `cd/1`               | Change the working directory                              |
-| `clear/0`            | Clear the terminal screen                                 |
-
-The `parse_args/1` convenience function merges `parsed.args`, `parsed.options`,
-and `parsed.flags` into a single flat map and stores it in `ProGen.Env` under
-`:pg_cli_vals`. It also auto-prints usage on `--help` and version on `--version`.
+| Function     | Description                                   |
+|--------------|-----------------------------------------------|
+| `cli_args`   | Store an Optimus schema                       |
+| `parse_args` | Parse `System.argv()` using the stored schema |
+| `puts`       | Print a formatted message                     |
+| `log`        | Log an info message via Logger                |
+| `command`    | Run an arbitrary system command               |
+| `action`     | Run a ProGen action                           |
+| `cd`         | Change the working directory                  |
 
 ## Extending ProGen
 
@@ -163,7 +158,6 @@ It will be auto-discovered at runtime — no manual registration needed.
 defmodule ProGen.Action.MyCustom do
   use ProGen.Action
 
-  @description "Does something custom"
   @opts_def [
     name: [type: :string, required: true, doc: "The name"]
   ]
@@ -204,14 +198,6 @@ defmodule ProGen.Validate.Deploy do
 end
 ```
 
-Each `defcheck` block requires three statements:
-
-| Statement | Purpose                                                                     |
-|-----------|-----------------------------------------------------------------------------|
-| `desc`    | Human-readable description (used in docs table and `checks/0`)              |
-| `fail`    | Error message string, or a `fn term -> string end` for parameterized checks |
-| `test`    | `fn term -> boolean end` that performs the actual check                     |
-
 The `defcheck` macro auto-generates `all_checks/0` and appends an
 "Available Checks" table to the module's `@moduledoc`.
 
@@ -229,27 +215,9 @@ The `defcheck` macro auto-generates `all_checks/0` and appends an
 Without this, the formatter will add parentheses to `desc`, `fail`, and `test`
 calls inside the `defcheck` block.
 
-## Supporting Modules
+## CodeMods 
 
-### `ProGen.Env`
-
-An ETS-backed key-value store with OS environment variable fallback. The table is
-created lazily on first access.
-
-```elixir
-ProGen.Env.put(:color, "blue")
-ProGen.Env.get(:color)
-#=> "blue"
-
-# Falls back to env vars for missing keys
-# :database_url checks DATABASE_URL
-ProGen.Env.get(:database_url, "default")
-
-# Bulk operations
-ProGen.Env.put(fruit: "apple", veggie: "carrot")
-ProGen.Env.list()
-#=> [fruit: "apple", veggie: "carrot"]
-```
+UNDER CONSTRUCTION 
 
 ## Installation
 
@@ -267,29 +235,19 @@ For standalone scripts, use `Mix.install`:
 
 ```elixir
 Mix.install([{:pro_gen, github: "andyl/pro_gen"}])
-import ProGen.Script
 ```
 
 ## Development
 
-```bash
-mix deps.get                    # Fetch dependencies
-mix compile                     # Compile the project
-mix test                        # Run all tests
-mix test test/file.exs:LINE     # Run a specific test by line number
-mix format                      # Format code
-mix format --check-formatted    # Check formatting
-```
+Contributors: please use Conventional Commits
 
 ## Dependencies
 
-| Dependency       | Purpose                                         |
-|------------------|-------------------------------------------------|
-| igniter          | Elixir code generation framework                |
-| nimble_options   | Action argument validation                      |
-| optimus          | CLI argv parsing for Scripts                    |
-| usage_rules      | Claude Code rules integration                   |
-| ex_doc           | Documentation generation (dev only)             |
+| Dependency        | Purpose                          |
+|-------------------|----------------------------------|
+| igniter/sourceror | Elixir code generation framework |
+| nimble_options    | Action argument validation       |
+| optimus           | CLI argv parsing for Scripts     |
 
 ## License
 

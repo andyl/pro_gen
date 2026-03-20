@@ -35,6 +35,8 @@ defmodule ProGen.Action.Deps.Install do
     end
   end
 
+  # -----
+
   defp find_dep(dep) do
     case File.read("mix.exs") do
       {:ok, contents} -> String.contains?(contents, ":#{dep}")
