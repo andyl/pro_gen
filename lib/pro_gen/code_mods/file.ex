@@ -1,18 +1,23 @@
 defmodule ProGen.CodeMods.File do
 
-  def append_line(_file, _line) do
-    # check to ensure the file exists
-    # append the line to the file
-    # idempotently
-    # if the contents are changed, update the file
-    :ok
+  def append_line(file, line) do
+    with {:ok, contents} <- Elixir.File.read(file) do
+      if String.contains?(contents, line) do
+        :ok
+      else
+        trailing = if String.ends_with?(contents, "\n"), do: "", else: "\n"
+        Elixir.File.write(file, contents <> trailing <> line <> "\n")
+      end
+    end
   end
 
   def sed_file(file, expression) do
-    # check to ensure the file exists
-    "sed -i '#{expression}' #{file}"
-    |> ProGen.Sys.cmd()
-    :ok
+    if Elixir.File.exists?(file) do
+      "sed -i '#{expression}' #{file}"
+      |> ProGen.Sys.cmd()
+    else
+      {:error, :enoent}
+    end
   end
 
 end
