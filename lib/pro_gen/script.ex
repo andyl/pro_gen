@@ -27,9 +27,9 @@ defmodule ProGen.Script do
 
   Mix.install([:pro_gen, github: "andyl/pro_gen"])
 
-  alias ProGen.Script, as: PG
+  alias ProGen.Script, as: PS
 
-  PG.puts "Hello World"
+  PS.puts "Hello World"
   ...
   ```
 
@@ -218,6 +218,8 @@ defmodule ProGen.Script do
     |> halt_on_error()
   end
 
+  # ----- output functions
+
   @doc """
   Prints a formatted message prefixed with `>>>`.
   """
@@ -232,6 +234,17 @@ defmodule ProGen.Script do
   def inspect(text, term, _opts \\ []) do
     puts(text)
     IO.inspect(term)
+  end
+
+  @doc """
+  Prints an error message.
+  """
+  def err(text) when is_binary(text), do: err_puts(text)
+  def err(term), do: term |> inspect() |> err_puts()
+
+  def err_puts(text) do
+    output = IO.ANSI.light_red() <> text <> IO.ANSI.reset()
+    IO.puts("Error: #{output}")
   end
 
   @doc """
@@ -359,7 +372,7 @@ defmodule ProGen.Script do
   end
 
   defp halt_on_error({:error, message}) do
-    IO.puts(:stderr, "Error: #{inspect(message)}")
+    err(message)
     do_halt(1)
   end
 
