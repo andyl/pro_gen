@@ -4,16 +4,10 @@ defmodule ProGen.Action.Deps.Tableau.Daisy do
 
   Skips installation when the archive is already present.
   Pass `force: true` to reinstall regardless.
-
-  # run_cmd "Add Daisy"        "npm i -D daisyui@latest"
-  # run_cmd "Update CSS"       "echo '@plugin \"daisyui\";' >> assets/css/site.css"
-  # run_cmd "Fix CSS"          "sed -i 's/\"$/\";/' assets/css/site.css"
-
   """
 
   use ProGen.Action
 
-  # alias ProGen.Script, as: PS
   alias ProGen.CodeMods.File
 
   @css_file "assets/css/site.css"
@@ -47,11 +41,8 @@ defmodule ProGen.Action.Deps.Tableau.Daisy do
 
   @impl true
   def confirm(_result, _args) do
-    # if File.exists?("RULES.md"), do: :ok, else: {:error, "RULES.md was not created"}
     :ok
   end
-
-  # -----
 
 end
 
