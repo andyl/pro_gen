@@ -12,7 +12,7 @@ defmodule ProGen.Action.Deps.UsageRules.Setup do
 
   @impl true
   def depends_on(_args) do
-    [{"archive.install", [package: "usage_rules"]}]
+    [{"deps.install", [dep: "usage_rules"]}]
   end
 
   @impl true
