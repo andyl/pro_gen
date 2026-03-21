@@ -31,9 +31,9 @@ PS.cli_args(
 {:ok, %{project: project}} = PS.parse_args() 
 
 # Clear the screen
-PS.clear() 
+PS.puts(" ----- CREATE PROJECT <#{project}> -----")
 
-# Start a timer
+# Print a banner
 PS.start()
 
 # exit if validations do not pass
@@ -52,6 +52,8 @@ PS.cd(project)
 
 # Compile Code 
 PS.command "COMPILE", "mix compile"
+PS.action "Install UsageRules", "deps.install",           [dep: "usage_rules"]
+PS.action "Setup UsageRules",   "deps.usage_rules.setup", []
 
 # Report the elapsed time
 PS.finish()

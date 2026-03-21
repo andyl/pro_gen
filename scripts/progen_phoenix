@@ -38,8 +38,8 @@ PS.cli_args(
 # Parse the CLI args and grab the project name
 {:ok, %{project: project}} = PS.parse_args() 
 
-# Clear the screen
-PS.clear() 
+# Print a banner
+PS.puts(" ----- CREATE PROJECT <#{project}> -----")
 
 # Start a timer
 PS.start()
@@ -59,6 +59,8 @@ PS.cd(project)
 
 # Compile Code 
 PS.command "COMPILE", "mix compile"
+PS.action "Install UsageRules", "deps.install",           [dep: "usage_rules"]
+PS.action "Setup UsageRules",   "deps.usage_rules.setup", []
 
 # Report the elapsed time
 PS.finish()
