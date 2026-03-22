@@ -72,10 +72,10 @@ PS.command "COMPILE", "mix compile"
 if PS.cli_vals().max do 
   PS.action "Add ash",         "deps.install", [dep: "ash"]
   PS.action "Add ash_phoenix", "deps.install", [dep: "ash_phoenix"]
-  PS.action "Add git_ops",     "deps.install", [dep: "git_ops --only dev,test"]
+  PS.action "Add git_ops",     "deps.install", [dep: "git_ops", only: "dev,test"]
+  PS.action "Add LV debugger", "deps.install",  [dep: "live_debugger"]
 end
 
-# run_cmd "Add LV debugger" "mix igniter.install live_debugger --yes"
 # run_cmd "Add Xpc"         "mix igniter.install xpc@path:/home/aleak/src/App/xpc --only dev,test --yes"
 # run_cmd "Add AshMod"      "mix igniter.install ash_mod@path:/home/aleak/src/Lib/ash_mod --only dev,test --yes"
 #

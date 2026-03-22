@@ -8,7 +8,10 @@ defmodule ProGen.Action.Deps.Install do
 
   @impl true
   def opts_def do
-    [dep: [type: :string, required: true, doc: "The dependency to install"]]
+    [
+      dep:  [type: :string, required: true,  doc: "The dependency to install"],
+      only: [type: :string, required: false, doc: "Install in specific environments"]
+    ]
   end
 
   @impl true
@@ -25,8 +28,10 @@ defmodule ProGen.Action.Deps.Install do
 
   @impl true
   def perform(args) do
+    only = Keyword.get(args, :only)
     dependency = Keyword.fetch!(args, :dep)
-    Sys.cmd("mix igniter.install #{dependency} --yes")
+    only_str   = if only, do: "--only #{only}", else: ""
+    Sys.cmd("mix igniter.install #{dependency} #{only_str} --yes")
   end
 
   @impl true
