@@ -9,6 +9,7 @@ defmodule ProGen.MixProject do
       app: :pro_gen,
       version: @version,
       elixir: "~> 1.19",
+      elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       usage_rules: usage_rules(),
       deps: deps(),
@@ -74,6 +75,9 @@ defmodule ProGen.MixProject do
     Mix.Project.push(__MODULE__)
     Mix.Task.rerun("docs")
   end
+
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 
   defp usage_rules do
     [
