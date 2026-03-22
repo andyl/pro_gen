@@ -4,12 +4,12 @@ defmodule ProGen.Action do
 
   Defines six callbacks, listed here in execution order:
 
-    1. `opts_def/0`    — NimbleOptions schema; args are validated first (default: `[]`)
-    2. `depends_on/1`  — Dependencies run next (default: `[]`)
-    3. `needed?/1`     — Skip check; `false` → `{:ok, :skipped}` (default: `true`)
-    4. `validate/1`    — Precondition checks before perform (default: `[]`)
-    5. `perform/1`     — Main execution with validated keyword args
-    6. `confirm/2`     — Postcondition check after perform (default: `:ok`)
+    1. `opts_def/0`    — Optional. NimbleOptions schema; args are validated first (default: `[]`)
+    2. `depends_on/1`  — Optional. Dependencies run next (default: `[]`)
+    3. `needed?/1`     — Optional. Skip check; `false` → `{:ok, :skipped}` (default: `true`)
+    4. `validate/1`    — Optional. Precondition checks before perform (default: `[]`)
+    5. `perform/1`     — Required. Main execution with validated keyword args
+    6. `confirm/2`     — Optional. Postcondition check after perform (default: `:ok`)
 
   When `needed?/1` returns `false`, the framework skips `perform/1` and returns
   `{:ok, :skipped}`. Pass `force: true` to `ProGen.Actions.run/2` to bypass the check.
