@@ -1,4 +1,4 @@
-defmodule ProGen.Action.PhxNew do
+defmodule ProGen.Action.New.Phoenix do
   @moduledoc """
   Create a new Phoenix application.
 
@@ -11,7 +11,10 @@ defmodule ProGen.Action.PhxNew do
 
   @impl true
   def opts_def do
-    [project: [type: :string, required: true, doc: "Name of the phx project to create"]]
+    [
+      project: [type: :string, required: true, doc: "Name of the phx project to create"],
+      args:    [type: :string, required: true, doc: "Phx.new command line arguments"]
+    ]
   end
 
   @impl true
@@ -26,12 +29,13 @@ defmodule ProGen.Action.PhxNew do
   end
 
   @impl true
-  def perform(args) do
-    project = Keyword.fetch!(args, :project)
+  def perform(input_args) do
+    project = Keyword.fetch!(input_args, :project)
+    args    = Keyword.fetch!(input_args, :args)
     Sys.cmd("rm -rf #{project}")
 
     Sys.cmd(
-      "mix igniter.new #{project} --with=phx.new --with-args '--template heex --css tailwind'"
+      "mix igniter.new #{project} --with=phx.new --with-args '#{args}'"
     )
   end
 

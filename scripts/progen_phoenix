@@ -31,6 +31,11 @@ PS.cli_args(
       short: "-e", 
       long: "--ecto", 
       help: "Generate ecto files"
+    ], 
+    max: [
+      short: "-m", 
+      long: "--max", 
+      help: "Generate max features"
     ]
   ]
 )
@@ -38,29 +43,66 @@ PS.cli_args(
 # Parse the CLI args and grab the project name
 {:ok, %{project: project}} = PS.parse_args() 
 
+if PS.cli_vals().max do 
+  newargs = PS.cli_vals() |> Map.put(:ecto, true)
+  ProGen.Env.put(:pg_cli_vals, newargs)
+end
+
 # Print a banner
 PS.puts(" ----- CREATE PROJECT <#{project}> -----")
 
 # Start a timer
 PS.start()
 
-if PS.cli_vals().force, do: PS.command "CLEANUP OLD PROJECT", "rm -rf #{project}"
+if PS.cli_vals().force, do: PS.command("CLEANUP OLD PROJECT", "rm -rf #{project}")
 
 # exit if validations do not pass
-PS.validate "CHECK ENVIRONMENT", PV.Filesys, [:no_mix, :no_git, {:no_dir, project}]
+PS.validate "CHECK ENVIRONMENT", PV.Filesys, [:no_mix, :no_git]
   
-# generate project using igniter
-phx_gen_opts = if PS.cli_vals().ecto, do: "", else: "--with-args --no-ecto"
-phx_gen_cmd = "mix igniter.new #{project} --with=phx.new #{phx_gen_opts}"
-PS.command  "GEN PHX PROJECT", phx_gen_cmd
+phx_args = if PS.cli_vals().ecto, do: "", else: "--with-args --no-ecto"
+PS.action "GEN PHOENIX PROJECT", "new.phoenix", [project: project, args: phx_args]
 
 # Change to the project directory
 PS.cd(project)
 
 # Compile Code 
 PS.command "COMPILE", "mix compile"
+
+# Install max features 
+if PS.cli_vals().max do 
+  PS.action "Add ash",         "deps.install", [dep: "ash"]
+  PS.action "Add ash_phoenix", "deps.install", [dep: "ash_phoenix"]
+  PS.action "Add git_ops",     "deps.install", [dep: "git_ops --only dev,test"]
+end
+
+# run_cmd "Add LV debugger" "mix igniter.install live_debugger --yes"
+# run_cmd "Add Xpc"         "mix igniter.install xpc@path:/home/aleak/src/App/xpc --only dev,test --yes"
+# run_cmd "Add AshMod"      "mix igniter.install ash_mod@path:/home/aleak/src/Lib/ash_mod --only dev,test --yes"
+#
+# [ "$USE_ECTO"  == "true" ] && run_cmd "Add ash_postgres" "mix igniter.install ash_postgres --yes"
+# [ "$USE_AUTH"  == "true" ] && run_cmd "Add auth"         "mix igniter.install ash_authentication --auth-strategy password --yes"
+# [ "$USE_AUTH"  == "true" ] && run_cmd "Add auth_phx"     "mix igniter.install ash_authentication_phoenix --auth-strategy password --yes"
+# [ "$USE_AUTH"  == "true" ] && run_cmd "Use uuidv7"       "mix ash.gen.resource $APP.Accounts.User --uuid-v7-primary-key id --conflicts replace --yes"
+# [ "$USE_AUTH"  == "true" ] && run_cmd "Add accounts_gen" "mix ash_mod.template.render accounts_gen -m"
+# [ "$USE_AUTH"  == "true" ] && run_cmd "Add migration"    "mix ash.codegen use_uuidv7"
+# [ "$USE_ORG"   == "true" ] && run_cmd "Add User Slug"    "mix ash.gen.resource $APP.Accounts.User -a username:ci_string -a slug:ci_string -t --conflicts replace --yes"
+# [ "$USE_ORG"   == "true" ] && run_cmd "Create Org"       "mix ash.gen.resource $APP.Camp.Org --uuid-v7-primary-key id -a name:string -a orgname:ci_string -a slug:ci_string -a type:atom -t -e postgres --default-actions create,read,update,destroy --yes"
+# [ "$USE_ORG"   == "true" ] && run_cmd "Create Mem"       "mix ash.gen.resource $APP.Camp.Mem --uuid-v7-primary-key id -a mem_id:uuid -a user_id:uuid -a role:atom -t -e postgres --default-actions create,read,update,destroy --yes"
+# [ "$USE_ORG"   == "true" ] && run_cmd "Add camp_gen"     "mix ash_mod.template.render camp_gen -m"
+# [ "$USE_ORG"   == "true" ] && run_cmd "Add migration"    "mix ash.codegen add_camp_domain"
+# [ "$USE_AI"    == "true" ] && run_cmd "Add ash_ai"       "mix igniter.install ash_ai --yes"
+# [ "$USE_AI"    == "true" ] && run_cmd "Add ai chat"      "echo '0' | mix ash_ai.gen.chat --live --yes"
+# [ "$USE_AI"    == "true" ] && run_cmd "Add chat_bot"     "mix ash_mod.template.render chat_bot -m"
+# [ "$USE_ECTO"  == "true" ] && run_cmd "Setup database"   "mix ecto.drop ; mix ash.setup"
+# [ "$USE_ADMIN" == "true" ] && run_cmd "Add ash_admin"    "mix igniter.install ash_admin --yes"
+#
+# SEED_CMD="mix run -e \"Ash.Seed.seed!($APP.Accounts.User, %{email: ~s(a@a.com), hashed_password: Bcrypt.hash_pwd_salt(~s(12345678))})\""
+# [ "$USE_AUTH"  == "true" ] && echo "$SEED_CMD"
+# [ "$USE_AUTH"  == "true" ] && run_cmd "Add a seed user" "$SEED_CMD"
+
 PS.action "Install UsageRules", "deps.install",           [dep: "usage_rules"]
 PS.action "Setup UsageRules",   "deps.usage_rules.setup", []
+PS.action "Add Completions",    "mix_completions.run",    []
 
 # Report the elapsed time
 PS.finish()

@@ -1,6 +1,6 @@
 #!/usr/bin/env elixir
 
-# Generates a simple phoenix app which can be deployed using Kamal
+# Generates a phoenix app which can be deployed using Kamal
 
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 
