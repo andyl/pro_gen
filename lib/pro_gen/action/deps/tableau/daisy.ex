@@ -10,16 +10,19 @@ defmodule ProGen.Action.Deps.Tableau.Daisy do
 
   @css_file "assets/css/site.css"
 
-  @validate [
-    {"filesys", [:has_mix, {:has_file, @css_file}]},
-    {"mix",     [{:has_dep,  "tableau"}]},
-    {"lang",    [:has_npm]},
-  ]
+  @impl true
+  def validate(_args) do
+    [
+      {"filesys", [:has_mix, {:has_file, @css_file}]},
+      {"mix", [{:has_dep, "tableau"}]},
+      {"lang", [:has_npm]}
+    ]
+  end
 
   @impl true
   def depends_on(_args) do
     [
-      {"npm.install", [package: "daisy@latest"]},
+      {"npm.install", [package: "daisy@latest"]}
     ]
   end
 
@@ -41,6 +44,4 @@ defmodule ProGen.Action.Deps.Tableau.Daisy do
   def confirm(_result, _args) do
     :ok
   end
-
 end
-

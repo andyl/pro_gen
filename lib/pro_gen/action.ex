@@ -2,12 +2,14 @@ defmodule ProGen.Action do
   @moduledoc """
   Behavior for all actions.
 
-  Defines four callbacks:
+  Defines six callbacks, listed here in execution order:
 
-    * `depends_on/1` — Optional list of dependency action names to run first (default: `[]`)
-    * `needed?/1`    — Optional predicate checked before `perform/1` (default: `true`)
-    * `perform/1`    — Executes the action with validated keyword args
-    * `confirm/2`    — Optional postcondition checked after `perform/1` (default: `:ok`)
+    1. `opts_def/0`    — NimbleOptions schema; args are validated first (default: `[]`)
+    2. `depends_on/1`  — Dependencies run next (default: `[]`)
+    3. `needed?/1`     — Skip check; `false` → `{:ok, :skipped}` (default: `true`)
+    4. `validate/1`    — Precondition checks before perform (default: `[]`)
+    5. `perform/1`     — Main execution with validated keyword args
+    6. `confirm/2`     — Postcondition check after perform (default: `:ok`)
 
   When `needed?/1` returns `false`, the framework skips `perform/1` and returns
   `{:ok, :skipped}`. Pass `force: true` to `ProGen.Actions.run/2` to bypass the check.
@@ -16,26 +18,29 @@ defmodule ProGen.Action do
   the validated args. Return `:ok` to accept the result or `{:error, reason}` to
   signal a confirmation failure (wrapped as `{:error, {:confirmation_failed, reason}}`).
 
+  The `validate/1` callback returns a list of `{validator_name, checks}` tuples
+  declaring preconditions checked before `perform/1`. Each tuple is passed to
+  `ProGen.Validations.run/2`. Example:
+
+      @impl true
+      def validate(_args), do: [{"filesys", [:has_mix, :has_git]}]
+
   Action metadata:
 
     * The description is derived from the first line of `@moduledoc` (required)
-    * `@opts_def` — [NimbleOptions](https://github.com/dashbitco/nimble_options) schema describing accepted options (defaults to `[]`)
-    * `@validate` — List of `{validator_name, checks}` tuples declaring preconditions
-      checked before `perform/1` (defaults to `[]`). Each tuple is passed to
-      `ProGen.Validations.run/2`. Example: `@validate [{"filesys", [:has_mix, :has_git]}]`
 
   Using this module injects:
 
     * `name/0`          — Auto-derived namespaced action name (string, e.g. `"test.echo"`)
     * `description/0`   — First line of `@moduledoc`
-    * `opts_def/0` — Returns the declared option schema
-    * `validate/0`      — Returns the declared `@validate` list (default `[]`)
     * `validate_args/1`  — Validates a keyword list against the schema
     * `usage/0`          — Auto-generated usage text from the schema (overridable)
   """
 
+  @callback opts_def() :: keyword()
   @callback depends_on(args :: keyword()) :: [String.t() | {String.t(), keyword()}]
   @callback needed?(args :: keyword()) :: boolean()
+  @callback validate(args :: keyword()) :: [{String.t(), list()}]
   @callback perform(args :: keyword()) :: any()
   @callback confirm(result :: any(), args :: keyword()) :: :ok | {:error, term()}
 
@@ -43,10 +48,13 @@ defmodule ProGen.Action do
     quote do
       @behaviour ProGen.Action
 
-      Module.register_attribute(__MODULE__, :opts_def, persist: true)
-      Module.register_attribute(__MODULE__, :validate, persist: true)
-
       @before_compile ProGen.Action
+
+      @doc """
+      Returns the NimbleOptions schema for this action's arguments.
+      Defaults to `[]` (no options).
+      """
+      def opts_def, do: []
 
       @doc """
       Validates `args` against this action's `opts_def/0`.
@@ -71,6 +79,12 @@ defmodule ProGen.Action do
       def needed?(_args), do: true
 
       @doc """
+      Returns a list of `{validator_name, checks}` tuples declaring preconditions.
+      Defaults to `[]`.
+      """
+      def validate(_args), do: []
+
+      @doc """
       Postcondition check called after `perform/1`. Defaults to `:ok`.
       Override to verify the perform result before it is returned to callers.
       """
@@ -84,14 +98,12 @@ defmodule ProGen.Action do
         NimbleOptions.docs(opts_def())
       end
 
-      defoverridable usage: 0, depends_on: 1, needed?: 1, confirm: 2
+      defoverridable opts_def: 0, usage: 0, depends_on: 1, needed?: 1, validate: 1, confirm: 2
     end
   end
 
   defmacro __before_compile__(env) do
     moduledoc = Module.get_attribute(env.module, :moduledoc)
-    option_schema = Module.get_attribute(env.module, :opts_def) || []
-    validate = Module.get_attribute(env.module, :validate) || []
 
     doc_text =
       case moduledoc do
@@ -117,8 +129,6 @@ defmodule ProGen.Action do
     quote do
       def name, do: unquote(name)
       def description, do: unquote(description)
-      def opts_def, do: unquote(Macro.escape(option_schema))
-      def validate, do: unquote(Macro.escape(validate))
     end
   end
 end

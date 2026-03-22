@@ -3,9 +3,10 @@ defmodule ProGen.Action.Test.ConfirmFail do
 
   use ProGen.Action
 
-  @opts_def [
-    message: [type: :string, required: true, doc: "A message"]
-  ]
+  @impl true
+  def opts_def do
+    [message: [type: :string, required: true, doc: "A message"]]
+  end
 
   @impl true
   def perform(args), do: {:ok, Keyword.fetch!(args, :message)}

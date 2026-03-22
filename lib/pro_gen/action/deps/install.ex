@@ -6,8 +6,13 @@ defmodule ProGen.Action.Deps.Install do
   use ProGen.Action
   alias ProGen.Sys
 
-  @opts_def [ dep: [type: :string, required: true, doc: "The dependency to install"] ]
-  @validate [{"filesys", [:has_mix, :has_git]}]
+  @impl true
+  def opts_def do
+    [dep: [type: :string, required: true, doc: "The dependency to install"]]
+  end
+
+  @impl true
+  def validate(_args), do: [{"filesys", [:has_mix, :has_git]}]
 
   @impl true
   def depends_on(_args), do: [{"archive.install", package: "igniter_new"}]

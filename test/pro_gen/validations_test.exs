@@ -2,14 +2,15 @@ defmodule ProGen.ValidationsTest do
   use ExUnit.Case, async: true
 
   describe "list_validations/0" do
-    test "includes all four validators" do
+    test "includes all five validators" do
       validations = ProGen.Validations.list_validations()
       names = Enum.map(validations, &elem(&1, 0))
 
+      assert "archive" in names
       assert "filesys" in names
       assert "gem" in names
-      assert "hex" in names
       assert "lang" in names
+      assert "mix" in names
     end
   end
 

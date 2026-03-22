@@ -5,9 +5,10 @@ defmodule ProGen.Action.Git.Commit do
 
   use ProGen.Action
 
-  @opts_def [
-    message: [type: :string, required: true, doc: "Commit message"]
-  ]
+  @impl true
+  def opts_def do
+    [message: [type: :string, required: true, doc: "Commit message"]]
+  end
 
   @impl true
   def needed?(_args) do

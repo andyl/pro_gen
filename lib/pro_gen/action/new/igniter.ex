@@ -9,16 +9,22 @@ defmodule ProGen.Action.IgniterNew.Run do
   use ProGen.Action
   alias ProGen.Sys
 
-  @opts_def [
-    project: [type: :string, required: true, doc: "Name of the igniter project to create"],
-    packages: [type: :string, required: false, doc: "Comma-seperated list of packages to install"]
-  ]
+  @impl true
+  def opts_def do
+    [
+      project: [type: :string, required: true, doc: "Name of the igniter project to create"],
+      packages: [
+        type: :string,
+        required: false,
+        doc: "Comma-seperated list of packages to install"
+      ]
+    ]
+  end
 
   @impl true
   def depends_on(_args) do
     [{"archive.install", package: "igniter_new"}]
   end
-
 
   @impl true
   def needed?(args) do
@@ -30,9 +36,11 @@ defmodule ProGen.Action.IgniterNew.Run do
   def perform(args) do
     project = Keyword.fetch!(args, :project)
     Sys.cmd("rm -rf #{project}")
+
     case Keyword.fetch!(args, :installs) do
       nil ->
         Sys.cmd("mix igniter.new #{project}")
+
       packages ->
         Sys.cmd("mix igniter.new #{project} --install #{packages}")
     end

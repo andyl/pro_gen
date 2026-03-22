@@ -1,4 +1,4 @@
-defmodule ProGen.Validate.HexTest do
+defmodule ProGen.Validate.ArchiveTest do
   use ExUnit.Case, async: true
 
   # Skipping runtime checks for has_igniter, no_igniter, has_phx_new, no_phx_new
@@ -6,7 +6,7 @@ defmodule ProGen.Validate.HexTest do
 
   describe "checks/0 introspection" do
     test "returns a non-empty list of {term, desc} tuples" do
-      checks = ProGen.Validate.Hex.checks()
+      checks = ProGen.Validate.Archive.checks()
       assert is_list(checks)
       assert length(checks) == 6
 
@@ -17,8 +17,8 @@ defmodule ProGen.Validate.HexTest do
       end)
     end
 
-    test "contains all 6 hex check terms" do
-      terms = Enum.map(ProGen.Validate.Hex.checks(), &elem(&1, 0))
+    test "contains all 6 archive check terms" do
+      terms = Enum.map(ProGen.Validate.Archive.checks(), &elem(&1, 0))
 
       assert ":has_igniter_new" in terms
       assert ":no_igniter" in terms
@@ -30,25 +30,25 @@ defmodule ProGen.Validate.HexTest do
   end
 
   describe "module metadata" do
-    test "name/0 returns \"hex\"" do
-      assert ProGen.Validate.Hex.name() == "hex"
+    test "name/0 returns \"archive\"" do
+      assert ProGen.Validate.Archive.name() == "archive"
     end
 
     test "description/0 returns a non-empty string" do
-      desc = ProGen.Validate.Hex.description()
+      desc = ProGen.Validate.Archive.description()
       assert is_binary(desc)
       assert desc != ""
     end
 
     test "opts_def/0 includes :checks" do
-      schema = ProGen.Validate.Hex.opts_def()
+      schema = ProGen.Validate.Archive.opts_def()
       assert is_list(schema)
       assert Keyword.has_key?(schema, :checks)
     end
 
     test "is auto-discovered by the registry" do
       validations = ProGen.Validations.list_validations()
-      assert Enum.any?(validations, fn {name, _desc} -> name == "hex" end)
+      assert Enum.any?(validations, fn {name, _desc} -> name == "archive" end)
     end
   end
 end

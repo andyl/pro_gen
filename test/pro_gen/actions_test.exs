@@ -222,12 +222,12 @@ defmodule ProGen.ActionsTest do
     end
   end
 
-  describe "@validate integration" do
-    test "action with passing @validate runs perform successfully" do
+  describe "validate/1 integration" do
+    test "action with passing validate/1 runs perform successfully" do
       assert :ok = ProGen.Actions.run("test.validate_pass", [])
     end
 
-    test "action with failing @validate returns error and does not run perform" do
+    test "action with failing validate/1 returns error and does not run perform" do
       Process.delete(:validate_fail_performed)
       assert {:error, msg} = ProGen.Actions.run("test.validate_fail", [])
       assert msg =~ "mix.exs"
@@ -238,7 +238,7 @@ defmodule ProGen.ActionsTest do
       assert {:ok, :skipped} = ProGen.Actions.run("test.validate_skip", [])
     end
 
-    test "existing actions without @validate continue to work unchanged" do
+    test "existing actions without validate/1 override continue to work unchanged" do
       output =
         capture_io(fn ->
           assert :ok = ProGen.Actions.run("io.echo", message: "ok")
@@ -252,7 +252,7 @@ defmodule ProGen.ActionsTest do
       assert info.validate == [{"filesys", [:has_mix]}]
     end
 
-    test "action_info :validate is [] for actions without @validate" do
+    test "action_info :validate is [] for actions without validate/1 override" do
       assert {:ok, info} = ProGen.Actions.action_info("io.echo")
       assert info.validate == []
     end

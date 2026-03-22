@@ -8,9 +8,10 @@ defmodule ProGen.Action.MixCompletions.Run do
 
   use ProGen.Action
 
-  @validate [{"filesys", [{:has_file, "mix.exs"}]}]
-
   @cache_file ".mix_complete.cache"
+
+  @impl true
+  def validate(_args), do: [{"filesys", [{:has_file, "mix.exs"}]}]
 
   @impl true
   def depends_on(_args) do

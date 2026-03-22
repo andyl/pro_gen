@@ -1,9 +1,10 @@
 defmodule ProGen.Action.Test.ValidateFail do
-  @moduledoc "Action with failing @validate (test fixture)"
+  @moduledoc "Action with failing validate/1 (test fixture)"
 
   use ProGen.Action
 
-  @validate [{"filesys", [:no_mix]}]
+  @impl true
+  def validate(_args), do: [{"filesys", [:no_mix]}]
 
   @impl true
   def perform(_args) do

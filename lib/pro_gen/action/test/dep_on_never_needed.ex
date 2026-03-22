@@ -3,9 +3,10 @@ defmodule ProGen.Action.Test.DepOnNeverNeeded do
 
   use ProGen.Action
 
-  @opts_def [
-    message: [type: :string, required: true, doc: "Passed to satisfy never_needed's schema"]
-  ]
+  @impl true
+  def opts_def do
+    [message: [type: :string, required: true, doc: "Passed to satisfy never_needed's schema"]]
+  end
 
   @impl true
   def depends_on(args), do: [{"test.never_needed", [message: Keyword.get(args, :message, "x")]}]

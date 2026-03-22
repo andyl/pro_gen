@@ -8,7 +8,8 @@ defmodule ProGen.Action.Deps.UsageRules.Setup do
 
   use ProGen.Action
 
-  @validate [{"filesys", [{:has_file, "mix.exs"}]}]
+  @impl true
+  def validate(_args), do: [{"filesys", [{:has_file, "mix.exs"}]}]
 
   @impl true
   def depends_on(_args) do
@@ -52,4 +53,3 @@ defmodule ProGen.Action.Deps.UsageRules.Setup do
     """
   end
 end
-

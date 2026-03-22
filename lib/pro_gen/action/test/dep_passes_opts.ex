@@ -3,8 +3,6 @@ defmodule ProGen.Action.Test.DepPassesOpts do
 
   use ProGen.Action
 
-  @opts_def []
-
   @impl true
   def depends_on(_args), do: [{"test.dep_with_opts", [message: "from_parent"]}]
 

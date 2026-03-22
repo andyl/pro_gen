@@ -3,9 +3,10 @@ defmodule ProGen.Action.Test.DefaultCheck do
 
   use ProGen.Action
 
-  @opts_def [
-    label: [type: :string, default: "default_value", doc: "A label"]
-  ]
+  @impl true
+  def opts_def do
+    [label: [type: :string, default: "default_value", doc: "A label"]]
+  end
 
   @impl true
   def needed?(args) do

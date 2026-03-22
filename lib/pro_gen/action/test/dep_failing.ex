@@ -3,8 +3,6 @@ defmodule ProGen.Action.Test.DepFailing do
 
   use ProGen.Action
 
-  @opts_def []
-
   @impl true
   def perform(_args), do: :ok
 

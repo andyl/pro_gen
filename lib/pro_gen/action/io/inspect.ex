@@ -5,9 +5,10 @@ defmodule ProGen.Action.IO.Inspect do
 
   use ProGen.Action
 
-  @opts_def [
-    element: [type: :any, required: true, doc: "The Elixir term to inspect"]
-  ]
+  @impl true
+  def opts_def do
+    [element: [type: :any, required: true, doc: "The Elixir term to inspect"]]
+  end
 
   @impl true
   def perform(args) do

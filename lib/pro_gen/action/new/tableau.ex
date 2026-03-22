@@ -9,9 +9,10 @@ defmodule ProGen.Action.New.Tableau do
   use ProGen.Action
   alias ProGen.Sys
 
-  @opts_def [
-    project: [type: :string, required: true, doc: "Name of the Tableau project to create"]
-  ]
+  @impl true
+  def opts_def do
+    [project: [type: :string, required: true, doc: "Name of the Tableau project to create"]]
+  end
 
   @impl true
   def depends_on(_args) do
@@ -28,7 +29,10 @@ defmodule ProGen.Action.New.Tableau do
   def perform(args) do
     project = Keyword.fetch!(args, :project)
     Sys.cmd("rm -rf #{project}")
-    arg = "mix igniter.new #{project} --with=tableau.new --with-args '--template heex --css tailwind'"
+
+    arg =
+      "mix igniter.new #{project} --with=tableau.new --with-args '--template heex --css tailwind'"
+
     Sys.cmd(arg)
   end
 

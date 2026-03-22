@@ -18,8 +18,8 @@ defmodule ProGen.Validate.Filesys do
   end
 
   defcheck :no_mix do
-    desc "Pass if 'mix.exs' exists"
-    fail "File 'mix.exs' does not exist"
+    desc "Pass if 'mix.exs' does not exist"
+    fail "File 'mix.exs' already exists"
     test fn _ -> not eval_test(:has_mix) end
   end
 

@@ -1,7 +1,7 @@
 defmodule ProGen.ActionTest do
   use ExUnit.Case
 
-  describe "ProGen.Action attribute accessors" do
+  describe "ProGen.Action callbacks" do
     test "name/0 returns the derived string name" do
       assert ProGen.Action.IO.Echo.name() == "io.echo"
     end
@@ -48,17 +48,17 @@ defmodule ProGen.ActionTest do
     end
   end
 
-  describe "validate/0 accessor" do
-    test "returns [] by default (no @validate declared)" do
-      assert ProGen.Action.IO.Echo.validate() == []
+  describe "validate/1 callback" do
+    test "returns [] by default (no validate/1 override)" do
+      assert ProGen.Action.IO.Echo.validate([]) == []
     end
 
-    test "returns declared list when @validate is set" do
-      assert ProGen.Action.Test.ValidatePass.validate() == [{"filesys", [:has_mix]}]
+    test "returns declared list when validate/1 is overridden" do
+      assert ProGen.Action.Test.ValidatePass.validate([]) == [{"filesys", [:has_mix]}]
     end
 
     test "returns declared list for failing fixture" do
-      assert ProGen.Action.Test.ValidateFail.validate() == [{"filesys", [:no_mix]}]
+      assert ProGen.Action.Test.ValidateFail.validate([]) == [{"filesys", [:no_mix]}]
     end
   end
 
@@ -82,8 +82,6 @@ defmodule ProGen.ActionTest do
       defmodule ProGen.Action.Test.OverrideNeeded do
         @moduledoc "Action that overrides needed?/1"
         use ProGen.Action
-
-        @opts_def []
 
         @impl true
         def needed?(_args), do: false

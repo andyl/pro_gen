@@ -8,7 +8,10 @@ defmodule ProGen.Action.Archive.Install do
 
   use ProGen.Action
 
-  @opts_def [package: [type: :string, required: true, doc: "The package to install"] ]
+  @impl true
+  def opts_def do
+    [package: [type: :string, required: true, doc: "The package to install"]]
+  end
 
   @impl true
   def needed?(args) do
@@ -26,6 +29,7 @@ defmodule ProGen.Action.Archive.Install do
   @impl true
   def confirm(_result, args) do
     pkg = Keyword.fetch!(args, :package)
+
     if archive_installed(pkg) do
       :ok
     else

@@ -3,9 +3,10 @@ defmodule ProGen.Action.Test.DepConditional do
 
   use ProGen.Action
 
-  @opts_def [
-    with_dep: [type: :boolean, default: false, doc: "Whether to include dependency"]
-  ]
+  @impl true
+  def opts_def do
+    [with_dep: [type: :boolean, default: false, doc: "Whether to include dependency"]]
+  end
 
   @impl true
   def depends_on(args) do

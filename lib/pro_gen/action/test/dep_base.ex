@@ -3,8 +3,6 @@ defmodule ProGen.Action.Test.DepBase do
 
   use ProGen.Action
 
-  @opts_def []
-
   @impl true
   def perform(_args) do
     count = Process.get(:dep_base_count, 0)

@@ -9,13 +9,10 @@ defmodule ProGen.Action.TermUI.New do
   use ProGen.Action
   alias ProGen.Sys
 
-  @opts_def [
-    project: [
-      type: :string,
-      required: true,
-      doc: "Name of the TermUI project to create"
-    ]
-  ]
+  @impl true
+  def opts_def do
+    [project: [type: :string, required: true, doc: "Name of the TermUI project to create"]]
+  end
 
   @impl true
   def depends_on(_args) do

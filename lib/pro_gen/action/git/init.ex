@@ -5,8 +5,6 @@ defmodule ProGen.Action.Git.Init do
 
   use ProGen.Action
 
-  @opts_def []
-
   @impl true
   def needed?(_args) do
     File.dir?(".git")

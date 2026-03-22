@@ -5,9 +5,10 @@ defmodule ProGen.Action.IO.Echo do
 
   use ProGen.Action
 
-  @opts_def [
-    message: [type: :string, required: true, doc: "The message to print"]
-  ]
+  @impl true
+  def opts_def do
+    [message: [type: :string, required: true, doc: "The message to print"]]
+  end
 
   @impl true
   def perform(args) do
