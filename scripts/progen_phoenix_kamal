@@ -46,6 +46,7 @@ PS.cli_args(
 # Parse the CLI args and grab the project name
 {:ok, %{project: project}} = PS.parse_args() 
 
+# set if max==true, set ecto=true
 if PS.cli_vals().max do 
   newargs = PS.cli_vals() |> Map.put(:ecto, true)
   ProGen.Env.put(:pg_cli_vals, newargs)
@@ -69,7 +70,7 @@ PS.command "progen_phoenix #{project} #{ecto} #{max} #{force}"
 
 PS.cd project
 
-PS.action "gems.install", [pkg: "kamal"] 
+PS.action "gems.install", [gems: "kamal"] 
 
 # # MANUAL EDIT: remove [:dev, :test] from igniter
 # cd myapp 
