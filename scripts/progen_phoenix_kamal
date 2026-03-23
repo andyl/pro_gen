@@ -72,8 +72,7 @@ PS.cd project
 
 PS.action "Install kamal gem",            "gems.install",     [gems: "kamal"]
 PS.action "Add sourceror",                "deps.install",     [deps: "sourceror"]
-PS.action "Remove --only from igniter",   "deps.only.remove", [dep: "igniter"]
-PS.action "Remove --only from sourceror", "deps.only.remove", [dep: "sourceror"]
+PS.action "Remove --only from deps",       "deps.only.remove", [deps: "igniter sourceror"]
 PS.action "Install kamal_plug",           "deps.install",     [deps: "kamal_plug@github:andyl/kamal_plug"]
 
 # mix igniter.install kamal_plug@github:andyl/kamal_plug
