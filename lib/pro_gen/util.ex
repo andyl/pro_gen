@@ -22,4 +22,22 @@ defmodule ProGen.Util do
   def compress(string) do
     String.replace(string, ~r/ +/, " ")
   end
+
+  @doc false
+  def to_snake(str) when is_binary(str) do
+    str
+    |> String.replace(~r/([A-Z])/, "_\\1")
+    |> String.replace(~r/[- ]/, "_")
+    |> String.replace(~r/_+/, "_")
+    |> String.trim_leading("_")
+    |> String.downcase()
+  end
+
+  @doc false
+  def to_pascal(str) when is_binary(str) do
+    str
+    |> String.replace(~r/[_-\s]+/, " ")
+    |> String.split()
+    |> Enum.map_join(&String.capitalize/1)
+  end
 end

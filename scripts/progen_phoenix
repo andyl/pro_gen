@@ -72,11 +72,18 @@ PS.command "COMPILE", "mix compile"
 
 # Install max features 
 if PS.cli_vals().max do 
-  PS.action "Add ash",          "deps.install", [deps: "ash ash_phoenix ash_postgres"]
-  PS.action "Add auth",         "deps.install", [deps: "ash_authentication ash_authentication_phoenix", args: "--auth-strategy password"]
 
-  # PS.action "Add LV debugger",  "deps.install", [deps: "live_debugger"]
-  # PS.action "Add git_ops",      "deps.install", [deps: "git_ops", only: "dev,test"]
+  project_pascal = ProGen.Util.to_pascal(project) 
+  seed_cmd = "mix run -e \"Ash.Seed.seed!(#{project_pascal}.Accounts.User, %{email: 'a@a.com', hashed_password: Bcrypt.hash_pwd_salt('12345678')})\""
+
+  PS.action  "Add ash",          "deps.install", [deps: "ash ash_phoenix ash_postgres"]
+  PS.action  "Add auth",         "deps.install", [deps: "ash_authentication ash_authentication_phoenix", args: "--auth-strategy password"]
+  PS.action  "Add ash_admin",    "deps.install", [deps: "ash_admin"]
+  PS.action  "Add LV debugger",  "deps.install", [deps: "live_debugger"]
+  PS.action  "Add git_ops",      "deps.install", [deps: "git_ops",                                       only: "dev,test"]
+  PS.command "Create migration", "mix ash.codegen setup_auth"
+  PS.command "Setup database",   "mix ecto.drop ; mix ash.setup"
+  PS.command "Create seed user", seed_cmd
 end
 
 # run_cmd "Add Xpc"         "mix igniter.install xpc@path:/home/aleak/src/App/xpc --only dev,test --yes"
@@ -89,10 +96,6 @@ end
 # [ "$USE_ORG"   == "true" ] && run_cmd "Create Org"       "mix ash.gen.resource $APP.Camp.Org --uuid-v7-primary-key id -a name:string -a orgname:ci_string -a slug:ci_string -a type:atom -t -e postgres --default-actions create,read,update,destroy --yes"
 # [ "$USE_ORG"   == "true" ] && run_cmd "Create Mem"       "mix ash.gen.resource $APP.Camp.Mem --uuid-v7-primary-key id -a mem_id:uuid -a user_id:uuid -a role:atom -t -e postgres --default-actions create,read,update,destroy --yes"
 # [ "$USE_ORG"   == "true" ] && run_cmd "Add camp_gen"     "mix ash_mod.template.render camp_gen -m"
-# [ "$USE_ORG"   == "true" ] && run_cmd "Add migration"    "mix ash.codegen add_camp_domain"
-#
-# [ "$USE_ECTO"  == "true" ] && run_cmd "Setup database"   "mix ecto.drop ; mix ash.setup"
-# [ "$USE_ADMIN" == "true" ] && run_cmd "Add ash_admin"    "mix igniter.install ash_admin --yes"
 #
 # SEED_CMD="mix run -e \"Ash.Seed.seed!($APP.Accounts.User, %{email: ~s(a@a.com), hashed_password: Bcrypt.hash_pwd_salt(~s(12345678))})\""
 # [ "$USE_AUTH"  == "true" ] && echo "$SEED_CMD"
