@@ -70,11 +70,12 @@ PS.command "Build Base App", "progen_phoenix #{project} #{ecto} #{max} #{force}"
 
 PS.cd project
 
-PS.action "Install kamal gem",  "gems.install",     [gems: "kamal"]
-PS.action "Add sourceror",      "deps.install",     [deps: "sourceror"]
-PS.action "Remove --only",      "deps.only.remove", [deps: "igniter sourceror"]
-PS.action "Install kamal_plug", "deps.install",     [deps: "kamal_plug@github:andyl/kamal_plug"]
-PS.command "Build release",     "phx.gen.release"
+PS.action  "Install kamal gem",  "gems.install",     [gems: "kamal"]
+PS.action  "Add sourceror",      "deps.install",     [deps: "sourceror"]
+PS.action  "Remove --only",      "deps.only.remove", [deps: "igniter sourceror"]
+PS.action  "Install kamal_plug", "deps.install",     [deps: "kamal_plug@github:andyl/kamal_plug"]
+PS.action  "Build release",      "release.new",      []
+PS.action  "Generate release",   "release.gen",      []
 
 PS.puts("SUCCESS")
 
