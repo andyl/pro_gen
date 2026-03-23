@@ -47,7 +47,7 @@ defmodule ProGen.CodeMods.DepsTweaksTest do
   describe "remove_only/2" do
     test "removes only: :atom from a dependency", %{tmp_dir: tmp_dir} do
       path = write_fixture(tmp_dir)
-      assert {:ok, :updated} = DepsTweaks.remove_only(:ex_doc, path: path)
+      assert {:ok, :updated} = DepsTweaks.remove_only("ex_doc", path: path)
       content = File.read!(path)
       assert content =~ ~s({:ex_doc, "~> 0.31", runtime: false})
       refute content =~ "only: :dev"
@@ -55,7 +55,7 @@ defmodule ProGen.CodeMods.DepsTweaksTest do
 
     test "removes only: [list] from a dependency", %{tmp_dir: tmp_dir} do
       path = write_fixture(tmp_dir)
-      assert {:ok, :updated} = DepsTweaks.remove_only(:usage_rules, path: path)
+      assert {:ok, :updated} = DepsTweaks.remove_only("usage_rules", path: path)
       content = File.read!(path)
       assert content =~ ~s({:usage_rules, "~> 0.2"})
       refute content =~ "usage_rules, \"~> 0.2\", only:"
@@ -63,18 +63,18 @@ defmodule ProGen.CodeMods.DepsTweaksTest do
 
     test "returns :already_set when no only: option present", %{tmp_dir: tmp_dir} do
       path = write_fixture(tmp_dir)
-      assert {:ok, :already_set} = DepsTweaks.remove_only(:nimble_options, path: path)
+      assert {:ok, :already_set} = DepsTweaks.remove_only("nimble_options", path: path)
     end
 
     test "is idempotent — second call returns :already_set", %{tmp_dir: tmp_dir} do
       path = write_fixture(tmp_dir)
-      assert {:ok, :updated} = DepsTweaks.remove_only(:usage_rules, path: path)
-      assert {:ok, :already_set} = DepsTweaks.remove_only(:usage_rules, path: path)
+      assert {:ok, :updated} = DepsTweaks.remove_only("usage_rules", path: path)
+      assert {:ok, :already_set} = DepsTweaks.remove_only("usage_rules", path: path)
     end
 
     test "preserves other dependencies", %{tmp_dir: tmp_dir} do
       path = write_fixture(tmp_dir)
-      assert {:ok, :updated} = DepsTweaks.remove_only(:ex_doc, path: path)
+      assert {:ok, :updated} = DepsTweaks.remove_only("ex_doc", path: path)
       content = File.read!(path)
       assert content =~ ~s({:igniter, "~> 0.6"})
       assert content =~ ~s({:usage_rules, "~> 0.2", only: [:dev, :test]})
@@ -83,13 +83,13 @@ defmodule ProGen.CodeMods.DepsTweaksTest do
 
     test "returns error for missing dependency", %{tmp_dir: tmp_dir} do
       path = write_fixture(tmp_dir)
-      assert {:error, msg} = DepsTweaks.remove_only(:nonexistent, path: path)
+      assert {:error, msg} = DepsTweaks.remove_only("nonexistent", path: path)
       assert msg =~ "not found"
     end
 
     test "raises for missing mix.exs" do
       assert_raise RuntimeError, ~r/mix.exs not found/, fn ->
-        DepsTweaks.remove_only(:foo, path: "/nonexistent/mix.exs")
+        DepsTweaks.remove_only("foo", path: "/nonexistent/mix.exs")
       end
     end
   end
@@ -97,14 +97,14 @@ defmodule ProGen.CodeMods.DepsTweaksTest do
   describe "set_only/3" do
     test "adds only: to a dependency without one", %{tmp_dir: tmp_dir} do
       path = write_fixture(tmp_dir)
-      assert {:ok, :updated} = DepsTweaks.set_only(:nimble_options, [:dev, :test], path: path)
+      assert {:ok, :updated} = DepsTweaks.set_only("nimble_options", [:dev, :test], path: path)
       content = File.read!(path)
       assert content =~ ~s({:nimble_options, "~> 1.0", only: [:dev, :test]})
     end
 
     test "replaces existing only: :atom with a list", %{tmp_dir: tmp_dir} do
       path = write_fixture(tmp_dir)
-      assert {:ok, :updated} = DepsTweaks.set_only(:ex_doc, [:dev, :test], path: path)
+      assert {:ok, :updated} = DepsTweaks.set_only("ex_doc", [:dev, :test], path: path)
       content = File.read!(path)
       assert content =~ "only: [:dev, :test]"
       # runtime: false should still be present
@@ -113,38 +113,38 @@ defmodule ProGen.CodeMods.DepsTweaksTest do
 
     test "replaces existing only: [list] with a different list", %{tmp_dir: tmp_dir} do
       path = write_fixture(tmp_dir)
-      assert {:ok, :updated} = DepsTweaks.set_only(:usage_rules, [:dev], path: path)
+      assert {:ok, :updated} = DepsTweaks.set_only("usage_rules", [:dev], path: path)
       content = File.read!(path)
       assert content =~ ~s({:usage_rules, "~> 0.2", only: [:dev]})
     end
 
     test "returns :already_set when only: already matches", %{tmp_dir: tmp_dir} do
       path = write_fixture(tmp_dir)
-      assert {:ok, :already_set} = DepsTweaks.set_only(:usage_rules, [:dev, :test], path: path)
+      assert {:ok, :already_set} = DepsTweaks.set_only("usage_rules", [:dev, :test], path: path)
     end
 
     test "supports single atom env", %{tmp_dir: tmp_dir} do
       path = write_fixture(tmp_dir)
-      assert {:ok, :updated} = DepsTweaks.set_only(:nimble_options, :dev, path: path)
+      assert {:ok, :updated} = DepsTweaks.set_only("nimble_options", :dev, path: path)
       content = File.read!(path)
       assert content =~ ~s({:nimble_options, "~> 1.0", only: :dev})
     end
 
     test "is idempotent — second call returns :already_set", %{tmp_dir: tmp_dir} do
       path = write_fixture(tmp_dir)
-      assert {:ok, :updated} = DepsTweaks.set_only(:igniter, [:dev], path: path)
-      assert {:ok, :already_set} = DepsTweaks.set_only(:igniter, [:dev], path: path)
+      assert {:ok, :updated} = DepsTweaks.set_only("igniter", [:dev], path: path)
+      assert {:ok, :already_set} = DepsTweaks.set_only("igniter", [:dev], path: path)
     end
 
     test "returns error for missing dependency", %{tmp_dir: tmp_dir} do
       path = write_fixture(tmp_dir)
-      assert {:error, msg} = DepsTweaks.set_only(:nonexistent, [:dev], path: path)
+      assert {:error, msg} = DepsTweaks.set_only("nonexistent", [:dev], path: path)
       assert msg =~ "not found"
     end
 
     test "raises for missing mix.exs" do
       assert_raise RuntimeError, ~r/mix.exs not found/, fn ->
-        DepsTweaks.set_only(:foo, [:dev], path: "/nonexistent/mix.exs")
+        DepsTweaks.set_only("foo", [:dev], path: "/nonexistent/mix.exs")
       end
     end
   end

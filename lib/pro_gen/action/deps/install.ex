@@ -58,8 +58,9 @@ defmodule ProGen.Action.Deps.Install do
   end
 
   defp dep_installed?(dep) do
+    [kdep | _] = String.split(dep, "@")
     case File.read("mix.exs") do
-      {:ok, contents} -> String.contains?(contents, ":#{dep}")
+      {:ok, contents} -> String.contains?(contents, ":#{kdep}")
       {:error, _} -> false
     end
   end

@@ -61,20 +61,21 @@ PS.start()
 PS.validate "CHECK ENVIRONMENT", PV.Filesys, [:no_mix, :no_git]
 PS.validate "CHECK RUBY",        PV.Lang,    [:has_ruby]
 
-project = PS.cli_vals().project
-ecto    = if PS.cli_vals().ecto,  do: "--ecto",  else: ""
-max     = if PS.cli_vals().max,   do: "--max",   else: ""
-force   = if PS.cli_vals().force, do: "--force", else: ""
+# project = PS.cli_vals().project
+# ecto    = if PS.cli_vals().ecto,  do: "--ecto",  else: ""
+# max     = if PS.cli_vals().max,   do: "--max",   else: ""
+# force   = if PS.cli_vals().force, do: "--force", else: ""
 
-PS.command "progen_phoenix #{project} #{ecto} #{max} #{force}"
+# PS.command "Build Base App", "progen_phoenix #{project} #{ecto} #{max} #{force}"
 
 PS.cd project
 
-PS.action "gems.install", [gems: "kamal"] 
+PS.action "Install kamal gem",            "gems.install",     [gems: "kamal"]
+PS.action "Add sourceror",                "deps.install",     [deps: "sourceror"]
+PS.action "Remove --only from igniter",   "deps.only.remove", [dep: "igniter"]
+PS.action "Remove --only from sourceror", "deps.only.remove", [dep: "sourceror"]
+PS.action "Install kamal_plug",           "deps.install",     [deps: "kamal_plug@github:andyl/kamal_plug"]
 
-# # MANUAL EDIT: remove [:dev, :test] from igniter
-# cd myapp 
-#
 # mix igniter.install kamal_plug@github:andyl/kamal_plug
 # echo "/rel/" >> .gitignore
 # mix phx.gen.release 

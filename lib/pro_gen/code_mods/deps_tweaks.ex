@@ -16,13 +16,13 @@ defmodule ProGen.CodeMods.DepsTweaks do
 
   ## Examples
 
-      remove_only(:ex_doc)
+      remove_only("ex_doc")
       # {:ex_doc, "~> 0.31", only: :dev} → {:ex_doc, "~> 0.31"}
 
-      remove_only(:ex_doc)
+      remove_only("ex_doc")
       # {:ex_doc, "~> 0.31", only: :dev, runtime: false} → {:ex_doc, "~> 0.31", runtime: false}
   """
-  def remove_only(dependency, opts \\ []) when is_atom(dependency) do
+  def remove_only(dependency, opts \\ []) when is_binary(dependency) do
     path = resolve_path!(opts)
     source = File.read!(path)
 
@@ -55,13 +55,13 @@ defmodule ProGen.CodeMods.DepsTweaks do
 
   ## Examples
 
-      set_only(:usage_rules, [:dev, :test])
+      set_only("usage_rules", [:dev, :test])
       # {:usage_rules, "~> 0.2"} → {:usage_rules, "~> 0.2", only: [:dev, :test]}
 
-      set_only(:usage_rules, [:dev, :test])
+      set_only("usage_rules", [:dev, :test])
       # {:usage_rules, "~> 0.2", only: :dev} → {:usage_rules, "~> 0.2", only: [:dev, :test]}
   """
-  def set_only(dependency, envs, opts \\ []) when is_atom(dependency) do
+  def set_only(dependency, envs, opts \\ []) when is_binary(dependency) do
     path = resolve_path!(opts)
     source = File.read!(path)
     envs_str = inspect(envs)
@@ -88,12 +88,12 @@ defmodule ProGen.CodeMods.DepsTweaks do
   end
 
   defp find_dep_tuple(source, dependency) do
-    dep_str = Regex.escape(Atom.to_string(dependency))
+    dep_str = Regex.escape(dependency)
     pattern = ~r/\{:#{dep_str},[^}]*\}/
 
     case Regex.run(pattern, source) do
       [match] -> {:ok, match}
-      nil -> {:error, "dependency #{inspect(dependency)} not found in deps/0"}
+      nil -> {:error, "dependency :#{dependency} not found in deps/0"}
     end
   end
 
