@@ -49,8 +49,8 @@ PS.action  "GEN TABLEAU PROJECT", "new.tableau", [project: project]
 PS.cd(project)
 
 PS.command "COMPILE",           "mix compile"
-PS.action "Install HeroIcons",  "deps.install",           [dep: "heroicons"]
-PS.action "Install UsageRules", "deps.install",           [dep: "usage_rules"]
+PS.action "Install HeroIcons",  "deps.install",           [deps: "heroicons"]
+PS.action "Install UsageRules", "deps.install",           [deps: "usage_rules"]
 PS.action "Setup UsageRules",   "deps.usage_rules.setup", []
 PS.action "Setup Daisy",        "deps.tableau.daisy",     []
 PS.action "Add Completions",    "mix_completions.run",    []

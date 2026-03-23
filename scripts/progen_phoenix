@@ -72,11 +72,11 @@ PS.command "COMPILE", "mix compile"
 
 # Install max features 
 if PS.cli_vals().max do 
-  PS.action "Add ash",          "deps.install", [dep: "ash ash_phoenix ash_postgres"]
-  PS.action "Add auth",         "deps.install", [dep: "ash_authentication ash_authentication_phoenix --auth-strategy password"]
- 
-  # PS.action "Add LV debugger",  "deps.install", [dep: "live_debugger"]
-  # PS.action "Add git_ops",      "deps.install", [dep: "git_ops", only: "dev,test"]
+  PS.action "Add ash",          "deps.install", [deps: "ash ash_phoenix ash_postgres"]
+  PS.action "Add auth",         "deps.install", [deps: "ash_authentication ash_authentication_phoenix", args: "--auth-strategy password"]
+
+  # PS.action "Add LV debugger",  "deps.install", [deps: "live_debugger"]
+  # PS.action "Add git_ops",      "deps.install", [deps: "git_ops", only: "dev,test"]
 end
 
 # run_cmd "Add Xpc"         "mix igniter.install xpc@path:/home/aleak/src/App/xpc --only dev,test --yes"
@@ -98,7 +98,7 @@ end
 # [ "$USE_AUTH"  == "true" ] && echo "$SEED_CMD"
 # [ "$USE_AUTH"  == "true" ] && run_cmd "Add a seed user" "$SEED_CMD"
 
-PS.action "Install UsageRules", "deps.install",           [dep: "usage_rules"]
+PS.action "Install UsageRules", "deps.install",           [deps: "usage_rules"]
 PS.action "Setup UsageRules",   "deps.usage_rules.setup", []
 PS.action "Add Completions",    "mix_completions.run",    []
 

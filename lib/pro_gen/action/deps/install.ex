@@ -9,8 +9,9 @@ defmodule ProGen.Action.Deps.Install do
   @impl true
   def opts_def do
     [
-      dep:  [type: :string, required: true,  doc: "The dependency to install"],
-      only: [type: :string, required: false, doc: "Install in specific environments"]
+      deps: [type: :string, required: true,  doc: "Space-separated list of dependencies to install"],
+      args: [type: :string, required: false, doc: "Additional command-line flags (e.g. --auth-strategy password)"],
+      only: [type: :string, required: false, doc: "Install in specific environments (e.g. dev,test)"]
     ]
   end
 
@@ -22,34 +23,41 @@ defmodule ProGen.Action.Deps.Install do
 
   @impl true
   def needed?(args) do
-    dep = Keyword.fetch!(args, :dep)
-    not find_dep(dep)
+    deps = parse_deps(args)
+    Enum.any?(deps, fn dep -> not dep_installed?(dep) end)
   end
 
   @impl true
   def perform(args) do
-    only = Keyword.get(args, :only)
-    dependency = Keyword.fetch!(args, :dep)
-    only_str   = if only, do: "--only #{only}", else: ""
-    cmd = "mix igniter.install #{dependency} #{only_str} --yes"
-    ProGen.Script.puts(cmd |> ProGen.Util.compress())
+    deps = Keyword.fetch!(args, :deps)
+    args_str = Keyword.get(args, :args, "")
+    only_str = case Keyword.get(args, :only) do
+      nil  -> ""
+      only -> "--only #{only}"
+    end
+    cmd = "mix igniter.install #{deps} #{args_str} #{only_str} --yes" |> ProGen.Util.compress()
+    ProGen.Script.puts(cmd)
     Sys.cmd(cmd)
   end
 
   @impl true
   def confirm(_result, args) do
-    dep = Keyword.fetch!(args, :dep)
+    deps = parse_deps(args)
+    missing = Enum.reject(deps, &dep_installed?/1)
 
-    if find_dep(dep) do
-      :ok
-    else
-      {:error, "dependency \"#{dep}\" was not installed"}
+    case missing do
+      [] -> :ok
+      _  -> {:error, "dependencies not installed: #{Enum.join(missing, ", ")}"}
     end
   end
 
   # -----
 
-  defp find_dep(dep) do
+  defp parse_deps(args) do
+    args |> Keyword.fetch!(:deps) |> String.split()
+  end
+
+  defp dep_installed?(dep) do
     case File.read("mix.exs") do
       {:ok, contents} -> String.contains?(contents, ":#{dep}")
       {:error, _} -> false

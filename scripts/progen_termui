@@ -52,7 +52,7 @@ PS.cd(project)
 
 # Compile Code 
 PS.command "COMPILE", "mix compile"
-PS.action "Install UsageRules", "deps.install",           [dep: "usage_rules"]
+PS.action "Install UsageRules", "deps.install",           [deps: "usage_rules"]
 PS.action "Setup UsageRules",   "deps.usage_rules.setup", []
 
 # Report the elapsed time
