@@ -16,15 +16,6 @@ defmodule ProGen.Action.File.Append do
   @impl true
   def validate(args), do: [{"filesys", [{:has_file, args[:file]}]}]
 
-  # @impl true
-  # def depends_on(_args), do: [{"archive.install", package: "igniter_new"}]
-
-  # @impl true
-  # def needed?(args) do
-  #   deps = parse_deps(args)
-  #   Enum.any?(deps, fn dep -> not dep_installed?(dep) end)
-  # end
-
   @impl true
   def perform(args) do
     # this operation is idempotent
