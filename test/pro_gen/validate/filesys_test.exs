@@ -101,7 +101,7 @@ defmodule ProGen.Validate.FilesysTest do
     test "returns a non-empty list of {term, desc} tuples" do
       checks = ProGen.Validate.Filesys.checks()
       assert is_list(checks)
-      assert length(checks) == 8
+      assert length(checks) == 10
 
       Enum.each(checks, fn entry ->
         assert {term, desc} = entry

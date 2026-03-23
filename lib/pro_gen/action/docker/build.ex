@@ -10,7 +10,6 @@ defmodule ProGen.Action.Docker.Build do
   def opts_def do
     [
       project: [type: :string, required: true, doc: "Docker image tag / project name"],
-      args: [type: :string, required: false, doc: "Additional docker build flags"]
     ]
   end
 

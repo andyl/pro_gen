@@ -80,7 +80,6 @@ PS.action  "Docker build",       "docker.build",     [project: project]
 
 PS.puts("SUCCESS")
 
-# docker build -t myapp . 
 # kamal init 
 # echo 'SECRET_KEY_BASE=$SECRET_KEY_BASE' > .kamal/secrets 
 # # MANUAL EDIT: config/deploy.yml 

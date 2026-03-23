@@ -35,7 +35,7 @@ defmodule ProGen.ValidationsTest do
       assert info.name == "filesys"
       assert is_binary(info.description)
       assert is_list(info.checks)
-      assert length(info.checks) == 8
+      assert length(info.checks) == 10
     end
 
     test "returns metadata map for 'gem'" do
