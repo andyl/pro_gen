@@ -1,6 +1,5 @@
 defmodule ProGen.Action.File.Append do
   @moduledoc """
-  Use igniter to install a dependency in your mix.exs file.
   Append a line to a file, idempotently.
   """
 
@@ -34,10 +33,20 @@ defmodule ProGen.Action.File.Append do
 
   @impl true
   def confirm(_result, args) do
-    _file = args[:file]
-    _line = args[:line]
-    # confirm that the append operation has succeeded
-    # do this with grep or some sort of string-matching function
+    file = args[:file]
+    line = args[:line]
+
+    case File.read(file) do
+      {:ok, contents} ->
+        if String.contains?(contents, line) do
+          :ok
+        else
+          {:error, "line not found in #{file} after append"}
+        end
+
+      {:error, reason} ->
+        {:error, "could not read #{file}: #{:file.format_error(reason)}"}
+    end
   end
 
 end
