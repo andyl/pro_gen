@@ -18,4 +18,8 @@ defmodule ProGen.Util do
     end)
   end
 
+  @doc false
+  def compress(string) do
+    String.replace(string, ~r/ +/, " ")
+  end
 end

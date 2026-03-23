@@ -31,7 +31,9 @@ defmodule ProGen.Action.Deps.Install do
     only = Keyword.get(args, :only)
     dependency = Keyword.fetch!(args, :dep)
     only_str   = if only, do: "--only #{only}", else: ""
-    Sys.cmd("mix igniter.install #{dependency} #{only_str} --yes")
+    cmd = "mix igniter.install #{dependency} #{only_str} --yes"
+    ProGen.Script.puts(cmd |> ProGen.Util.compress())
+    Sys.cmd(cmd)
   end
 
   @impl true

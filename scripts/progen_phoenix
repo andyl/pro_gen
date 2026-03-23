@@ -59,8 +59,10 @@ if PS.cli_vals().force, do: PS.command("CLEANUP OLD PROJECT", "rm -rf #{project}
 # exit if validations do not pass
 PS.validate "CHECK ENVIRONMENT", PV.Filesys, [:no_mix, :no_git]
   
-phx_args = if PS.cli_vals().ecto, do: "", else: "--with-args --no-ecto"
-PS.action "GEN PHOENIX PROJECT", "new.phoenix", [project: project, args: phx_args]
+# generate phoenix project
+proj = [project: project]
+args = if PS.cli_vals().ecto, do: [], else: [args: "--no-ecto"]
+PS.action "GEN PHOENIX PROJECT", "new.phoenix", Keyword.merge(proj, args)
 
 # Change to the project directory
 PS.cd(project)
@@ -70,18 +72,16 @@ PS.command "COMPILE", "mix compile"
 
 # Install max features 
 if PS.cli_vals().max do 
-  PS.action "Add ash",         "deps.install", [dep: "ash"]
-  PS.action "Add ash_phoenix", "deps.install", [dep: "ash_phoenix"]
-  PS.action "Add git_ops",     "deps.install", [dep: "git_ops", only: "dev,test"]
-  PS.action "Add LV debugger", "deps.install",  [dep: "live_debugger"]
+  PS.action "Add ash",          "deps.install", [dep: "ash ash_phoenix ash_postgres"]
+  PS.action "Add auth",         "deps.install", [dep: "ash_authentication ash_authentication_phoenix --auth-strategy password"]
+ 
+  # PS.action "Add LV debugger",  "deps.install", [dep: "live_debugger"]
+  # PS.action "Add git_ops",      "deps.install", [dep: "git_ops", only: "dev,test"]
 end
 
 # run_cmd "Add Xpc"         "mix igniter.install xpc@path:/home/aleak/src/App/xpc --only dev,test --yes"
 # run_cmd "Add AshMod"      "mix igniter.install ash_mod@path:/home/aleak/src/Lib/ash_mod --only dev,test --yes"
 #
-# [ "$USE_ECTO"  == "true" ] && run_cmd "Add ash_postgres" "mix igniter.install ash_postgres --yes"
-# [ "$USE_AUTH"  == "true" ] && run_cmd "Add auth"         "mix igniter.install ash_authentication --auth-strategy password --yes"
-# [ "$USE_AUTH"  == "true" ] && run_cmd "Add auth_phx"     "mix igniter.install ash_authentication_phoenix --auth-strategy password --yes"
 # [ "$USE_AUTH"  == "true" ] && run_cmd "Use uuidv7"       "mix ash.gen.resource $APP.Accounts.User --uuid-v7-primary-key id --conflicts replace --yes"
 # [ "$USE_AUTH"  == "true" ] && run_cmd "Add accounts_gen" "mix ash_mod.template.render accounts_gen -m"
 # [ "$USE_AUTH"  == "true" ] && run_cmd "Add migration"    "mix ash.codegen use_uuidv7"
@@ -90,9 +90,7 @@ end
 # [ "$USE_ORG"   == "true" ] && run_cmd "Create Mem"       "mix ash.gen.resource $APP.Camp.Mem --uuid-v7-primary-key id -a mem_id:uuid -a user_id:uuid -a role:atom -t -e postgres --default-actions create,read,update,destroy --yes"
 # [ "$USE_ORG"   == "true" ] && run_cmd "Add camp_gen"     "mix ash_mod.template.render camp_gen -m"
 # [ "$USE_ORG"   == "true" ] && run_cmd "Add migration"    "mix ash.codegen add_camp_domain"
-# [ "$USE_AI"    == "true" ] && run_cmd "Add ash_ai"       "mix igniter.install ash_ai --yes"
-# [ "$USE_AI"    == "true" ] && run_cmd "Add ai chat"      "echo '0' | mix ash_ai.gen.chat --live --yes"
-# [ "$USE_AI"    == "true" ] && run_cmd "Add chat_bot"     "mix ash_mod.template.render chat_bot -m"
+#
 # [ "$USE_ECTO"  == "true" ] && run_cmd "Setup database"   "mix ecto.drop ; mix ash.setup"
 # [ "$USE_ADMIN" == "true" ] && run_cmd "Add ash_admin"    "mix igniter.install ash_admin --yes"
 #
