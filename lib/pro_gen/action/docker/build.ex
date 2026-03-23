@@ -9,9 +9,8 @@ defmodule ProGen.Action.Docker.Build do
   @impl true
   def opts_def do
     [
-      deps: [type: :string, required: true,  doc: "Space-separated list of dependencies to install"],
-      args: [type: :string, required: false, doc: "Additional command-line flags (e.g. --auth-strategy password)"],
-      only: [type: :string, required: false, doc: "Install in specific environments (e.g. dev,test)"]
+      project: [type: :string, required: true, doc: "Docker image tag / project name"],
+      args: [type: :string, required: false, doc: "Additional docker build flags"]
     ]
   end
 
@@ -41,13 +40,19 @@ defmodule ProGen.Action.Docker.Build do
 
   @impl true
   def confirm(_result, args) do
-    project = args[:project]
-    # this is example code - probably it fails
-    # please replace with working code
-    # maybe there is a better way to do this than "grep"
-    cmd = "docker images | grep #{project}"
-    ProGen.Script.puts(cmd)
-    Sys.cmd(cmd)
+    project = Keyword.fetch!(args, :project)
+
+    case System.cmd("docker", ["images", "-q", project], stderr_to_stdout: true) do
+      {output, 0} ->
+        if String.trim(output) != "" do
+          :ok
+        else
+          {:error, "docker image '#{project}' not found after build"}
+        end
+
+      {_, _code} ->
+        {:error, "failed to verify docker image '#{project}'"}
+    end
   end
 
 end
