@@ -74,7 +74,7 @@ PS.command "COMPILE", "mix compile"
 if PS.cli_vals().max do 
 
   project_pascal = ProGen.Util.to_pascal(project) 
-  seed_cmd = "mix run -e \"Ash.Seed.seed!(#{project_pascal}.Accounts.User, %{email: 'a@a.com', hashed_password: Bcrypt.hash_pwd_salt('12345678')})\""
+  seed_cmd = "mix run -e \"Ash.Seed.seed!(#{project_pascal}.Accounts.User, %{email: ~s(a@a.com), hashed_password: Bcrypt.hash_pwd_salt(~s(12345678))})\""
 
   PS.action  "Add ash",          "deps.install", [deps: "ash ash_phoenix ash_postgres"]
   PS.action  "Add auth",         "deps.install", [deps: "ash_authentication ash_authentication_phoenix", args: "--auth-strategy password"]

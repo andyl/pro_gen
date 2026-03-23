@@ -36,7 +36,7 @@ defmodule ProGen.Util do
   @doc false
   def to_pascal(str) when is_binary(str) do
     str
-    |> String.replace(~r/[_-\s]+/, " ")
+    |> String.replace(~r/[_\-\s]+/, " ")
     |> String.split()
     |> Enum.map_join(&String.capitalize/1)
   end
