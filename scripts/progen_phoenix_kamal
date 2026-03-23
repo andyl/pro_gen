@@ -4,7 +4,8 @@
 
 Mix.install([{:pro_gen, path: "~/src/pro_gen"}])
 
-alias ProGen.Script, as: PS 
+alias ProGen.Script,   as: PS
+alias ProGen.Validate, as: PV
 
 PS.cli_args( 
   description: "Phoenix Project and Kamal Deploy Generator", 
@@ -29,6 +30,11 @@ PS.cli_args(
       long: "--ecto", 
       help: "Generate ecto files"
     ], 
+    max: [
+      short: "-m", 
+      long: "--max", 
+      help: "Generate max features"
+    ], 
     force: [
       short: "-f", 
       long: "--force", 
@@ -37,27 +43,51 @@ PS.cli_args(
   ]
 )
 
-PS.puts "= UNDER CONSTRUCTION =\n... Script Outline ..."
+# Parse the CLI args and grab the project name
+{:ok, %{project: project}} = PS.parse_args() 
 
-outline = """
-mix igniter.new myapp --with phx.new --with-args=--no-ecto --yes
-# MANUAL EDIT: remove [:dev, :test] from igniter
-cd myapp 
-git init && git add . && git commit -am'First commit'
-mix igniter.install kamal_plug@github:andyl/kamal_plug
-echo "/rel/" >> .gitignore
-mix phx.gen.release 
-MIX_ENV=prod mix release
-# see DOCKERFILE_TIMEOUT_ISSUE below...
-rerun mix phx.gen.release --docker   
-docker build -t myapp . 
-kamal init 
-echo 'SECRET_KEY_BASE=$SECRET_KEY_BASE' > .kamal/secrets 
-# MANUAL EDIT: config/deploy.yml 
-# make sure you can ssh to root@<target>  (USE KEYSEND root@<target>)
-kamal setup 
-kamal deploy
-"""
+if PS.cli_vals().max do 
+  newargs = PS.cli_vals() |> Map.put(:ecto, true)
+  ProGen.Env.put(:pg_cli_vals, newargs)
+end
 
-PS.puts outline
+# Print a banner
+PS.puts(" ----- CREATE PROJECT <#{project}> -----")
+
+# Start a timer
+PS.start()
+
+PS.validate "CHECK ENVIRONMENT", PV.Filesys, [:no_mix, :no_git]
+PS.validate "CHECK RUBY",        PV.Lang,    [:has_ruby]
+
+project = PS.cli_vals().project
+ecto    = if PS.cli_vals().ecto,  do: "--ecto",  else: ""
+max     = if PS.cli_vals().max,   do: "--max",   else: ""
+force   = if PS.cli_vals().force, do: "--force", else: ""
+
+PS.command "progen_phoenix #{project} #{ecto} #{max} #{force}"
+
+PS.cd project
+
+PS.action "gems.install", [pkg: "kamal"] 
+
+# # MANUAL EDIT: remove [:dev, :test] from igniter
+# cd myapp 
+#
+# mix igniter.install kamal_plug@github:andyl/kamal_plug
+# echo "/rel/" >> .gitignore
+# mix phx.gen.release 
+# MIX_ENV=prod mix release
+# # see DOCKERFILE_TIMEOUT_ISSUE below...
+# rerun mix phx.gen.release --docker   
+# docker build -t myapp . 
+# kamal init 
+# echo 'SECRET_KEY_BASE=$SECRET_KEY_BASE' > .kamal/secrets 
+# # MANUAL EDIT: config/deploy.yml 
+# # make sure you can ssh to root@<target>  (USE KEYSEND root@<target>)
+# kamal setup 
+# kamal deploy
+
+# Report Elapsed Time
+PS.finish()
 
