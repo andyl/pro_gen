@@ -16,7 +16,9 @@ defmodule ProGen.Action.Release.New do
 
   @impl true
   def perform(_args) do
-    cmd = "mix phx.gen.release --docker "
+    # the 'rerun' is a hack/workaround for a phoenix bug
+    # https://github.com/phoenixframework/phoenix/issues/6424
+    cmd = "rerun mix phx.gen.release --docker "
     ProGen.Script.puts(cmd)
     Sys.cmd(cmd)
   end

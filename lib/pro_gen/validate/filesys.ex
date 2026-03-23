@@ -11,6 +11,18 @@ defmodule ProGen.Validate.Filesys do
   use ProGen.Validate
   alias ProGen.Validate
 
+  defcheck :has_docker do
+    desc "Pass if 'docker' exists"
+    fail "Docker executable does not exist"
+      test fn _ -> System.find_executable("docker") != nil end
+  end
+
+  defcheck :no_docker do
+    desc "Pass if 'docker' does not exist"
+    fail "Docker executable exists"
+    test fn _ -> not eval_test(:has_docker) end
+  end
+
   defcheck :has_mix do
     desc "Pass if 'mix.exs' exists"
     fail "File 'mix.exs' does not exist"
