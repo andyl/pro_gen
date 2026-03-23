@@ -22,13 +22,15 @@ defmodule ProGen.Validate.Mix do
   defcheck {:has_dep, "dep"} do
     desc "Pass if <dep> is installed"
     fail fn {:has_dep, dep} -> "No #{dep} found in mix.exs" end
-    test fn {:has_dep, dep} -> elem(System.cmd("mix", ["help"]), 0) =~ dep end
+    test fn {:has_dep, dep} ->
+      File.exists?("mix.exs") and File.read!("mix.exs") =~ ~r/:#{Regex.escape(dep)}\b/
+    end
   end
 
   defcheck {:no_dep, "dep"} do
     desc "Pass if <dep> is not installed"
-    fail fn {:has_dep, dep} -> "Dependency #{dep} found in mix.exs" end
-    test fn {:has_dep, dep} -> not eval_test({:has_dep, dep}) end
+    fail fn {:no_dep, dep} -> "Dependency #{dep} found in mix.exs" end
+    test fn {:no_dep, dep} -> not eval_test({:has_dep, dep}) end
   end
 
 end
