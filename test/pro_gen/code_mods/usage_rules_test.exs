@@ -1,7 +1,7 @@
-defmodule ProGen.CodeMods.MixFileTest do
+defmodule ProGen.CodeMods.UsageRulesTest do
   use ExUnit.Case, async: false
 
-  alias ProGen.CodeMods.MixFile
+  alias ProGen.CodeMods.UsageRules
 
   @fixture """
   defmodule TestProject.MixProject do
@@ -22,7 +22,7 @@ defmodule ProGen.CodeMods.MixFileTest do
 
   setup do
     tmp_dir =
-      Path.join(System.tmp_dir!(), "pro_gen_mix_file_test_#{:erlang.unique_integer([:positive])}")
+      Path.join(System.tmp_dir!(), "pro_gen_usage_rules_test_#{:erlang.unique_integer([:positive])}")
 
     File.mkdir_p!(tmp_dir)
     on_exit(fn -> File.rm_rf!(tmp_dir) end)
@@ -39,20 +39,20 @@ defmodule ProGen.CodeMods.MixFileTest do
   describe "add_to_project/3" do
     test "adds a new key to project/0", %{tmp_dir: tmp_dir} do
       path = write_fixture(tmp_dir)
-      assert {:ok, :updated} = MixFile.add_to_project(:usage_rules, "usage_rules()", path: path)
+      assert {:ok, :updated} = UsageRules.add_to_project(:usage_rules, "usage_rules()", path: path)
       content = File.read!(path)
       assert content =~ "usage_rules: usage_rules()"
     end
 
     test "is idempotent — second call returns :already_exists", %{tmp_dir: tmp_dir} do
       path = write_fixture(tmp_dir)
-      assert {:ok, :updated} = MixFile.add_to_project(:foo, ":bar", path: path)
-      assert {:ok, :already_exists} = MixFile.add_to_project(:foo, ":bar", path: path)
+      assert {:ok, :updated} = UsageRules.add_to_project(:foo, ":bar", path: path)
+      assert {:ok, :already_exists} = UsageRules.add_to_project(:foo, ":bar", path: path)
     end
 
     test "does not modify existing keys", %{tmp_dir: tmp_dir} do
       path = write_fixture(tmp_dir)
-      assert {:ok, :already_exists} = MixFile.add_to_project(:app, ":other", path: path)
+      assert {:ok, :already_exists} = UsageRules.add_to_project(:app, ":other", path: path)
       content = File.read!(path)
       assert content =~ "app: :test_project"
     end
@@ -61,7 +61,7 @@ defmodule ProGen.CodeMods.MixFileTest do
       path = write_fixture(tmp_dir)
 
       assert {:ok, :updated} =
-               MixFile.add_to_project(:description, "\"A test project\"", path: path)
+               UsageRules.add_to_project(:description, "\"A test project\"", path: path)
 
       content = File.read!(path)
       assert content =~ "app: :test_project"
@@ -70,7 +70,7 @@ defmodule ProGen.CodeMods.MixFileTest do
     end
 
     test "returns error for missing file" do
-      assert {:error, msg} = MixFile.add_to_project(:foo, ":bar", path: "/nonexistent/mix.exs")
+      assert {:error, msg} = UsageRules.add_to_project(:foo, ":bar", path: "/nonexistent/mix.exs")
       assert msg =~ "could not read"
     end
 
@@ -82,7 +82,7 @@ defmodule ProGen.CodeMods.MixFileTest do
         end
         """)
 
-      assert {:error, msg} = MixFile.add_to_project(:foo, ":bar", path: path)
+      assert {:error, msg} = UsageRules.add_to_project(:foo, ":bar", path: path)
       assert msg =~ "project/0"
     end
   end
@@ -97,7 +97,7 @@ defmodule ProGen.CodeMods.MixFileTest do
       end
       """
 
-      assert {:ok, :updated} = MixFile.add_defp(:usage_rules, 0, body, path: path)
+      assert {:ok, :updated} = UsageRules.add_defp(:usage_rules, 0, body, path: path)
       content = File.read!(path)
       assert content =~ "defp usage_rules do"
       assert content =~ ~s(file: "CLAUDE.md")
@@ -112,15 +112,15 @@ defmodule ProGen.CodeMods.MixFileTest do
       end
       """
 
-      assert {:ok, :updated} = MixFile.add_defp(:my_func, 0, body, path: path)
-      assert {:ok, :already_exists} = MixFile.add_defp(:my_func, 0, body, path: path)
+      assert {:ok, :updated} = UsageRules.add_defp(:my_func, 0, body, path: path)
+      assert {:ok, :already_exists} = UsageRules.add_defp(:my_func, 0, body, path: path)
     end
 
     test "does not overwrite existing defp", %{tmp_dir: tmp_dir} do
       path = write_fixture(tmp_dir)
 
       assert {:ok, :already_exists} =
-               MixFile.add_defp(:deps, 0, "defp deps, do: [:new]", path: path)
+               UsageRules.add_defp(:deps, 0, "defp deps, do: [:new]", path: path)
 
       content = File.read!(path)
       # Original deps function should still be intact
@@ -136,7 +136,7 @@ defmodule ProGen.CodeMods.MixFileTest do
       end
       """
 
-      assert {:ok, :updated} = MixFile.add_defp(:my_config, 0, body, path: path)
+      assert {:ok, :updated} = UsageRules.add_defp(:my_config, 0, body, path: path)
       content = File.read!(path)
       # All original content should still be present
       assert content =~ "use Mix.Project"
@@ -147,7 +147,7 @@ defmodule ProGen.CodeMods.MixFileTest do
 
     test "returns error for missing file" do
       assert {:error, msg} =
-               MixFile.add_defp(:foo, 0, "defp foo, do: :ok", path: "/nonexistent/mix.exs")
+               UsageRules.add_defp(:foo, 0, "defp foo, do: :ok", path: "/nonexistent/mix.exs")
 
       assert msg =~ "could not read"
     end

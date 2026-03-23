@@ -1,12 +1,12 @@
-defmodule ProGen.CodeMods.MixFile do
-  @moduledoc "Programmatic, idempotent modifications to mix.exs files."
+defmodule ProGen.CodeMods.UsageRules do
+  @moduledoc "Mix.exs changes required by the 'usage_rules' package."
 
   alias Sourceror.Zipper
 
   @doc """
   Adds a key-value entry to the `project/0` keyword list in a mix.exs file.
 
-  The `value_code` parameter is a string of Elixir code (e.g., `"usage_rules()"`
+  The `value_code` parameter is a string of Elixir code (e.g., `"usage_rules()"`)
   or `":my_app"`).
 
   Returns `{:ok, :updated}` if the entry was added, `{:ok, :already_exists}` if

@@ -56,7 +56,7 @@ ProGen has three pillars (Actions are implemented; Scripts and Menus are stubs/f
 
 ### Utilities
 
-**`ProGen.CodeMods.MixFile`** — Programmatic, idempotent modifications to mix.exs files. Uses Sourceror/Igniter for AST-based code transformations. Two public functions: `add_to_project/3` (inserts a key-value entry into the `project/0` keyword list) and `add_defp/4` (appends a private function to the module). Both are no-ops if the target already exists.
+**`ProGen.CodeMods.UsageRules`** — Mix.exs changes required by the 'usage_rules' package. Uses Sourceror/Igniter for AST-based code transformations. Two public functions: `add_to_project/3` (inserts a key-value entry into the `project/0` keyword list) and `add_defp/4` (appends a private function to the module). Both are no-ops if the target already exists.
 
 ### Menus (Future)
 

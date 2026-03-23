@@ -7,7 +7,7 @@
 
 ## Goal
 
-Create a reusable utility module `ProGen.MixFile` that can programmatically and
+Create a reusable utility module `ProGen.CodeMods.UsageRules` that can programmatically and
 idempotently modify mix.exs files — specifically adding key-value entries to the
 `project/0` keyword list and appending private functions to the module.
 
@@ -40,7 +40,7 @@ idempotently modify mix.exs files — specifically adding key-value entries to t
    `Igniter.Code.Common.add_code/3` (insertion) covers the need.
 
 2. **Utility module, not an Action.** The spec explicitly calls for a standalone
-   utility module. Place it at `lib/pro_gen/mix_file.ex` as `ProGen.MixFile`.
+   utility module. Place it at `lib/pro_gen/mix_file.ex` as `ProGen.CodeMods.UsageRules`.
    Actions or scripts can call these functions as needed.
 
 3. **Wrap Igniter lifecycle internally.** Each public function creates an
@@ -74,7 +74,7 @@ idempotently modify mix.exs files — specifically adding key-value entries to t
 ### 1. Create `lib/pro_gen/mix_file.ex`
 
 - Files: `lib/pro_gen/mix_file.ex`
-- Define module `ProGen.MixFile` with `@moduledoc`.
+- Define module `ProGen.CodeMods.UsageRules` with `@moduledoc`.
 - Implement `add_to_project/3`:
   1. Create `Igniter.new()`
   2. Use `Igniter.update_elixir_file/3` on the target mix.exs path
@@ -116,7 +116,7 @@ idempotently modify mix.exs files — specifically adding key-value entries to t
 ### 3. Update `CLAUDE.md`
 
 - Files: `CLAUDE.md`
-- Add brief mention of `ProGen.MixFile` in the Architecture section under
+- Add brief mention of `ProGen.CodeMods.UsageRules` in the Architecture section under
   a "Utilities" heading, describing it as a code modification utility for
   mix.exs files.
 
