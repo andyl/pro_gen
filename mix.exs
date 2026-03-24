@@ -64,8 +64,13 @@ defmodule ProGen.MixProject do
 
   defp aliases do
     [
-      docgen: ["docs.scripts", &reload_and_docs/1]
+      docgen: [&generate_script_guide/1, &reload_and_docs/1]
     ]
+  end
+
+  defp generate_script_guide(_) do
+    Mix.Task.run("compile")
+    ProGen.Docs.ScriptGuide.generate()
   end
 
   # Force Mix to re-read project/0 so the :extras list

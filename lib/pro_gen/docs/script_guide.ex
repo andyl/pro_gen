@@ -1,17 +1,10 @@
-defmodule Mix.Tasks.Docs.Scripts do
-  @shortdoc "Generate markdown guides from example scripts"
-
+defmodule ProGen.Docs.ScriptGuide do
   @moduledoc """
-  Generates a single markdown guide from all example scripts in `scripts/`.
+  Generates a markdown guide from example scripts in `scripts/`.
 
-  ```bash
-  mix docs.scripts
-  ```
-
-  All executable scripts in `scripts/` (files without a `.md` extension)
-  are collected into a single `guides/example_scripts.md` file, with each
-  script as an `## h2` section containing its description, run command,
-  source link, and code block.
+  All executable scripts (files without a `.md` extension) are collected into
+  a single `guides/example_scripts.md` file, with each script as an `## h2`
+  section containing its description, run command, source link, and code block.
 
   ## Script comment-block convention
 
@@ -31,14 +24,16 @@ defmodule Mix.Tasks.Docs.Scripts do
   generic fallback is used.
   """
 
-  use Mix.Task
-
   @scripts_dir "scripts"
   @output_path "guides/example_scripts.md"
   @source_url "https://github.com/andyl/pro_gen/blob/master"
 
-  @impl true
-  def run(_args) do
+  @doc """
+  Generates `guides/example_scripts.md` from all scripts in `scripts/`.
+
+  Returns `:ok`.
+  """
+  def generate do
     File.mkdir_p!(Path.dirname(@output_path))
 
     sections =

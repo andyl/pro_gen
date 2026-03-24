@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ProGen is a scriptable Elixir project generator built on [Igniter](https://github.com/ash-project/igniter) for code generation, extended to handle deployment, CI/CD, monitoring, and DevOps tasks. It is in early-stage development (v0.1.0).
 
+This is the **core library** package. CLI Mix tasks (`mix progen.*`) live in the separate [`pro_gen_cli`](https://github.com/andyl/pro_gen_cli) package, which ships as a Mix archive. This package has zero Mix tasks — users access functionality via the Elixir API (`ProGen.Actions.run/2`, etc.) or the CLI archive.
+
 ## Build & Development Commands
 
 ```bash
@@ -57,6 +59,8 @@ ProGen has three pillars (Actions are implemented; Scripts and Menus are stubs/f
 ### Utilities
 
 **`ProGen.CodeMods.UsageRules`** — Mix.exs changes required by the 'usage_rules' package. Uses Sourceror/Igniter for AST-based code transformations. Two public functions: `add_to_project/3` (inserts a key-value entry into the `project/0` keyword list) and `add_defp/4` (appends a private function to the module). Both are no-ops if the target already exists.
+
+**`ProGen.Docs.ScriptGuide`** — Generates `guides/example_scripts.md` from scripts in `scripts/`. Called via `mix docgen` alias (which also regenerates ExDoc). Public function: `generate/0`.
 
 ### Menus (Future)
 
