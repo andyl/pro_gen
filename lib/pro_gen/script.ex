@@ -335,33 +335,7 @@ defmodule ProGen.Script do
   # --- Private helpers ---
 
   defp auto_commit(desc, commit_type, opts) do
-    if Application.get_env(:pro_gen, :auto_commit, true) and
-         Keyword.get(opts, :commit, true) do
-      message = format_commit_message(desc, commit_type)
-
-      case ProGen.Actions.run("git.commit", message: message) do
-        :ok ->
-          :ok
-
-        {:ok, :skipped} ->
-          :ok
-
-        {:error, reason} ->
-          require Logger
-          Logger.warning("Auto-commit failed: #{inspect(reason)}")
-          :ok
-      end
-    else
-      :ok
-    end
-  end
-
-  defp format_commit_message(desc, commit_type) do
-    if ProGen.Config.use_conventional_commits?() do
-      "#{commit_type}: [ProGen] #{desc}"
-    else
-      "[ProGen] #{desc}"
-    end
+    ProGen.AutoCommit.auto_commit(desc, commit_type, opts)
   end
 
   defp normalize_action_opts(action_name, opts) do
