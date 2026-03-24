@@ -7,7 +7,7 @@ Igniter/Sourceror code mods, and basic OS commands in a composable / extensible
 system.
 
 The goal is full-lifecycle project generation: configuration, CI/CD,
-deployment, DevOps, etc.
+deployment, DevOps, Git Hooks, etc.
 
 **Status:** Early-stage development (v0.0.1)
 
