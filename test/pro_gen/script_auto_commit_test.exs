@@ -7,7 +7,13 @@ defmodule ProGen.ScriptAutoCommitTest do
     Application.put_env(:pro_gen, :auto_commit, true)
 
     original_dir = File.cwd!()
-    tmp_dir = Path.join(System.tmp_dir!(), "pro_gen_test_auto_commit_#{:erlang.unique_integer([:positive])}")
+
+    tmp_dir =
+      Path.join(
+        System.tmp_dir!(),
+        "pro_gen_test_auto_commit_#{:erlang.unique_integer([:positive])}"
+      )
+
     File.mkdir_p!(tmp_dir)
     File.cd!(tmp_dir)
 
@@ -72,6 +78,78 @@ defmodule ProGen.ScriptAutoCommitTest do
 
       {log, 0} = System.cmd("git", ["log", "--format=%s"])
       refute log =~ "[ProGen] Echo test"
+    end
+  end
+
+  describe "conventional commits formatting" do
+    test "CC enabled + action with custom @commit_type formats message" do
+      File.write!(".progen.yml", "use_conventional_commits: true\n")
+      File.write!("cc_test1.txt", "content")
+
+      capture_io(fn ->
+        ProGen.Script.action("Add feature", ProGen.Action.Test.CcFeat, [])
+      end)
+
+      {log, 0} = System.cmd("git", ["log", "--format=%s", "-1"])
+      assert String.trim(log) == "feat: [ProGen] Add feature"
+    end
+
+    test "CC enabled + action without @commit_type uses default chore(action)" do
+      File.write!(".progen.yml", "use_conventional_commits: true\n")
+      File.write!("cc_test2.txt", "content")
+
+      capture_io(fn ->
+        ProGen.Script.action("Default type", ProGen.Action.Test.CcDefault, [])
+      end)
+
+      {log, 0} = System.cmd("git", ["log", "--format=%s", "-1"])
+      assert String.trim(log) == "chore(action): [ProGen] Default type"
+    end
+
+    test "CC enabled + command uses chore(command)" do
+      File.write!(".progen.yml", "use_conventional_commits: true\n")
+
+      capture_io(fn ->
+        ProGen.Script.command("Run setup", "touch cc_cmd.txt")
+      end)
+
+      {log, 0} = System.cmd("git", ["log", "--format=%s", "-1"])
+      assert String.trim(log) == "chore(command): [ProGen] Run setup"
+    end
+
+    test "CC disabled (no config file) preserves legacy format" do
+      File.write!("cc_test3.txt", "content")
+
+      capture_io(fn ->
+        ProGen.Script.action("Echo test", "io.echo", message: "hello")
+      end)
+
+      {log, 0} = System.cmd("git", ["log", "--format=%s", "-1"])
+      assert String.trim(log) == "[ProGen] Echo test"
+    end
+
+    test "CC disabled (false) preserves legacy format" do
+      File.write!(".progen.yml", "use_conventional_commits: false\n")
+      File.write!("cc_test4.txt", "content")
+
+      capture_io(fn ->
+        ProGen.Script.action("Echo test", "io.echo", message: "hello")
+      end)
+
+      {log, 0} = System.cmd("git", ["log", "--format=%s", "-1"])
+      assert String.trim(log) == "[ProGen] Echo test"
+    end
+
+    test "CC enabled + action by string name with custom @commit_type" do
+      File.write!(".progen.yml", "use_conventional_commits: true\n")
+      File.write!("cc_test5.txt", "content")
+
+      capture_io(fn ->
+        ProGen.Script.action("Docs update", "test.cc_docs_api", [])
+      end)
+
+      {log, 0} = System.cmd("git", ["log", "--format=%s", "-1"])
+      assert String.trim(log) == "docs(api): [ProGen] Docs update"
     end
   end
 

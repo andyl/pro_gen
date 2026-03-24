@@ -33,6 +33,7 @@ defmodule ProGen.Action do
 
     * `name/0`          — Auto-derived namespaced action name (string, e.g. `"test.echo"`)
     * `description/0`   — First line of `@moduledoc`
+    * `commit_type/0`   — Conventional Commits type (default `"chore(action)"`, overridable via `@commit_type`)
     * `validate_args/1`  — Validates a keyword list against the schema
     * `usage/0`          — Auto-generated usage text from the schema (overridable)
   """
@@ -43,10 +44,15 @@ defmodule ProGen.Action do
   @callback validate(args :: keyword()) :: [{String.t(), list()}]
   @callback perform(args :: keyword()) :: any()
   @callback confirm(result :: any(), args :: keyword()) :: :ok | {:error, term()}
+  @callback commit_type() :: String.t()
+
+  @valid_cc_types ~w(feat fix build chore ci docs style refactor perf revert test)
 
   defmacro __using__(_opts) do
     quote do
       @behaviour ProGen.Action
+
+      Module.register_attribute(__MODULE__, :commit_type, accumulate: false)
 
       @before_compile ProGen.Action
 
@@ -126,9 +132,35 @@ defmodule ProGen.Action do
       |> Enum.map(&Macro.underscore/1)
       |> Enum.join(".")
 
+    commit_type = Module.get_attribute(env.module, :commit_type)
+
+    if commit_type do
+      # Extract the bare type (before any parenthesized scope)
+      bare_type =
+        case String.split(commit_type, "(", parts: 2) do
+          [type | _] -> type
+          _ -> commit_type
+        end
+
+      valid_types = ProGen.Action.__valid_cc_types__()
+
+      unless bare_type in valid_types do
+        raise CompileError,
+          description:
+            "invalid @commit_type #{inspect(commit_type)} in #{inspect(env.module)}. " <>
+              "Type must be one of: #{Enum.join(valid_types, ", ")}"
+      end
+    end
+
+    resolved_commit_type = commit_type || "chore(action)"
+
     quote do
       def name, do: unquote(name)
       def description, do: unquote(description)
+      def commit_type, do: unquote(resolved_commit_type)
     end
   end
+
+  @doc false
+  def __valid_cc_types__, do: @valid_cc_types
 end

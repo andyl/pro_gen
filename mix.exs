@@ -27,7 +27,7 @@ defmodule ProGen.MixProject do
         extras: [
           {"README.md", title: "Overview", filename: "overview"},
           "guides/example_scripts.md",
-          "LICENSE.txt",
+          "LICENSE.txt"
         ],
         assets: %{"assets" => "assets"},
         before_closing_body_tag: %{
@@ -97,6 +97,7 @@ defmodule ProGen.MixProject do
       {:usage_rules, "~> 1.0"},
       {:nimble_options, "~> 1.0"},
       {:optimus, "~> 0.5"},
+      {:yaml_elixir, "~> 2.11"},
       {:ex_doc, "~> 0.31", only: :dev, runtime: false}
     ]
   end

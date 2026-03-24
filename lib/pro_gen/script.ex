@@ -35,7 +35,7 @@ defmodule ProGen.Script do
 
   # --- Schema storage ---
 
-  @doc """
+  @doc \"""
   Stores an Optimus schema in `ProGen.Env` under `:pg_cli_args`.
   """
   def cli_args(schema) do
@@ -149,7 +149,7 @@ defmodule ProGen.Script do
       ProGen.Sys.cmd(command)
       |> halt_on_error()
 
-    auto_commit(desc, commit_opts)
+    auto_commit(desc, "chore(command)", commit_opts)
     result
   end
 
@@ -176,7 +176,7 @@ defmodule ProGen.Script do
       |> ProGen.Actions.run(action_opts)
       |> halt_on_error()
 
-    auto_commit(desc, commit_opts)
+    auto_commit(desc, mod.commit_type(), commit_opts)
     result
   end
 
@@ -185,12 +185,18 @@ defmodule ProGen.Script do
 
     log(desc)
 
+    commit_type =
+      case ProGen.Actions.action_module(action_name) do
+        {:ok, mod} -> mod.commit_type()
+        :error -> "chore(action)"
+      end
+
     result =
       action_name
       |> ProGen.Actions.run(normalize_action_opts(action_name, action_opts))
       |> halt_on_error()
 
-    auto_commit(desc, commit_opts)
+    auto_commit(desc, commit_type, commit_opts)
     result
   end
 
@@ -205,6 +211,7 @@ defmodule ProGen.Script do
 
   def validate(desc, mod, checks) when is_atom(mod) do
     log(desc)
+
     mod
     |> ProGen.Validations.run(checks: checks)
     |> halt_on_error()
@@ -327,10 +334,12 @@ defmodule ProGen.Script do
 
   # --- Private helpers ---
 
-  defp auto_commit(desc, opts) do
+  defp auto_commit(desc, commit_type, opts) do
     if Application.get_env(:pro_gen, :auto_commit, true) and
          Keyword.get(opts, :commit, true) do
-      case ProGen.Actions.run("git.commit", message: "[ProGen] #{desc}") do
+      message = format_commit_message(desc, commit_type)
+
+      case ProGen.Actions.run("git.commit", message: message) do
         :ok ->
           :ok
 
@@ -344,6 +353,14 @@ defmodule ProGen.Script do
       end
     else
       :ok
+    end
+  end
+
+  defp format_commit_message(desc, commit_type) do
+    if ProGen.Config.use_conventional_commits?() do
+      "#{commit_type}: [ProGen] #{desc}"
+    else
+      "[ProGen] #{desc}"
     end
   end
 
@@ -371,6 +388,7 @@ defmodule ProGen.Script do
   end
 
   defp halt_on_error(:ok), do: :ok
+
   defp halt_on_error({:ok, :skipped}) do
     IO.puts("skipped...")
     :ok

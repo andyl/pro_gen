@@ -69,6 +69,7 @@ defmodule ProGen.Actions do
            module: mod,
            name: mod.name(),
            description: mod.description(),
+           commit_type: mod.commit_type(),
            opts_def: mod.opts_def(),
            validate: mod.validate([]),
            usage: mod.usage()
