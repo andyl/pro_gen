@@ -7,7 +7,7 @@ defmodule ProGen.Actions do
   dot-joined into a string (e.g. `ProGen.Action.Test.Echo` → `"test.echo"`).
   """
 
-  alias ProGen.Xtool.StringUtil, as: Util
+  alias ProGen.Xt.StringUtil, as: Util
 
   # Process dictionary keys for dependency resolution
   @ran_set_key :__pro_gen_ran_set__

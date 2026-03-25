@@ -37,7 +37,7 @@ defmodule ProGen.Action.New.Phoenix do
     argout = if args, do: "--with-args '#{args}'", else: ""
 
     cmd = "mix igniter.new #{project} --with=phx.new #{argout} --yes"
-    ProGen.Script.puts(cmd |> ProGen.Xtool.StringUtil.compress())
+    ProGen.Script.puts(cmd |> ProGen.Xt.StringUtil.compress())
     Sys.cmd(cmd)
   end
 

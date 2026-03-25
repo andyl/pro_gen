@@ -32,7 +32,7 @@ defmodule ProGen.Validate do
     * Append a checks table to `@moduledoc`
   """
 
-  alias ProGen.Xtool.StringUtil, as: Util
+  alias ProGen.Xt.StringUtil, as: Util
 
   @callback checks() :: [%{term: atom() | tuple(), desc: String.t()}]
   @callback check(term :: atom() | tuple()) :: :ok | {:error, String.t()}

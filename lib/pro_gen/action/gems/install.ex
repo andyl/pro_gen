@@ -28,7 +28,7 @@ defmodule ProGen.Action.Gems.Install do
   @impl true
   def perform(args) do
     gems = Keyword.fetch!(args, :gems)
-    cmd  = "gem install #{gems}" |> ProGen.Xtool.StringUtil.compress()
+    cmd  = "gem install #{gems}" |> ProGen.Xt.StringUtil.compress()
     ProGen.Script.puts(cmd)
     Sys.cmd(cmd)
   end

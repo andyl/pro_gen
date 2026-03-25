@@ -1,4 +1,4 @@
-defmodule ProGen.Xtool.StringUtil do
+defmodule ProGen.Xt.StringUtil do
   @moduledoc false
 
   @doc false
