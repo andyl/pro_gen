@@ -6,6 +6,10 @@
 - Namespace split: `ProGen.*` in core, `ProGen.CLI.*` + `Mix.Tasks.Progen.*` in CLI
 - CLI depends on core via `path: "../pro_gen"` for local dev
 
+## Git Workflow
+- **pro_gen_cli**: Do NOT auto-commit. Leave changes for manual review.
+- **pro_gen**: Normal commit workflow (commit when asked).
+
 ## Current State (2026-03-24)
 - Core library is feature-complete: actions, validations, scripts, config, auto-commit, conventional commits
 - CLI modules were implemented then removed from core (commit a079002) in prep for pro_gen_cli split
