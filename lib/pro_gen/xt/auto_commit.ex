@@ -46,7 +46,7 @@ defmodule ProGen.Xt.AutoCommit do
   Without CC:      `"[ProGen] <desc>"`
   """
   def format_commit_message(desc, commit_type) do
-    if ProGen.Config.use_conventional_commits?() do
+    if ProGen.Xt.Config.use_conventional_commits?() do
       "#{commit_type}: [ProGen] #{desc}"
     else
       "[ProGen] #{desc}"

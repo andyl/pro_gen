@@ -1,4 +1,4 @@
-defmodule ProGen.Config do
+defmodule ProGen.Xt.Config do
   @moduledoc """
   Reads and parses project configuration from `.progen.yml` / `.progen.yaml`.
 
