@@ -13,7 +13,7 @@ defmodule ProGen.Action.IO.Echo do
   @impl true
   def perform(args) do
     text = Keyword.fetch!(args, :message)
-    IO.puts(text <> "!")
+    IO.puts(text)
     :ok
   end
 end
