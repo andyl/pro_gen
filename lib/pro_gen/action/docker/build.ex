@@ -4,7 +4,7 @@ defmodule ProGen.Action.Docker.Build do
   """
 
   use ProGen.Action
-  alias ProGen.Sys
+  alias ProGen.Xt.Sys, as: Sys
 
   @impl true
   def opts_def do

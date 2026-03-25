@@ -22,7 +22,7 @@ defmodule ProGen.Action.Archive.Install do
   @impl true
   def perform(args) do
     pkg = Keyword.fetch!(args, :package)
-    ProGen.Sys.cmd("mix archive.install hex #{pkg} --force")
+    ProGen.Xt.Sys.cmd("mix archive.install hex #{pkg} --force")
     :ok
   end
 

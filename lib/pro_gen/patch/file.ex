@@ -57,7 +57,7 @@ defmodule ProGen.Patch.File do
   def sed_file(file, expression) do
     if Elixir.File.exists?(file) do
       "sed -i '#{expression}' #{file}"
-      |> ProGen.Sys.cmd()
+      |> ProGen.Xt.Sys.cmd()
     else
       {:error, :enoent}
     end

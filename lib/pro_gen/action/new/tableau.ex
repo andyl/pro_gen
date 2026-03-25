@@ -7,7 +7,7 @@ defmodule ProGen.Action.New.Tableau do
   """
 
   use ProGen.Action
-  alias ProGen.Sys
+  alias ProGen.Xt.Sys, as: Sys
 
   @impl true
   def opts_def do

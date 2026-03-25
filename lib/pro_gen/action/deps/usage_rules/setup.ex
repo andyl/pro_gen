@@ -27,7 +27,7 @@ defmodule ProGen.Action.Deps.UsageRules.Setup do
     ProGen.Patch.Pkg.UsageRules.add_to_project(:usage_rules, "usage_rules()")
     ProGen.Patch.Pkg.UsageRules.add_defp(:usage_rules, 0, body())
     # always regenerate to sync changes
-    ProGen.Sys.cmd("mix usage_rules.sync --yes")
+    ProGen.Xt.Sys.cmd("mix usage_rules.sync --yes")
     :ok
   end
 

@@ -1,4 +1,4 @@
-defmodule ProGen.Sys do
+defmodule ProGen.Xt.Sys do
   @moduledoc """
   Low-level system command runner.
 

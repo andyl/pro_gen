@@ -52,7 +52,7 @@ ProGen has three pillars (Actions are implemented; Scripts and Menus are stubs/f
 - `git(arg)` — Run a git command (string or list).
 - `commit(message)` — Stage all and commit.
 
-**System commands:** `ProGen.Sys` provides `cmd/1` (string) and `cmd/2` (cmd + args) for running system commands.
+**System commands:** `ProGen.Xt.Sys` provides `cmd/1` (string) and `cmd/2` (cmd + args) for running system commands.
 
 **Usage:** Create a `.exs` file that does `Mix.install([{:pro_gen, ...}])`, then call `ProGen.Script.parse_args(schema, System.argv())`. See `examples/greeter.exs`. Note: top-level `import` doesn't work with `Mix.install` scripts (Elixir compile-time limitation); use qualified calls or wrap in a module.
 

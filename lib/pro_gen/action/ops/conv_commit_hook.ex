@@ -31,7 +31,7 @@ defmodule ProGen.Action.Ops.ConvCommitHook do
   """
 
   use ProGen.Action
-  alias ProGen.Sys
+  alias ProGen.Xt.Sys, as: Sys
 
   @impl true
   def validate(_args), do: [{"filesys", [:has_mix, :has_git]}]

@@ -26,8 +26,8 @@ defmodule ProGen.Action.Git.Commit do
   def perform(args) do
     message = Keyword.fetch!(args, :message)
 
-    with :ok <- ProGen.Sys.cmd("git", ["add", "."]) do
-      ProGen.Sys.cmd("git", ["commit", "-m", message])
+    with :ok <- ProGen.Xt.Sys.cmd("git", ["add", "."]) do
+      ProGen.Xt.Sys.cmd("git", ["commit", "-m", message])
     end
   end
 

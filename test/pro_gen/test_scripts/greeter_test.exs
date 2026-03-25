@@ -191,22 +191,22 @@ defmodule ProGen.ScriptTest do
 
   describe "cmd/1,2" do
     test "runs a command string and returns output" do
-      {_result, output} = with_io(fn -> ProGen.Sys.cmd("echo hello") end)
+      {_result, output} = with_io(fn -> ProGen.Xt.Sys.cmd("echo hello") end)
       assert output =~ "hello"
     end
 
     test "runs a command with arg list and returns output" do
-      {_result, output} = with_io(fn -> ProGen.Sys.cmd("echo", ["hello"]) end)
+      {_result, output} = with_io(fn -> ProGen.Xt.Sys.cmd("echo", ["hello"]) end)
       assert output =~ "hello"
     end
 
     test "returns :ok on success" do
-      capture_io(fn -> send(self(), ProGen.Sys.cmd("echo", ["hi"])) end)
+      capture_io(fn -> send(self(), ProGen.Xt.Sys.cmd("echo", ["hi"])) end)
       assert_received :ok
     end
 
     test "returns {:error, _} on failure" do
-      capture_io(fn -> send(self(), ProGen.Sys.cmd("false", [])) end)
+      capture_io(fn -> send(self(), ProGen.Xt.Sys.cmd("false", [])) end)
       assert_received {:error, code} when is_integer(code)
     end
 
@@ -214,7 +214,7 @@ defmodule ProGen.ScriptTest do
       output_path = Path.join(System.tmp_dir!(), "pro_gen_sys_redirect_test_#{System.unique_integer([:positive])}")
 
       try do
-        capture_io(fn -> send(self(), ProGen.Sys.cmd("echo asdf > #{output_path}")) end)
+        capture_io(fn -> send(self(), ProGen.Xt.Sys.cmd("echo asdf > #{output_path}")) end)
         assert_received :ok
         assert File.read!(output_path) =~ "asdf"
       after
@@ -223,7 +223,7 @@ defmodule ProGen.ScriptTest do
     end
 
     test "handles shell pipes" do
-      {_result, output} = with_io(fn -> ProGen.Sys.cmd("echo hello world | tr h H") end)
+      {_result, output} = with_io(fn -> ProGen.Xt.Sys.cmd("echo hello world | tr h H") end)
       assert output =~ "Hello"
     end
   end

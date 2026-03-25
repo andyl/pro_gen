@@ -27,7 +27,7 @@ defmodule ProGen.Action.MixCompletions.Run do
 
   @impl true
   def perform(_args) do
-    ProGen.Sys.cmd("mix complete.bash > @cache_file")
+    ProGen.Xt.Sys.cmd("mix complete.bash > @cache_file")
   end
 
   @impl true
