@@ -1,7 +1,7 @@
-defmodule ProGen.CodeMods.DepsTweaksTest do
+defmodule ProGen.Patch.MixDepsTest do
   use ExUnit.Case, async: false
 
-  alias ProGen.CodeMods.DepsTweaks
+  alias ProGen.Patch.MixDeps, as: DepsTweaks
 
   @fixture """
   defmodule TestProject.MixProject do

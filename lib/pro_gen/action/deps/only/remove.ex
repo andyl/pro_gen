@@ -28,7 +28,7 @@ defmodule ProGen.Action.Deps.Only.Remove do
   def perform(args) do
     args[:deps]
     |> String.split(" ", trim: true)
-    |> Enum.each(&ProGen.CodeMods.DepsTweaks.remove_only/1)
+    |> Enum.each(&ProGen.Patch.MixDeps.remove_only/1)
 
     :ok
   end

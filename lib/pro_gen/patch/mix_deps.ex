@@ -1,4 +1,4 @@
-defmodule ProGen.CodeMods.DepsTweaks do
+defmodule ProGen.Patch.MixDeps do
   @moduledoc "Tweaks to dependency specs in mix.exs"
 
   @doc """
