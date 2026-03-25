@@ -102,7 +102,7 @@ defmodule ProGen.ScriptTest do
 
     test "stores merged args in :pg_cli_vals" do
       {:ok, args} = ProGen.Script.parse_args(["--name", "World", "--loud"])
-      assert ProGen.Env.get(:pg_cli_vals) == args
+      assert ProGen.Script.Env.get(:pg_cli_vals) == args
       assert args[:name] == "World"
       assert args[:loud] == true
     end

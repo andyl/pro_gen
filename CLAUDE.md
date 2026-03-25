@@ -39,7 +39,7 @@ ProGen has three pillars (Actions are implemented; Scripts and Menus are stubs/f
 **Plain functions:** `ProGen.Script` provides plain functions — no macros, callbacks, or `use` required. Call functions as `ProGen.Script.function()`, or `import ProGen.Script` inside a module for unqualified access.
 
 **Core functions:**
-- `cli_args(schema)` — Store an Optimus schema in `ProGen.Env` under `:pg_cli_args`.
+- `cli_args(schema)` — Store an Optimus schema in `ProGen.Script.Env` under `:pg_cli_args`.
 - `cli_args()` — Retrieve the stored Optimus schema.
 - `parse_args(schema, argv)` — Parse argv (list or string) against an Optimus schema. Returns `{:ok, parsed}` / `{:error, errors}` / `:help` / `:version`.
 - `parse_args(argv)` — Parse argv using the stored schema. Merges args/options/flags into a flat map, stores in `:pg_args`. Auto-prints usage on `--help` and version on `--version`.

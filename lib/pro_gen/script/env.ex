@@ -1,4 +1,4 @@
-defmodule ProGen.Env do
+defmodule ProGen.Script.Env do
   @moduledoc """
   An ETS-backed key-value store with environment variable fallback.
 
@@ -17,9 +17,9 @@ defmodule ProGen.Env do
 
   ## Examples
 
-      ProGen.Env.put(:color, "blue")
-      ProGen.Env.put(fruit: "apple", veggie: "carrot")
-      ProGen.Env.put(%{lang: "elixir"})
+      ProGen.Script.Env.put(:color, "blue")
+      ProGen.Script.Env.put(fruit: "apple", veggie: "carrot")
+      ProGen.Script.Env.put(%{lang: "elixir"})
   """
   def put(pairs) when is_list(pairs) do
     ensure_table()
@@ -68,8 +68,8 @@ defmodule ProGen.Env do
 
   ## Examples
 
-      ProGen.Env.put(color: "blue", lang: "elixir")
-      ProGen.Env.list()
+      ProGen.Script.Env.put(color: "blue", lang: "elixir")
+      ProGen.Script.Env.list()
       #=> [color: "blue", lang: "elixir"]
   """
   def list do
