@@ -1,5 +1,16 @@
 defmodule ProGen.Patch.Pkg.UsageRules do
-  @moduledoc "Mix.exs changes required by the 'usage_rules' package."
+  @moduledoc """
+  Mix.exs changes required by the 'usage_rules' package.
+
+  Learn more about UsageRules config on the [README](https://github.com/ash-project/usage_rules/blob/main/README.md).
+
+  This module performs two `mix.exs` modifications:
+
+  1. Add a `usage_rules` element to the `project` keyword list,.
+  2. Add a `usage_rules` function to the `mix.exs` file.
+
+  Both operations are idempotent.
+  """
 
   alias Sourceror.Zipper
 
