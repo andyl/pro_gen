@@ -70,7 +70,7 @@ defmodule ProGen.MixProject do
 
   defp generate_script_guide(_) do
     Mix.Task.run("compile")
-    ProGen.Xtool.Docs.ScriptGuide.generate()
+    ProGen.Xt.ScriptGuide.generate()
   end
 
   # Force Mix to re-read project/0 so the :extras list

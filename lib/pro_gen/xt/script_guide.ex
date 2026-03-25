@@ -1,4 +1,4 @@
-defmodule ProGen.Xtool.Docs.ScriptGuide do
+defmodule ProGen.Xt.ScriptGuide do
   @moduledoc """
   Generates a markdown guide from example scripts in `scripts/`.
 
