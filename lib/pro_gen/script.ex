@@ -335,7 +335,7 @@ defmodule ProGen.Script do
   # --- Private helpers ---
 
   defp auto_commit(desc, commit_type, opts) do
-    ProGen.AutoCommit.auto_commit(desc, commit_type, opts)
+    ProGen.Xtool.AutoCommit.auto_commit(desc, commit_type, opts)
   end
 
   defp normalize_action_opts(action_name, opts) do

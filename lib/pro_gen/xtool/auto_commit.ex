@@ -1,4 +1,4 @@
-defmodule ProGen.AutoCommit do
+defmodule ProGen.Xtool.AutoCommit do
   @moduledoc """
   Shared auto-commit logic used by `ProGen.Script` and CLI Mix tasks.
 
