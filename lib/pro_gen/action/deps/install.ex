@@ -35,7 +35,7 @@ defmodule ProGen.Action.Deps.Install do
       nil  -> ""
       only -> "--only #{only}"
     end
-    cmd = "mix igniter.install #{deps} #{args_str} #{only_str} --yes" |> ProGen.Util.compress()
+    cmd = "mix igniter.install #{deps} #{args_str} #{only_str} --yes" |> ProGen.Xtool.StringUtil.compress()
     ProGen.Script.puts(cmd)
     Sys.cmd(cmd)
   end

@@ -9,7 +9,7 @@ defmodule ProGen.Validations do
 
   @type validation_map :: %{String.t() => module()}
 
-  alias ProGen.Util
+  alias ProGen.Xtool.StringUtil, as: Util
 
   @doc """
   Clears the cached validator discovery results.
