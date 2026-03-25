@@ -1,4 +1,4 @@
-defmodule ProGen.CodeMods.FileTest do
+defmodule ProGen.Patch.FileTest do
   use ExUnit.Case, async: true
 
   @moduletag :tmp_dir
@@ -8,7 +8,7 @@ defmodule ProGen.CodeMods.FileTest do
       path = Path.join(tmp, "test.txt")
       File.write!(path, "first\n")
 
-      assert :ok = ProGen.CodeMods.File.append_line(path, "second")
+      assert :ok = ProGen.Patch.File.append_line(path, "second")
       assert File.read!(path) == "first\nsecond\n"
     end
 
@@ -16,7 +16,7 @@ defmodule ProGen.CodeMods.FileTest do
       path = Path.join(tmp, "test.txt")
       File.write!(path, "first")
 
-      assert :ok = ProGen.CodeMods.File.append_line(path, "second")
+      assert :ok = ProGen.Patch.File.append_line(path, "second")
       assert File.read!(path) == "first\nsecond\n"
     end
 
@@ -24,7 +24,7 @@ defmodule ProGen.CodeMods.FileTest do
       path = Path.join(tmp, "test.txt")
       File.write!(path, "existing line\n")
 
-      assert :ok = ProGen.CodeMods.File.append_line(path, "existing line")
+      assert :ok = ProGen.Patch.File.append_line(path, "existing line")
       assert File.read!(path) == "existing line\n"
     end
 
@@ -32,14 +32,14 @@ defmodule ProGen.CodeMods.FileTest do
       path = Path.join(tmp, "test.txt")
       File.write!(path, "")
 
-      assert :ok = ProGen.CodeMods.File.append_line(path, "hello")
+      assert :ok = ProGen.Patch.File.append_line(path, "hello")
       assert File.read!(path) == "\nhello\n"
     end
 
     test "returns error for non-existent file", %{tmp_dir: tmp} do
       path = Path.join(tmp, "missing.txt")
 
-      assert {:error, :enoent} = ProGen.CodeMods.File.append_line(path, "line")
+      assert {:error, :enoent} = ProGen.Patch.File.append_line(path, "line")
     end
   end
 
@@ -49,7 +49,7 @@ defmodule ProGen.CodeMods.FileTest do
       File.write!(path, "header\n")
 
       block = "line1\nline2\nline3"
-      assert :ok = ProGen.CodeMods.File.append_block(path, block)
+      assert :ok = ProGen.Patch.File.append_block(path, block)
       assert File.read!(path) == "header\nline1\nline2\nline3\n"
     end
 
@@ -58,7 +58,7 @@ defmodule ProGen.CodeMods.FileTest do
       block = "line1\nline2\nline3\n"
       File.write!(path, "header\n" <> block)
 
-      assert :ok = ProGen.CodeMods.File.append_block(path, block)
+      assert :ok = ProGen.Patch.File.append_block(path, block)
       assert File.read!(path) == "header\nline1\nline2\nline3\n"
     end
 
@@ -67,7 +67,7 @@ defmodule ProGen.CodeMods.FileTest do
       File.write!(path, "header")
 
       block = "line1\nline2"
-      assert :ok = ProGen.CodeMods.File.append_block(path, block)
+      assert :ok = ProGen.Patch.File.append_block(path, block)
       assert File.read!(path) == "header\nline1\nline2\n"
     end
 
@@ -77,7 +77,7 @@ defmodule ProGen.CodeMods.FileTest do
 
       # Block with extra trailing newlines should still match
       block = "line1\nline2\n\n\n"
-      assert :ok = ProGen.CodeMods.File.append_block(path, block)
+      assert :ok = ProGen.Patch.File.append_block(path, block)
       # File unchanged since block already present
       assert File.read!(path) == "header\nline1\nline2\n"
     end
@@ -87,14 +87,14 @@ defmodule ProGen.CodeMods.FileTest do
       File.write!(path, "")
 
       block = "line1\nline2"
-      assert :ok = ProGen.CodeMods.File.append_block(path, block)
+      assert :ok = ProGen.Patch.File.append_block(path, block)
       assert File.read!(path) == "\nline1\nline2\n"
     end
 
     test "returns error for non-existent file", %{tmp_dir: tmp} do
       path = Path.join(tmp, "missing.txt")
 
-      assert {:error, :enoent} = ProGen.CodeMods.File.append_block(path, "block")
+      assert {:error, :enoent} = ProGen.Patch.File.append_block(path, "block")
     end
   end
 
@@ -103,7 +103,7 @@ defmodule ProGen.CodeMods.FileTest do
       path = Path.join(tmp, "test.txt")
       File.write!(path, "hello world\n")
 
-      assert :ok = ProGen.CodeMods.File.sed_file(path, "s/hello/goodbye/")
+      assert :ok = ProGen.Patch.File.sed_file(path, "s/hello/goodbye/")
       assert File.read!(path) == "goodbye world\n"
     end
 
@@ -111,14 +111,14 @@ defmodule ProGen.CodeMods.FileTest do
       path = Path.join(tmp, "test.txt")
       File.write!(path, "aaa bbb aaa\n")
 
-      assert :ok = ProGen.CodeMods.File.sed_file(path, "s/aaa/ccc/g")
+      assert :ok = ProGen.Patch.File.sed_file(path, "s/aaa/ccc/g")
       assert File.read!(path) == "ccc bbb ccc\n"
     end
 
     test "returns error for non-existent file", %{tmp_dir: tmp} do
       path = Path.join(tmp, "missing.txt")
 
-      assert {:error, :enoent} = ProGen.CodeMods.File.sed_file(path, "s/a/b/")
+      assert {:error, :enoent} = ProGen.Patch.File.sed_file(path, "s/a/b/")
     end
   end
 end

@@ -53,7 +53,7 @@ defmodule ProGen.Action.Ops.ConvCommitHook do
     File.chmod!("bin/install-git-hooks.sh", 0o755)
 
     if File.exists?("README.md") do
-      ProGen.CodeMods.File.append_block("README.md", readme_text())
+      ProGen.Patch.File.append_block("README.md", readme_text())
     end
 
     Sys.cmd("bin/install-git-hooks.sh")

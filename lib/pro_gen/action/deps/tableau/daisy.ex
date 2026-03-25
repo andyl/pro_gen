@@ -34,9 +34,9 @@ defmodule ProGen.Action.Deps.Tableau.Daisy do
   @impl true
   def perform(_args) do
     # add CSS plugin (idempotent)
-    ProGen.CodeMods.File.append_line(@css_file, ~s(@plugin "daisyui"))
+    ProGen.Patch.File.append_line(@css_file, ~s(@plugin "daisyui"))
     # update CSS file (idempotent)
-    ProGen.CodeMods.File.sed_file(@css_file, ~s(s/\"$/\";/))
+    ProGen.Patch.File.sed_file(@css_file, ~s(s/\"$/\";/))
     :ok
   end
 

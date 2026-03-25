@@ -1,4 +1,4 @@
-defmodule ProGen.CodeMods.File do
+defmodule ProGen.Patch.File do
   @moduledoc """
   File-level code modifications: appending lines, appending blocks, and running
   sed expressions.

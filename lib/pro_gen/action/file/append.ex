@@ -19,7 +19,7 @@ defmodule ProGen.Action.File.Append do
   @impl true
   def perform(args) do
     # this operation is idempotent
-    ProGen.CodeMods.File.append_line(args[:file], args[:line])
+    ProGen.Patch.File.append_line(args[:file], args[:line])
   end
 
   @impl true
