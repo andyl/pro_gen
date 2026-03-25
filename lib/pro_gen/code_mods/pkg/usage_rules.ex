@@ -1,4 +1,4 @@
-defmodule ProGen.CodeMods.UsageRules do
+defmodule ProGen.CodeMods.Pkg.UsageRules do
   @moduledoc "Mix.exs changes required by the 'usage_rules' package."
 
   alias Sourceror.Zipper

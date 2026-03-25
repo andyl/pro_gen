@@ -24,8 +24,8 @@ defmodule ProGen.Action.Deps.UsageRules.Setup do
   @impl true
   def perform(_args) do
     # these are idempotent...
-    ProGen.CodeMods.UsageRules.add_to_project(:usage_rules, "usage_rules()")
-    ProGen.CodeMods.UsageRules.add_defp(:usage_rules, 0, body())
+    ProGen.CodeMods.Pkg.UsageRules.add_to_project(:usage_rules, "usage_rules()")
+    ProGen.CodeMods.Pkg.UsageRules.add_defp(:usage_rules, 0, body())
     # always regenerate to sync changes
     ProGen.Sys.cmd("mix usage_rules.sync --yes")
     :ok

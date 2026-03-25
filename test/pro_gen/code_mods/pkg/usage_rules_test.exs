@@ -1,7 +1,7 @@
-defmodule ProGen.CodeMods.UsageRulesTest do
+defmodule ProGen.CodeMods.Pkg.UsageRulesTest do
   use ExUnit.Case, async: false
 
-  alias ProGen.CodeMods.UsageRules
+  alias ProGen.CodeMods.Pkg.UsageRules
 
   @fixture """
   defmodule TestProject.MixProject do
