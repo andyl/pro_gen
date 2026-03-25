@@ -17,6 +17,20 @@ defmodule ProGen.Actions do
   @type action_map :: %{String.t() => module()}
 
   @doc """
+  Clears the cached action discovery results.
+
+  Call this after loading new modules or recompiling code to force
+  re-discovery on the next `list_actions/0` or `action_module/1` call.
+  """
+  def clear_cache do
+    :persistent_term.erase({__MODULE__, :actions_list})
+    :persistent_term.erase({__MODULE__, :actions_map})
+    :ok
+  rescue
+    ArgumentError -> :ok
+  end
+
+  @doc """
   Returns a sorted list of `{name, description}` tuples for all registered actions.
   """
   def list_actions do

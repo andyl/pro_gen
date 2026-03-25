@@ -12,6 +12,20 @@ defmodule ProGen.Validations do
   alias ProGen.Util
 
   @doc """
+  Clears the cached validator discovery results.
+
+  Call this after loading new modules or recompiling code to force
+  re-discovery on the next `list_validations/0` or `validation_module/1` call.
+  """
+  def clear_cache do
+    :persistent_term.erase({__MODULE__, :validations_list})
+    :persistent_term.erase({__MODULE__, :validations_map})
+    :ok
+  rescue
+    ArgumentError -> :ok
+  end
+
+  @doc """
   Returns a sorted list of `{name, description}` tuples for all registered validators.
   """
   def list_validations do
