@@ -72,6 +72,10 @@ YAML-defined TUI menus for interactive script generation. Not yet implemented.
 - **nimble_options** — Action argument validation (also transitive via igniter)
 - **optimus** — CLI argv parsing for Scripts
 
+## Sibling Repo
+
+The CLI package lives at `../pro_gen_cli` (repo `andyl/pro_gen_cli`). It depends on this package via `path: "../pro_gen"` for local dev. See its `CLAUDE.md` for CLI-specific architecture. When working on features that span both packages, keep the namespace split: `ProGen.*` here, `ProGen.CLI.*` and `Mix.Tasks.Progen.*` there.
+
 ## Design Notes
 
 See `notes/Design.md` for architecture decisions and planned built-in actions (args, mix, run, file, ask, yes?, no?, route). Argument validation uses NimbleOptions for Actions and Optimus for Scripts.
