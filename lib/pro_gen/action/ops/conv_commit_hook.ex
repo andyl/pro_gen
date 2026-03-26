@@ -126,6 +126,7 @@ defmodule ProGen.Action.Ops.ConvCommitHook do
     if ! head -n1 "$COMMIT_MSG_FILE" | grep -qE '^(feat|fix|chore|docs|test|style|refactor|perf|build|ci|revert)(\\([a-z0-9-]+\\))?!?: .+'; then
         echo "Invalid commit message format."
         echo "   Use Conventional Commits: <type>[optional scope]: <description>"
+        echo "   Valid types: feat, fix, chore, docs, test, style, refactor, perf, build, ci, revert"
         echo "   Example: feat(api): add user authentication"
         echo "   Full spec: https://www.conventionalcommits.org"
         exit 1

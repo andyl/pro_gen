@@ -1,141 +1,97 @@
-defmodule ProGen.Action.Ops.GitOps do
+defmodule ProGen.Action.Ops.GitOps.Setup do
   @moduledoc """
-  Installs and Configures GitOps
+  Setup GitOps
 
-  # Add documentation that describes
-  # The function of GitOps
-  # The URL of the GitOps repo (https://github.com/zachdaniel/git_ops)
-  #
+  Learn more about GitOps config on the README.
+
+  https://github.com/zachdaniel/git_ops#configuration
+
+  This Action skips installation when the dependency is already present.
+  Pass `force: true` to reinstall regardless.
+
+  Updates the mix file with initial UsageRules configuration. See
+  ProGen.Patch.Pkg.GitOps for the patch code.
+
+  The default configuration ingests all usage_rules for all dependencies
+  and creates a file `RULES.md`.
+
+  The project maintainer must perform the following periodic actions:
+
+  1. run `mix usage_rules.sync` as dependencies change
+  2. visit the `usage_rules` config in the mix.exs file to update skills
   """
 
   use ProGen.Action
-  alias ProGen.Xt.Sys, as: Sys
 
   @impl true
-  def validate(_args), do: [{"filesys", [:has_mix, :has_git]}]
+  def validate(_args), do: [{"filesys", [:has_git, :has_mix]}]
 
   @impl true
   def depends_on(_args) do
-    [
-      "ops.conv_commit_hook",
-      {"deps.install", deps: "git_ops", only: "dev"}
-    ]
+    [{"deps.install", [deps: "usage_rules", only: "dev"]}]
   end
 
   @impl true
   def needed?(_args) do
-    not (File.exists?(".githooks/commit-msg") and File.exists?("bin/install-git-hooks.sh"))
+    #
+    true
   end
 
   @impl true
   def perform(_args) do
-    File.mkdir_p!(".githooks")
-    File.mkdir_p!("bin")
-
-    File.write!(".githooks/commit-msg", commit_msg_hook())
-    File.chmod!(".githooks/commit-msg", 0o755)
-
-    File.write!("bin/install-git-hooks.sh", install_script())
-    File.chmod!("bin/install-git-hooks.sh", 0o755)
-
-    if File.exists?("README.md") do
-      ProGen.Patch.File.append_block("README.md", readme_text())
-    end
-
-    Sys.cmd("bin/install-git-hooks.sh")
-
-    IO.puts("Git hooks have been installed")
-    IO.puts("Conventional Commit messages are enforced")
-
+    # these are idempotent...
+    ProGen.Patch.Pkg.GitOps.install_config_block()
+    ProGen.Patch.Pkg.GitOps.update_mix_version()
+    # initial sync
+    ProGen.Xt.Sys.cmd("mix git_opts.release --initial")
     :ok
   end
 
   @impl true
   def confirm(_result, _args) do
-    cond do
-      not File.exists?(".githooks/commit-msg") ->
-        {:error, ".githooks/commit-msg was not created"}
-
-      not File.exists?("bin/install-git-hooks.sh") ->
-        {:error, "bin/install-git-hooks.sh was not created"}
-
-      true ->
-        :ok
-    end
+    # if File.exists?("RULES.md") do
+    #   :ok
+    # else
+    #   {:error, "RULES.md was not created"}
+    # end
+    :ok
   end
 
   # -----
 
-  defp readme_text do
+  def config_block do
     """
-    ## Git Hooks
+    config :git_ops,
+      # see https://github.com/zachdaniel/git_ops#configuration
+      mix_project: Mix.Project.get!(),
+      changelog_file: "CHANGELOG.md",
 
-    We enforce Conventional Commit messages locally so the repo stays clean.
+      # for release notes: if true, use git user.email to find
+      # user on github, else use author name in the commit
+      github_handle_lookup?: false,
+      github_api_base_url: "https://api.github.com",
 
-    Learn more at [https://www.conventionalcommits.org](https://www.conventionalcommits.org).
-
-    After cloning, install the githook. Run once:
-    ```bash
-    ./bin/install-git-hooks.sh
-    ```
-
-    After the githook is installed - test by trying to commit an invalid
-    message.
-
-    ```bash
-    echo hello > tmpfile.txt
-    git add .
-    git commit -am'My Bad Commit Message'
-    ```
-    """
-    |> String.trim()
-  end
-
-  defp commit_msg_hook do
-    """
-    #!/usr/bin/env bash
-    # .githooks/commit-msg
-    # Lints commit messages to enforce Conventional Commits format
-    # (you can customize the regex or replace with commitlint, etc.)
-
-    COMMIT_MSG_FILE="$1"
-
-    # Skip empty messages or merge/revert commits (Git handles those)
-    if [[ -z "$(cat "$COMMIT_MSG_FILE")" ]]; then
-        echo "Commit message cannot be empty."
-        exit 1
-    fi
-
-    # Basic Conventional Commits regex:
-    # type[(scope)]: description
-    # Allowed types: feat, fix, chore, docs, test, style, refactor, perf, build, ci, revert
-    if ! head -n1 "$COMMIT_MSG_FILE" | grep -qE '^(feat|fix|chore|docs|test|style|refactor|perf|build|ci|revert)(\\([a-z0-9-]+\\))?!?: .+'; then
-        echo "Invalid commit message format."
-        echo "   Use Conventional Commits: <type>[optional scope]: <description>"
-        echo "   Example: feat(api): add user authentication"
-        echo "   Full spec: https://www.conventionalcommits.org"
-        exit 1
-    fi
-
-    # Optional: enforce reasonable length
-    if [[ $(head -n1 "$COMMIT_MSG_FILE" | wc -c) -gt 100 ]]; then
-        echo "Commit message subject is too long (max 100 chars recommended)."
-        exit 1
-    fi
-
-    echo "Commit message looks good!"
-    exit 0
-    """
-    |> String.trim()
-  end
-
-  defp install_script do
-    """
-    #!/usr/bin/env bash
-    # bin/install-git-hooks.sh
-    HOOKS_DIR="$(git rev-parse --show-toplevel)/.githooks"
-    git config --local core.hooksPath "$HOOKS_DIR"
-    echo "Git hooks installed from .githooks/"
+      # repository_url: "https://github.com/my_user/my_repo",
+      types: [
+        # The type `style` is not shown in the changelog...
+        style: [ hidden?: true ],
+        refactor: [ hidden?: true ],
+        build: [ hidden?: true ],
+        ci: [ hidden?: true ],
+        # The type `important` gets a changelog section header
+        important: [ header: "Important Changes" ]
+      ],
+      tags: [
+        # Only add commits to the changelog that have the "backend" tag
+        # allowed: ["backend"],
+        # Filter out or not commits that don't contain tags
+        allow_untagged?: true
+      ],
+      # manage mix version in `mix.exs`
+      manage_mix_version?: true,
+      # manage the version in `README.md`
+      manage_readme_version: false,
+      version_tag_prefix: "v"
     """
     |> String.trim()
   end

@@ -6,18 +6,19 @@ defmodule ProGen.Action.Deps.UsageRules.Setup do
 
   https://github.com/ash-project/usage_rules/blob/main/README.md
 
-  This Action skips installation when the dependency is already present. Pass
-  `force: true` to reinstall regardless.
+  This Action skips installation when the dependency is already present.
+  Pass `force: true` to reinstall regardless.
 
-  Updates the mix file with initial UsageRules configuration. See ProGen.Patch.Pkg.UsageRules
-  for the patch code.
+  Updates the mix file with initial UsageRules configuration. See
+  ProGen.Patch.Pkg.UsageRules for the patch code.
 
-  The default configuration ingests all usage_rules for all dependencies and creates a file `RULES.md`.
+  The default configuration ingests all usage_rules for all dependencies
+  and creates a file `RULES.md`.
 
   The project maintainer must perform the following periodic actions:
 
-  1. run `mix usage_rules.sync` as dependencies are added and removed
-  2. revisit the `usage_rules` configuration in the mix.exs file to add/remove skills
+  1. run `mix usage_rules.sync` as dependencies change
+  2. visit the `usage_rules` config in the mix.exs file to update skills
   """
 
   use ProGen.Action
@@ -58,10 +59,12 @@ defmodule ProGen.Action.Deps.UsageRules.Setup do
 
   def body do
     """
+    # see https://github.com/ash-project/usage_rules#configuration
     defp usage_rules do
       [
-        file: "RULES.md",
+        # link to every `usage_rules.md` found across all dependencies
         usage_rules: [{~r/.*/, link: :markdown}],
+        file: "RULES.md",
       ]
     end
     """
