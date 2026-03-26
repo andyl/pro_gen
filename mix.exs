@@ -26,8 +26,8 @@ defmodule ProGen.MixProject do
         source_ref: "master",
         extras: [
           {"README.md", title: "Overview", filename: "overview"},
-          "guides/composite_actions.md",
           "guides/example_scripts.md",
+          "guides/composite_actions.md",
           "LICENSE.txt"
         ],
         assets: %{"assets" => "assets"},
