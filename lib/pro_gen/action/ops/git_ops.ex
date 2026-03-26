@@ -1,24 +1,27 @@
-defmodule ProGen.Action.Ops.GitOps.Setup do
+defmodule ProGen.Action.Ops.GitOps do
   @moduledoc """
-  Setup GitOps
+  Setup GitOps for automated changelog and version management.
 
   Learn more about GitOps config on the README.
 
   https://github.com/zachdaniel/git_ops#configuration
 
-  This Action skips installation when the dependency is already present.
-  Pass `force: true` to reinstall regardless.
+  ## Dependencies
 
-  Updates the mix file with initial UsageRules configuration. See
-  ProGen.Patch.Pkg.GitOps for the patch code.
+  Depends on `deps.install` to ensure the `git_ops` package is in `mix.exs`.
 
-  The default configuration ingests all usage_rules for all dependencies
-  and creates a file `RULES.md`.
+  ## What it does
 
-  The project maintainer must perform the following periodic actions:
+  1. Patches `config/config.exs` via `ProGen.Patch.Pkg.GitOps` (disables
+     GitHub handle lookup).
+  2. Runs `mix git_ops.release --initial` to create the first changelog
+     and version tag.
 
-  1. run `mix usage_rules.sync` as dependencies change
-  2. visit the `usage_rules` config in the mix.exs file to update skills
+  ## Skipped when
+
+  The action is skipped (`needed?/1` returns `false`) when the git_ops
+  config is already present in `config/config.exs`. Pass `force: true`
+  to run regardless.
   """
 
   use ProGen.Action
@@ -28,71 +31,36 @@ defmodule ProGen.Action.Ops.GitOps.Setup do
 
   @impl true
   def depends_on(_args) do
-    [{"deps.install", [deps: "usage_rules", only: "dev"]}]
+    [{"deps.install", "git_ops"}]
   end
 
   @impl true
   def needed?(_args) do
-    #
-    true
+    case File.read("config/config.exs") do
+      {:ok, contents} -> not String.contains?(contents, ":git_ops")
+      {:error, _} -> true
+    end
   end
 
   @impl true
   def perform(_args) do
-    # these are idempotent...
-    ProGen.Patch.Pkg.GitOps.install_config_block()
-    ProGen.Patch.Pkg.GitOps.update_mix_version()
+    # this is idempotent...
+    ProGen.Patch.Pkg.GitOps.update_git_ops_config()
     # initial sync
-    ProGen.Xt.Sys.cmd("mix git_opts.release --initial")
+    ProGen.Xt.Sys.cmd("mix git_ops.release --initial")
+    ProGen.Script.puts("Initial release successful - git tag created")
+    ProGen.Script.puts("Use 'git push --follow-tags' to push tags")
     :ok
   end
 
   @impl true
   def confirm(_result, _args) do
-    # if File.exists?("RULES.md") do
-    #   :ok
-    # else
-    #   {:error, "RULES.md was not created"}
-    # end
-    :ok
-  end
+    {tags, 0} = System.cmd("git", ["tag", "--list"])
 
-  # -----
-
-  def config_block do
-    """
-    config :git_ops,
-      # see https://github.com/zachdaniel/git_ops#configuration
-      mix_project: Mix.Project.get!(),
-      changelog_file: "CHANGELOG.md",
-
-      # for release notes: if true, use git user.email to find
-      # user on github, else use author name in the commit
-      github_handle_lookup?: false,
-      github_api_base_url: "https://api.github.com",
-
-      # repository_url: "https://github.com/my_user/my_repo",
-      types: [
-        # The type `style` is not shown in the changelog...
-        style: [ hidden?: true ],
-        refactor: [ hidden?: true ],
-        build: [ hidden?: true ],
-        ci: [ hidden?: true ],
-        # The type `important` gets a changelog section header
-        important: [ header: "Important Changes" ]
-      ],
-      tags: [
-        # Only add commits to the changelog that have the "backend" tag
-        # allowed: ["backend"],
-        # Filter out or not commits that don't contain tags
-        allow_untagged?: true
-      ],
-      # manage mix version in `mix.exs`
-      manage_mix_version?: true,
-      # manage the version in `README.md`
-      manage_readme_version: false,
-      version_tag_prefix: "v"
-    """
-    |> String.trim()
+    if String.trim(tags) == "" do
+      {:error, "no git tags found — initial release may have failed"}
+    else
+      :ok
+    end
   end
 end

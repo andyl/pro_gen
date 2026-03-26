@@ -1,7 +1,7 @@
 defmodule ProGen.Patch.File do
   @moduledoc """
-  File-level code modifications: appending lines, appending blocks, and running
-  sed expressions.
+  File-level code modifications: appending lines, appending blocks, replacing
+  strings, and running sed expressions.
 
   All append operations are idempotent — they no-op if the content already
     exists in the file.
@@ -43,6 +43,25 @@ defmodule ProGen.Patch.File do
       else
         trailing = if String.ends_with?(contents, "\n"), do: "", else: "\n"
         Elixir.File.write(file, contents <> trailing <> String.trim_trailing(block) <> "\n")
+      end
+    end
+  end
+
+  @doc """
+  Replaces all occurrences of `old_string` with `new_string` in `file`.
+
+  Writes the file only if the content actually changed. Returns `:ok` on
+  success (including when `old_string` is not found), or `{:error, reason}`
+  if the file cannot be read.
+  """
+  def replace(file, old_string, new_string) do
+    with {:ok, contents} <- Elixir.File.read(file) do
+      replaced = String.replace(contents, old_string, new_string)
+
+      if replaced == contents do
+        :ok
+      else
+        Elixir.File.write(file, replaced)
       end
     end
   end

@@ -98,6 +98,46 @@ defmodule ProGen.Patch.FileTest do
     end
   end
 
+  describe "replace/3" do
+    test "replaces all occurrences of old_string with new_string", %{tmp_dir: tmp} do
+      path = Path.join(tmp, "test.txt")
+      File.write!(path, "hello world hello\n")
+
+      assert :ok = ProGen.Patch.File.replace(path, "hello", "goodbye")
+      assert File.read!(path) == "goodbye world goodbye\n"
+    end
+
+    test "does not write file when old_string is not found", %{tmp_dir: tmp} do
+      path = Path.join(tmp, "test.txt")
+      File.write!(path, "hello world\n")
+
+      assert :ok = ProGen.Patch.File.replace(path, "missing", "replacement")
+      assert File.read!(path) == "hello world\n"
+    end
+
+    test "handles multi-line replacements", %{tmp_dir: tmp} do
+      path = Path.join(tmp, "test.txt")
+      File.write!(path, "line1\nold block\nline3\n")
+
+      assert :ok = ProGen.Patch.File.replace(path, "old block", "new block")
+      assert File.read!(path) == "line1\nnew block\nline3\n"
+    end
+
+    test "can replace with empty string to delete content", %{tmp_dir: tmp} do
+      path = Path.join(tmp, "test.txt")
+      File.write!(path, "keep this remove this keep this\n")
+
+      assert :ok = ProGen.Patch.File.replace(path, " remove this", "")
+      assert File.read!(path) == "keep this keep this\n"
+    end
+
+    test "returns error for non-existent file", %{tmp_dir: tmp} do
+      path = Path.join(tmp, "missing.txt")
+
+      assert {:error, :enoent} = ProGen.Patch.File.replace(path, "a", "b")
+    end
+  end
+
   describe "sed_file/2" do
     test "performs in-place substitution", %{tmp_dir: tmp} do
       path = Path.join(tmp, "test.txt")
