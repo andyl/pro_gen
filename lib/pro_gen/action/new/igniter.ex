@@ -37,13 +37,12 @@ defmodule ProGen.Action.IgniterNew.Run do
     project = Keyword.fetch!(args, :project)
     Sys.cmd("rm -rf #{project}")
 
-    case Keyword.fetch!(args, :installs) do
-      nil ->
-        Sys.cmd("mix igniter.new #{project}")
-
-      packages ->
-        Sys.cmd("mix igniter.new #{project} --install #{packages}")
+    packages = case Keyword.fetch!(args, :packages) do
+      nil -> "git_ops"
+      string -> "git_ops," <> string
     end
+
+    Sys.cmd("mix igniter.new #{project} --install #{packages}")
   end
 
   @impl true
