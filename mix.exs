@@ -104,7 +104,8 @@ defmodule ProGen.MixProject do
       {:nimble_options, "~> 1.0"},
       {:optimus, "~> 0.5"},
       {:yaml_elixir, "~> 2.11"},
-      {:ex_doc, "~> 0.31", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.31", only: :dev, runtime: false},
+      {:commit_hook, "~> 0.4", only: :dev, runtime: false},
     ]
   end
 end
