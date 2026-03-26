@@ -98,6 +98,7 @@ defmodule ProGen.MixProject do
 
   defp deps do
     [
+      {:git_ops, "~> 2.0", only: [:dev], runtime: false},
       {:igniter, "~> 0.6"},
       {:sourceror, "~> 1.11"},
       {:usage_rules, "~> 1.0"},
@@ -105,7 +106,7 @@ defmodule ProGen.MixProject do
       {:optimus, "~> 0.5"},
       {:yaml_elixir, "~> 2.11"},
       {:ex_doc, "~> 0.31", only: :dev, runtime: false},
-      {:commit_hook, "~> 0.4", only: :dev, runtime: false},
+      {:commit_hook, "~> 0.4", only: :dev, runtime: false}
     ]
   end
 end
