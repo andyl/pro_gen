@@ -149,9 +149,9 @@ end
 
 ### When to Use Which
 
-| Situation | Use |
-|---|---|
-| Post-processing is always the same for this action | Composite action |
-| Post-processing varies by caller or context | Script |
+| Situation                                                            | Use              |
+|----------------------------------------------------------------------|------------------|
+| Post-processing is always the same for this action                   | Composite action |
+| Post-processing varies by caller or context                          | Script           |
 | You want the result discoverable via `ProGen.Actions.list_actions/0` | Composite action |
-| You want a standalone CLI entry point | Script |
+| You want a standalone CLI entry point                                | Script           |
