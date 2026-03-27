@@ -98,7 +98,7 @@ defmodule ProGen.MixProject do
 
   defp deps do
     [
-      {:git_ops, "~> 2.0", only: [:dev], runtime: false},
+      {:git_ops, "~> 2.0", only: [:dev, :test], runtime: false},
       {:igniter, "~> 0.6"},
       {:sourceror, "~> 1.11"},
       {:usage_rules, "~> 1.0"},
