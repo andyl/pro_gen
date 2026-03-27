@@ -31,7 +31,7 @@ defmodule ProGen.Action.Ops.GitOps do
 
   @impl true
   def depends_on(_args) do
-    [{"deps.install", "git_ops"}]
+    [{"deps.install", package: "git_ops"}]
   end
 
   @impl true

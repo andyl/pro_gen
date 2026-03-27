@@ -31,7 +31,7 @@ defmodule ProGen.Action.Ops.CommitHook do
 
   @impl true
   def depends_on(_args) do
-    [{"deps.install", "commit_hook"}]
+    [{"deps.install", package: "commit_hook"}]
   end
 
   @impl true
