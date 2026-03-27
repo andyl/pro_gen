@@ -2,7 +2,25 @@ defmodule ProGen.Action.Ops.CommitHook do
   @moduledoc """
   Install a Conventional Commits git hook.
 
-  # TODO: finish documentation
+  Uses the `commit_hook` package to enforce Conventional Commits format
+  on all commit messages.
+
+  Learn more at [conventionalcommits.org](https://www.conventionalcommits.org).
+
+  ## Dependencies
+
+  Depends on `deps.install` to ensure the `commit_hook` package is in `mix.exs`.
+
+  ## What it does
+
+  Runs `mix commit_hooks.enable` to install a `commit-msg` git hook that
+  validates commit messages against the Conventional Commits spec.
+
+  ## Skipped when
+
+  The action is skipped (`needed?/1` returns `false`) when the `commit_hook`
+  dependency is installed and `.git/hooks/commit-msg` already exists. Pass
+  `force: true` to run regardless.
   """
 
   use ProGen.Action
@@ -18,8 +36,7 @@ defmodule ProGen.Action.Ops.CommitHook do
 
   @impl true
   def needed?(_args) do
-    # TODO: needed if
-    # commit_hook dep is missing OR not (File.exists?(".git/hooks/commit-msg"))
+    not dep_installed?() or not File.exists?(".git/hooks/commit-msg")
   end
 
   @impl true
@@ -33,6 +50,19 @@ defmodule ProGen.Action.Ops.CommitHook do
 
   @impl true
   def confirm(_result, _args) do
-    # TODO: add logic for this function
+    if File.exists?(".git/hooks/commit-msg") do
+      :ok
+    else
+      {:error, ".git/hooks/commit-msg was not created"}
+    end
+  end
+
+  # -----
+
+  defp dep_installed? do
+    case File.read("mix.exs") do
+      {:ok, contents} -> String.contains?(contents, ":commit_hook")
+      {:error, _} -> false
+    end
   end
 end
