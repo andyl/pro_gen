@@ -5,6 +5,19 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## v0.0.2 (2026-03-27)
+
+
+
+
+### Bug Fixes:
+
+* update ops dependencies by andyl
+
+* add :test env to git_ops dep to silence config warning by andyl
+
+* complete CommitHook action and update tests by andyl
+
 ## v0.0.1 (2026-03-26)
 
 
