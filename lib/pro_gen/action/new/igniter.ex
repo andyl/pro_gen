@@ -1,6 +1,6 @@
 defmodule ProGen.Action.IgniterNew.Run do
   @moduledoc """
-  Create a new Igniter application.
+  Create a new elixir application with Igniter.
 
   Skips creation when the project directory already exists.
   Pass `force: true` to regenerate regardless.
