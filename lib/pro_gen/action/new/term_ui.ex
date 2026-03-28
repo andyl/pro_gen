@@ -1,4 +1,4 @@
-defmodule ProGen.Action.TermUI.New do
+defmodule ProGen.Action.New.TermUI do
   @moduledoc """
   Create a new TermUI application.
 
