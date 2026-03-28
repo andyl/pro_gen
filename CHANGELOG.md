@@ -5,6 +5,21 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## v0.1.0 (2026-03-28)
+
+
+
+
+### Features:
+
+* extend confirm/2 to support {:ok, cd: path} for composite dir mgmt by andyl
+
+### Bug Fixes:
+
+* fix module name by andyl
+
+* refactor new tasks by andyl
+
 ## v0.0.3 (2026-03-27)
 
 
