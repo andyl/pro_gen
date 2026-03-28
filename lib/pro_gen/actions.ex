@@ -238,11 +238,14 @@ defmodule ProGen.Actions do
     deps = mod.depends_on(validated_args) |> normalize_deps()
 
     Enum.reduce_while(deps, :ok, fn {dep_name, dep_opts}, :ok ->
+      depth = length(Process.get(@resolving_stack_key))
+      if Mix.env() != :test, do: ProGen.Xt.PGIO.puts("-> DEPENDENCY-L#{depth} " <> inspect({dep_name, dep_opts}))
       case run_internal(dep_name, dep_opts) do
         {:error, reason} ->
           {:halt, {:error, "Dependency \"#{dep_name}\" failed: #{inspect(reason)}"}}
 
         _ok ->
+          if Mix.env() != :test, do: ProGen.Xt.PGIO.puts("<- DEPENDENCY-L#{depth} " <> inspect({dep_name, dep_opts}))
           {:cont, :ok}
       end
     end)
@@ -272,6 +275,7 @@ defmodule ProGen.Actions do
   defp skip_and_confirm(mod, validated_args) do
     case mod.confirm({:ok, :skipped}, validated_args) do
       :ok ->
+        ProGen.Xt.PGIO.puts("skipped...")
         {:ok, :skipped}
 
       {:ok, opts} when is_list(opts) ->
@@ -280,6 +284,7 @@ defmodule ProGen.Actions do
           File.cd!(path)
         end
 
+        ProGen.Xt.PGIO.puts("skipped...")
         {:ok, :skipped}
 
       {:error, reason} ->
