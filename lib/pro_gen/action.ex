@@ -11,14 +11,16 @@ defmodule ProGen.Action do
     5. `perform/1`     — Required. Main execution with validated keyword args
     6. `confirm/2`     — Optional. Postcondition check after perform (default: `:ok`)
 
-  When `needed?/1` returns `false`, the framework skips `perform/1` and returns
+  When `needed?/1` returns `false`, the framework skips `perform/1` but still
+  calls `confirm/2` with `{:ok, :skipped}` as the result, allowing side-effects
+  like directory changes to occur even on skip. The overall return value is
   `{:ok, :skipped}`. Pass `force: true` to `ProGen.Actions.run/2` to bypass the check.
 
-  After `perform/1` succeeds, `confirm/2` is called with the raw perform result and
-  the validated args. Return `:ok` to accept the result, `{:ok, opts}` to accept
-  with side-effects (e.g., `{:ok, cd: path}` changes the working directory before
-  follow-on actions), or `{:error, reason}` to signal a confirmation failure
-  (wrapped as `{:error, {:confirmation_failed, reason}}`).
+  `confirm/2` is called after `perform/1` succeeds (with the raw perform result)
+  or after a skip (with `{:ok, :skipped}`). Return `:ok` to accept, `{:ok, opts}`
+  to accept with side-effects (e.g., `{:ok, cd: path}` changes the working
+  directory before follow-on actions), or `{:error, reason}` to signal a
+  confirmation failure (wrapped as `{:error, {:confirmation_failed, reason}}`).
 
   The `validate/1` callback returns a list of `{validator_name, checks}` tuples
   declaring preconditions checked before `perform/1`. Each tuple is passed to

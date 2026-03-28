@@ -6,6 +6,7 @@ defmodule ProGen.Xt.Sys do
   """
 
   def cmd(cmd_string) when is_binary(cmd_string) do
+    ProGen.Xt.PGIO.puts(cmd_string)
     cmd("sh", ["-c", cmd_string])
   end
 

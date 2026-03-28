@@ -212,7 +212,7 @@ defmodule ProGen.Actions do
                       {:error, _} = err -> err
                     end
                   else
-                    {:ok, :skipped}
+                    skip_and_confirm(mod, validated_args)
                   end
 
                 # Record as ran and pop from stack
@@ -253,6 +253,24 @@ defmodule ProGen.Actions do
       {name, opts} when is_binary(name) and is_list(opts) -> {name, opts}
       name when is_binary(name) -> {name, []}
     end)
+  end
+
+  defp skip_and_confirm(mod, validated_args) do
+    case mod.confirm({:ok, :skipped}, validated_args) do
+      :ok ->
+        {:ok, :skipped}
+
+      {:ok, opts} when is_list(opts) ->
+        if path = opts[:cd] do
+          ProGen.Script.puts("cd #{path}")
+          File.cd!(path)
+        end
+
+        {:ok, :skipped}
+
+      {:error, reason} ->
+        {:error, {:confirmation_failed, reason}}
+    end
   end
 
   defp perform_and_confirm(mod, validated_args) do

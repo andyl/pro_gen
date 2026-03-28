@@ -39,6 +39,8 @@ defmodule ProGen.Action.New.Igniter do
       string -> "--install " <> string
     end
 
+    cmd = "mix igniter.new #{project} #{packages}"
+    ProGen.Script.puts(cmd)
     Sys.cmd("mix igniter.new #{project} #{packages}")
   end
 

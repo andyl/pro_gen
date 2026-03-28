@@ -41,7 +41,8 @@ defmodule ProGen.Action.Ops.CommitHook do
 
   @impl true
   def perform(_args) do
-    Sys.cmd("mix commit_hooks.enable")
+    Sys.cmd("pwd")
+    Sys.cmd("mix commit_hook.enable")
     ProGen.Script.puts("Git hooks have been installed")
     ProGen.Script.puts("Conventional Commit messages are enforced")
 

@@ -35,6 +35,7 @@ defmodule ProGen.Action.Git.Commit do
   def confirm(result, _args) do
     case result do
       :ok -> :ok
+      {:ok, :skipped} -> :ok
       {:error, _} -> {:error, "git commit failed"}
     end
   end

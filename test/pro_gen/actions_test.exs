@@ -140,9 +140,25 @@ defmodule ProGen.ActionsTest do
                ProGen.Actions.run(ProGen.Action.Test.ConfirmFail, message: "hi")
     end
 
-    test "confirm/2 is not called when action is skipped" do
+    test "confirm/2 is called with {:ok, :skipped} when action is skipped" do
       assert {:ok, :skipped} =
                ProGen.Actions.run("test.never_needed", message: "hi")
+    end
+
+    test "confirm/2 returning {:ok, cd: path} changes directory on skip" do
+      original = File.cwd!()
+      tmp_dir = System.tmp_dir!()
+
+      try do
+        capture_io(fn ->
+          assert {:ok, :skipped} =
+                   ProGen.Actions.run("test.confirm_cd_skip", cd_path: tmp_dir)
+        end)
+
+        assert File.cwd!() == tmp_dir
+      after
+        File.cd!(original)
+      end
     end
 
     test "confirm/2 returning {:ok, cd: path} changes working directory" do
