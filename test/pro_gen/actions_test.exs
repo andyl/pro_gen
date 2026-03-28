@@ -263,6 +263,28 @@ defmodule ProGen.ActionsTest do
       assert Process.get(:dep_on_never_needed_ran) == true
     end
 
+    test "depends_on accepts full module atom (ProGen.Action.X)" do
+      ProGen.Actions.clear_cache()
+      assert {:ok, :dep_mod_full_ran} = ProGen.Actions.run("test.dep_mod_full", [])
+      assert Process.get(:dep_base_count) == 1
+      assert Process.get(:dep_mod_full_ran) == true
+    end
+
+    test "depends_on accepts short module atom (X without ProGen.Action prefix)" do
+      ProGen.Actions.clear_cache()
+      assert {:ok, :dep_mod_short_ran} = ProGen.Actions.run("test.dep_mod_short", [])
+      assert Process.get(:dep_base_count) == 1
+      assert Process.get(:dep_mod_short_ran) == true
+    end
+
+    test "depends_on accepts {full_module, opts} tuple" do
+      ProGen.Actions.clear_cache()
+      Process.delete(:dep_with_opts_args)
+      assert {:ok, :dep_mod_full_opts_ran} = ProGen.Actions.run("test.dep_mod_full_opts", [])
+      assert Process.get(:dep_with_opts_args) == [message: "from_mod"]
+      assert Process.get(:dep_mod_full_opts_ran) == true
+    end
+
     test "conditional deps: depends_on/1 uses args" do
       # Without with_dep, no dependency runs
       Process.delete(:dep_base_count)

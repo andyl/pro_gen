@@ -43,7 +43,8 @@ defmodule ProGen.Action do
   """
 
   @callback opts_def() :: keyword()
-  @callback depends_on(args :: keyword()) :: [String.t() | {String.t(), keyword()}]
+  @type action_ref :: String.t() | module()
+  @callback depends_on(args :: keyword()) :: [action_ref() | {action_ref(), keyword()}]
   @callback needed?(args :: keyword()) :: boolean()
   @callback validate(args :: keyword()) :: [{String.t(), list()}]
   @callback perform(args :: keyword()) :: any()
@@ -77,9 +78,10 @@ defmodule ProGen.Action do
       end
 
       @doc """
-      Returns a list of dependency action names that must run before this action.
-      Each element is either a string name or a `{name, opts}` tuple.
-      Defaults to `[]`.
+      Returns a list of dependency action refs that must run before this action.
+      Each element is a string name, a module atom, or a `{name_or_mod, opts}` tuple.
+      Module atoms may be the full form (`ProGen.Action.Archive.Install`) or
+      the short form (`Archive.Install`). Defaults to `[]`.
       """
       def depends_on(_args), do: []
 

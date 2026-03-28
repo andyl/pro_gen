@@ -251,8 +251,22 @@ defmodule ProGen.Actions do
   defp normalize_deps(deps) do
     Enum.map(deps, fn
       {name, opts} when is_binary(name) and is_list(opts) -> {name, opts}
+      {mod, opts} when is_atom(mod) and is_list(opts) -> {module_to_action_name(mod), opts}
       name when is_binary(name) -> {name, []}
+      mod when is_atom(mod) -> {module_to_action_name(mod), []}
     end)
+  end
+
+  defp module_to_action_name(mod) do
+    parts = Module.split(mod)
+
+    case parts do
+      ["ProGen", "Action" | rest] when rest != [] ->
+        rest |> Enum.map(&Macro.underscore/1) |> Enum.join(".")
+
+      _ ->
+        parts |> Enum.map(&Macro.underscore/1) |> Enum.join(".")
+    end
   end
 
   defp skip_and_confirm(mod, validated_args) do
