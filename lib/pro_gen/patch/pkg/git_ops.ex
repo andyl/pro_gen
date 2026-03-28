@@ -22,9 +22,12 @@ defmodule ProGen.Patch.Pkg.GitOps do
   """
   def update_git_ops_config do
     file = "config/config.exs"
+    old = "github_handle_lookup?: true"
+    new = "github_handle_lookup?: false"
+    _xx = "github_handle_lookup?: true"
 
     if File.exists?(file) do
-      ProGen.Patch.File.replace(file, "github_handle_lookup?: true", "github_handle_lookup?: false")
+      ProGen.Patch.File.replace(file, old, new)
     else
       {:error, "#{file} does not exist — run `mix igniter.install git_ops` first"}
     end

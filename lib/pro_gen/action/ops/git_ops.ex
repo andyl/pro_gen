@@ -36,10 +36,7 @@ defmodule ProGen.Action.Ops.GitOps do
 
   @impl true
   def needed?(_args) do
-    case File.read("config/config.exs") do
-      {:ok, contents} -> not String.contains?(contents, ":git_ops")
-      {:error, _} -> true
-    end
+    not File.exists?("CHANGELOG.md")
   end
 
   @impl true
@@ -47,7 +44,7 @@ defmodule ProGen.Action.Ops.GitOps do
     # this is idempotent...
     ProGen.Patch.Pkg.GitOps.update_git_ops_config()
     # initial sync
-    ProGen.Xt.Sys.cmd("mix git_ops.release --initial")
+    ProGen.Xt.Sys.cmd("mix git_ops.release --initial --yes")
     ProGen.Script.puts("Initial release successful - git tag created")
     ProGen.Script.puts("Use 'git push --follow-tags' to push tags")
     :ok

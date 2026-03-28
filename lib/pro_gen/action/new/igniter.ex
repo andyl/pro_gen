@@ -1,4 +1,4 @@
-defmodule ProGen.Action.IgniterNew.Run do
+defmodule ProGen.Action.New.Igniter do
   @moduledoc """
   Create a new elixir application with Igniter.
 
@@ -13,11 +13,7 @@ defmodule ProGen.Action.IgniterNew.Run do
   def opts_def do
     [
       project: [type: :string, required: true, doc: "Name of the igniter project to create"],
-      packages: [
-        type: :string,
-        required: false,
-        doc: "Comma-seperated list of packages to install"
-      ]
+      packages: [type: :string, required: false, doc: "Comma-seperated list of packages to install"]
     ]
   end
 
@@ -37,12 +33,13 @@ defmodule ProGen.Action.IgniterNew.Run do
     project = Keyword.fetch!(args, :project)
     Sys.cmd("rm -rf #{project}")
 
-    packages = case Keyword.fetch!(args, :packages) do
-      nil -> "git_ops"
-      string -> "git_ops," <> string
+    # packages = case Keyword.fetch!(args, :packages) do
+    packages = case args[:packages] do
+      nil -> ""
+      string -> "--install " <> string
     end
 
-    Sys.cmd("mix igniter.new #{project} --install #{packages}")
+    Sys.cmd("mix igniter.new #{project} #{packages}")
   end
 
   @impl true
