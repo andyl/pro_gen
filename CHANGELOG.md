@@ -5,6 +5,27 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## v0.2.0 (2026-03-28)
+
+
+
+
+### Features:
+
+* show dependency stack by andyl
+
+### Bug Fixes:
+
+* test new Module format by andyl
+
+* remove unneeded log message by andyl
+
+* remove unnecessary message outputs by andyl
+
+* accept full module names for action deps by andyl
+
+* cleanup igniter_ops by andyl
+
 ## v0.1.0 (2026-03-28)
 
 
