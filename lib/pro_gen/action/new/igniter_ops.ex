@@ -20,9 +20,12 @@ defmodule ProGen.Action.New.IgniterOps do
   @impl true
   def depends_on(args) do
     [
-      {"new.igniter", args},
-      "ops.git_ops",
-      "ops.commit_hook"
+      # {"new.igniter", args},
+      # "ops.git_ops",
+      # "ops.commit_hook"
+      {ProGen.Action.New.Igniter, args},
+      ProGen.Action.Ops.GitOps,
+      ProGen.Action.Ops.CommitHook
     ]
   end
 
