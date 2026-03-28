@@ -144,6 +144,47 @@ defmodule ProGen.ActionsTest do
       assert {:ok, :skipped} =
                ProGen.Actions.run("test.never_needed", message: "hi")
     end
+
+    test "confirm/2 returning {:ok, cd: path} changes working directory" do
+      original = File.cwd!()
+      tmp_dir = System.tmp_dir!()
+
+      try do
+        capture_io(fn ->
+          assert {:ok, ^tmp_dir} =
+                   ProGen.Actions.run("test.confirm_cd", cd_path: tmp_dir)
+        end)
+
+        assert File.cwd!() == tmp_dir
+      after
+        File.cd!(original)
+      end
+    end
+
+    test "confirm/2 returning {:ok, []} does not change working directory" do
+      original = File.cwd!()
+
+      assert {:ok, "hi"} =
+               ProGen.Actions.run("test.confirm_ok_opts", message: "hi")
+
+      assert File.cwd!() == original
+    end
+
+    test "confirm/2 returning {:ok, cd: path} logs the cd event" do
+      original = File.cwd!()
+      tmp_dir = System.tmp_dir!()
+
+      try do
+        output =
+          capture_io(fn ->
+            ProGen.Actions.run("test.confirm_cd", cd_path: tmp_dir)
+          end)
+
+        assert output =~ "cd #{tmp_dir}"
+      after
+        File.cd!(original)
+      end
+    end
   end
 
   describe "depends_on/1" do

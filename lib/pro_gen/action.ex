@@ -15,8 +15,10 @@ defmodule ProGen.Action do
   `{:ok, :skipped}`. Pass `force: true` to `ProGen.Actions.run/2` to bypass the check.
 
   After `perform/1` succeeds, `confirm/2` is called with the raw perform result and
-  the validated args. Return `:ok` to accept the result or `{:error, reason}` to
-  signal a confirmation failure (wrapped as `{:error, {:confirmation_failed, reason}}`).
+  the validated args. Return `:ok` to accept the result, `{:ok, opts}` to accept
+  with side-effects (e.g., `{:ok, cd: path}` changes the working directory before
+  follow-on actions), or `{:error, reason}` to signal a confirmation failure
+  (wrapped as `{:error, {:confirmation_failed, reason}}`).
 
   The `validate/1` callback returns a list of `{validator_name, checks}` tuples
   declaring preconditions checked before `perform/1`. Each tuple is passed to
@@ -43,7 +45,8 @@ defmodule ProGen.Action do
   @callback needed?(args :: keyword()) :: boolean()
   @callback validate(args :: keyword()) :: [{String.t(), list()}]
   @callback perform(args :: keyword()) :: any()
-  @callback confirm(result :: any(), args :: keyword()) :: :ok | {:error, term()}
+  @callback confirm(result :: any(), args :: keyword()) ::
+              :ok | {:ok, keyword()} | {:error, term()}
   @callback commit_type() :: String.t()
 
   @valid_cc_types ~w(feat fix build chore ci docs style refactor perf revert test)

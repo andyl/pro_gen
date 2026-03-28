@@ -259,8 +259,19 @@ defmodule ProGen.Actions do
     result = mod.perform(validated_args)
 
     case mod.confirm(result, validated_args) do
-      :ok -> result
-      {:error, reason} -> {:error, {:confirmation_failed, reason}}
+      :ok ->
+        result
+
+      {:ok, opts} when is_list(opts) ->
+        if path = opts[:cd] do
+          ProGen.Script.puts("cd #{path}")
+          File.cd!(path)
+        end
+
+        result
+
+      {:error, reason} ->
+        {:error, {:confirmation_failed, reason}}
     end
   end
 

@@ -37,7 +37,7 @@ defmodule ProGen.Action.New.TermUI do
     project = Keyword.fetch!(args, :project)
 
     if File.dir?(project) do
-      :ok
+      {:ok, cd: Path.expand(project)}
     else
       {:error, "project directory \"#{project}\" was not created"}
     end
