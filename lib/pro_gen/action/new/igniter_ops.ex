@@ -21,30 +21,13 @@ defmodule ProGen.Action.New.IgniterOps do
   def depends_on(args) do
     [
       {"new.igniter", args},
-      {"ops.git_ops", args},
-      {"ops.commit_hook", args}
+      "ops.git_ops",
+      "ops.commit_hook"
     ]
   end
-
-  # @impl true
-  # def needed?(args) do
-  #   project = Keyword.fetch!(args, :project)
-  #   not File.dir?(project)
-  # end
 
   @impl true
   def perform(_args) do
     :ok
   end
-
-  # @impl true
-  # def confirm(_result, args) do
-  #   project = Keyword.fetch!(args, :project)
-  #
-  #   if File.dir?(project) do
-  #     :ok
-  #   else
-  #     {:error, "project directory \"#{project}\" was not created"}
-  #   end
-  # end
 end
